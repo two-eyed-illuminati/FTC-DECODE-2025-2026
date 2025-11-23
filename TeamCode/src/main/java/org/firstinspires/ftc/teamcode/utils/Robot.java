@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -20,37 +22,55 @@ public class Robot{
 
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
+  public static DcMotorEx intake;
+  public static MotorMechanism outtakeTurret;
+  public static Limelight3A limelight;
   public static MultipleTelemetry telemetry;
-  public static DcMotorEx fl;
-  public static DcMotorEx fr;
-  public static DcMotorEx bl;
-  public static DcMotorEx br;
+  //Stored Values
+  public enum Alliance{
+    BLUE, RED
+  }
+  public static Alliance alliance = Alliance.BLUE; //0 = blue, 1 = red
   public static boolean initialized = false;
 
   public static void initialize(HardwareMap hardwareMap, Telemetry dsTelemetry){
+    initializeOpMode(hardwareMap, dsTelemetry);
+
     if(!initialized) {
       drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-      telemetry = new MultipleTelemetry(
-              dsTelemetry, // Driver Station telemetry
-              FtcDashboard.getInstance().getTelemetry() // Dashboard telemetry
-      );
-      fl = hardwareMap.get(DcMotorEx.class, "fl");
-      fr = hardwareMap.get(DcMotorEx.class, "fr");
-      bl = hardwareMap.get(DcMotorEx.class, "bl");
-      br = hardwareMap.get(DcMotorEx.class, "br");
-      telemetry.addLine("INFO: ROBOT SUCCESSFULLY INITIALIZED");
+      intake = hardwareMap.get(DcMotorEx.class, "intake");
+      DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "outtakeTurret");
+      outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      outtakeTurret = new MotorMechanism(outtakeTurretMotor,
+              -90, 90, -5281.1/4, 5281.1/4, 180);
+      limelight = hardwareMap.get(Limelight3A.class, "limelight");
+      limelight.pipelineSwitch(5);
+      limelight.start();
+
+      LLResult llResult;
+      do {
+        llResult = limelight.getLatestResult();
+      } while(llResult == null || !llResult.isValid());
+      alliance = llResult.getFiducialResults().get(0).getFiducialId() == 24 ? Alliance.RED : Alliance.BLUE;
+//
+      telemetry.addLine("Robot successfully initialized");
+      telemetry.addLine("Detected as " + (alliance == Alliance.RED ? "RED" : "BLUE") + " alliance");
     }
     else{
-      telemetry.addLine("INFO: ROBOT USING PREVIOUS INITIALIZATION STATE");
-      telemetry.addLine("INFO: IF YOU WOULD LIKE TO UNINITIALIZE, RUN THE \"UninitializeRobot\" OP MODE");
+      telemetry.addLine("Robot using previous initialization state");
+      telemetry.addLine("If you would like to uninitialize, run the \"Uninitialize Robot\" OpMode");
     }
-
-    fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     initialized = true;
     telemetry.update();
   }
+
+  public static void initializeOpMode(HardwareMap hardwareMap, Telemetry dsTelemetry){
+    telemetry = new MultipleTelemetry( //apparently needs to reinit each time opmode inits
+            dsTelemetry, // Driver Station telemetry
+            FtcDashboard.getInstance().getTelemetry() // Dashboard telemetry
+    );
+  }
+
+
 }
