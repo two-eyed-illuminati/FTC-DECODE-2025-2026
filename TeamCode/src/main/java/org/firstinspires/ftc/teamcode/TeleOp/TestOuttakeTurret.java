@@ -30,7 +30,8 @@ public class TestOuttakeTurret extends OpMode {
             mode = 2;
         }
         if(mode == 0) {
-            Robot.outtakeTurret.setPos(Robot.outtakeTurret.getPos() + gamepad1.left_stick_y);
+            Robot.outtakeTurret.setPos(Math.signum(gamepad1.left_stick_y) == 1 ? Robot.outtakeTurret.maxPos : Robot.outtakeTurret.minPos,
+                    gamepad1.left_stick_y*Robot.outtakeTurret.maxVel);
             Robot.telemetry.addData("Outtake Turret Pos", Robot.outtakeTurret.getPos());
         }
         if(mode == 1) {
@@ -77,7 +78,12 @@ public class TestOuttakeTurret extends OpMode {
             double targetTurretPos = Math.toDegrees(Math.atan2(72-pose.position.y, -72-pose.position.x));
             Robot.telemetry.addData("Target Abs Turret Pos", targetTurretPos);
             Robot.telemetry.addData("Target Rel Turret Pos", targetTurretPos-Math.toDegrees(pose.heading.toDouble()));
-            Robot.outtakeTurret.setPos(targetTurretPos-Math.toDegrees(pose.heading.toDouble()));
+            double angle = (targetTurretPos-Math.toDegrees(pose.heading.toDouble())) % 360;
+            if(angle > 180){
+                angle -= 360;
+            }
+            Robot.telemetry.addData("Target Angle", angle);
+            Robot.outtakeTurret.setPos(angle);
             Robot.telemetry.addData("Outtake Turret Pos", Robot.outtakeTurret.getPos());
         }
     }
