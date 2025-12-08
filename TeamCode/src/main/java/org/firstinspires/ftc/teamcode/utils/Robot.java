@@ -47,7 +47,7 @@ public class Robot{
       outtakeTurretMotor.setTargetPosition(0);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
-              -90, 90, -5281.1/4*4, 5281.1/4*4, 180);
+              -90, 210, -537.7/4*4, 537.7/4*4, 1872);
       outtake = hardwareMap.get(DcMotorEx.class, "outtake");
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
@@ -77,5 +77,4 @@ public class Robot{
             FtcDashboard.getInstance().getTelemetry() // Dashboard telemetry
     );
   }
-
 }

@@ -4,11 +4,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class ServoMechanism extends Mechanism{
-    private final Servo servo;
-    private final double minServoPos;
-    private final double maxServoPos;
-    private double prevPos;
-    private final ElapsedTime time = new ElapsedTime();
+    public final Servo servo;
+    public final double minServoPos;
+    public final double maxServoPos;
+    public double prevPos;
+    public final ElapsedTime time = new ElapsedTime();
     public double toServoPos(double angle){
         return ((maxServoPos - minServoPos)/(maxPos - minPos))*(angle - minPos)+minServoPos;
     }

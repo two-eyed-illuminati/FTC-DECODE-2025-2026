@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class MotorMechanism extends Mechanism{
-    private final DcMotorEx motor;
-    private final double minEncoderPos;
-    private final double maxEncoderPos;
+    public final DcMotorEx motor;
+    public final double minEncoderPos;
+    public final double maxEncoderPos;
     public double toEncoderPos(double angle){
         return ((maxEncoderPos - minEncoderPos)/(maxPos - minPos))*(angle - minPos)+minEncoderPos;
     }
@@ -37,7 +37,7 @@ public class MotorMechanism extends Mechanism{
 
     @Override
     public void setPos(double pos, double maxVel){
-        motor.setVelocity(maxVel, AngleUnit.DEGREES);
+        motor.setVelocity(Math.abs(((maxEncoderPos - minEncoderPos)/(maxPos - minPos))*maxVel));
         motor.setTargetPosition((int)Clamp.clamp(toEncoderPos(pos), minEncoderPos, maxEncoderPos));
     }
 
