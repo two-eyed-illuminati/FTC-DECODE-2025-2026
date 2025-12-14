@@ -75,7 +75,7 @@ public class TestOuttakeTurret extends OpMode {
             Robot.telemetry.addData("x", pose.position.x);
             Robot.telemetry.addData("y", pose.position.y);
             Robot.telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-            double targetTurretPos = Math.toDegrees(Math.atan2(72-pose.position.y, -72-pose.position.x));
+            double targetTurretPos = Math.toDegrees(Math.atan2(72-pose.position.y+1.25, -72-pose.position.x+4.5));
             Robot.telemetry.addData("Target Abs Turret Pos", targetTurretPos);
             Robot.telemetry.addData("Target Rel Turret Pos", targetTurretPos-Math.toDegrees(pose.heading.toDouble()));
             double angle = (targetTurretPos-Math.toDegrees(pose.heading.toDouble())) % 360;
