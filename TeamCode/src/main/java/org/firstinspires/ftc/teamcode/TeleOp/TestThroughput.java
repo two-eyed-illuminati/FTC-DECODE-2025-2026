@@ -19,7 +19,7 @@ public class TestThroughput extends OpMode {
 
     @Override
     public void loop(){
-       double power = gamepad1.left_stick_y;
+       double power = gamepad1.x ? 1.0 : 0.0;
        Robot.intake.setPower(power);
        Robot.transfer.setPower(0.4*power);
        Robot.outtake.setPower(1.0);
