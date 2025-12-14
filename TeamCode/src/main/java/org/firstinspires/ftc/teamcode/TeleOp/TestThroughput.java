@@ -20,7 +20,7 @@ public class TestThroughput extends OpMode {
     public void loop(){
        double power = gamepad1.x ? 1.0 : 0.0;
        Robot.intake.setPower(power);
-       Robot.transfer.setPower(0.4*power);
+       Robot.transfer.setPower(power);
        double outtakePower = gamepad1.y ? 1.0 : 0.0;
        Robot.outtake.setPower(outtakePower);
        Robot.drive.setDrivePowers(new PoseVelocity2d(
