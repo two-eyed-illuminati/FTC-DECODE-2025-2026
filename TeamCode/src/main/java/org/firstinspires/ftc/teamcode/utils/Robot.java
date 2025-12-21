@@ -81,4 +81,15 @@ public class Robot{
             FtcDashboard.getInstance().getTelemetry() // Dashboard telemetry
     );
   }
+
+  public static double artifactPos(double v0, double theta, double x){
+    double v0x = v0*Math.cos(Math.toRadians(theta));
+    double v0y = v0*Math.sin(Math.toRadians(theta));
+    double a = 0.5*(-3.4448818898);
+    double b = v0x;
+    double t = (-b+Math.sqrt(b*b-4*a*(-x)))/(2*a);
+    double y = 0.4+v0y*t+0.5*(-30.183727034)*t*t;
+
+    return y;
+  }
 }
