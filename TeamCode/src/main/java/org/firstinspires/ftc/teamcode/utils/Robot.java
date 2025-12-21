@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -23,9 +24,10 @@ public class Robot{
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
   public static DcMotorEx intake;
-  public static DcMotorEx transfer;
+  public static CRServo transferIn;
+  public static CRServo transferUp;
   public static MotorMechanism outtakeTurret;
-  public static DcMotorEx outtake;
+  public static ContinuousMotorMechanism outtake;
   public static Limelight3A limelight;
   public static MultipleTelemetry telemetry;
   //Stored Values
@@ -41,14 +43,16 @@ public class Robot{
     if(!initialized) {
       drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
       intake = hardwareMap.get(DcMotorEx.class, "intake");
-      transfer = hardwareMap.get(DcMotorEx.class, "transfer");
+      transferIn = hardwareMap.get(CRServo.class, "transferIn");
+      transferUp = hardwareMap.get(CRServo.class, "transferUp");
       DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "outtakeTurret");
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       outtakeTurretMotor.setTargetPosition(0);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -90, 210, -537.7/4*4, 537.7/4*4, 1872);
-      outtake = hardwareMap.get(DcMotorEx.class, "outtake");
+      outtake = new ContinuousMotorMechanism(hardwareMap.get(DcMotorEx.class, "outtake"),
+              360.0/28.0, 36000.0);
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
       limelight.start();
