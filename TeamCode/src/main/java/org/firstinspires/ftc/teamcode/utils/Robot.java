@@ -25,7 +25,7 @@ public class Robot{
   public static MecanumDrive drive;
   public static DcMotorEx intake;
   public static CRServo transferIn;
-  public static CRServo transferUp;
+  public static ContinuousMotorMechanism transferUp;
   public static MotorMechanism outtakeTurret;
   public static ContinuousMotorMechanism outtake;
   public static Limelight3A limelight;
@@ -44,15 +44,20 @@ public class Robot{
       drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
       intake = hardwareMap.get(DcMotorEx.class, "intake");
       transferIn = hardwareMap.get(CRServo.class, "transferIn");
-      transferUp = hardwareMap.get(CRServo.class, "transferUp");
+      DcMotorEx transferUpMotor = hardwareMap.get(DcMotorEx.class, "transferUp");
+      transferUp = new ContinuousMotorMechanism(transferUpMotor,
+              360.0/145.1, 6900
+      );
       DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "outtakeTurret");
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       outtakeTurretMotor.setTargetPosition(0);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
-              -90, 210, -537.7/4*4, 537.7/4*4, 1872);
-      outtake = new ContinuousMotorMechanism(hardwareMap.get(DcMotorEx.class, "outtake"),
-              360.0/28.0, 36000.0);
+              -90, 90, -537.7/4*4, 537.7/4*4, 1872);
+      DcMotorEx outtakeMotor = hardwareMap.get(DcMotorEx.class, "outtake");
+      outtake = new ContinuousMotorMechanism(outtakeMotor,
+              360.0/28.0, 36000.0
+      );
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
       limelight.start();
@@ -91,5 +96,39 @@ public class Robot{
     double y = 0.4+v0y*t+0.5*(-30.183727034)*t*t;
 
     return y;
+  }
+
+  public static void aimOuttakeTurret(){
+    Pose2d pose = drive.localizer.getPose();
+    telemetry.addData("x", pose.position.x);
+    telemetry.addData("y", pose.position.y);
+    telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+    double targetTurretPos = Math.toDegrees(Math.atan2(72-pose.position.y+1.25, -72-pose.position.x+4.5));
+    telemetry.addData("Target Abs Turret Pos", targetTurretPos);
+    telemetry.addData("Target Rel Turret Pos", targetTurretPos-Math.toDegrees(pose.heading.toDouble()));
+    double angle = (targetTurretPos-Math.toDegrees(pose.heading.toDouble())) % 360;
+    if(angle > 180){
+      angle -= 360;
+    }
+    telemetry.addData("Target Angle", angle);
+    outtakeTurret.setPos(angle);
+    telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
+  }
+
+  public static void shootOuttake(){
+    Pose2d pose = drive.localizer.getPose();
+    double currDistance = Math.sqrt(Math.pow(72-pose.position.y+1.25, 2)+Math.pow(-72-pose.position.x+4.5, 2));
+    telemetry.addData("Curr Distance (ft)", currDistance);
+    double targetArtifactVel = BinarySearch.binarySearch(0, 1000,
+            (vel) -> 40 > artifactPos(vel, 45, currDistance/12));
+    telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
+    double targetOuttakeVel = 2.5*(targetArtifactVel/0.8);
+    telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
+    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360;
+    telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
+    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741+1000;
+    telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
+    telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.motor.getVelocity()*(360/28));
+    outtake.setPos(0, targetOuttakeAngVelInitial);
   }
 }
