@@ -93,7 +93,7 @@ public class Robot{
     double a = 0.5*(-3.4448818898);
     double b = v0x;
     double t = (-b+Math.sqrt(b*b-4*a*(-x)))/(2*a);
-    double y = 0.4+v0y*t+0.5*(-30.183727034)*t*t;
+    double y = 1.31234+v0y*t+0.5*(-30.183727034)*t*t;
 
     return y;
   }
@@ -102,12 +102,12 @@ public class Robot{
     telemetry.addData("x", robotPose.position.x);
     telemetry.addData("y", robotPose.position.y);
     telemetry.addData("heading (deg)", Math.toDegrees(robotPose.heading.toDouble()));
-    double targetTurretPos = Math.toDegrees(Math.atan2(72-robotPose.position.y+1.25, -72-robotPose.position.x+4.5));
+    double targetTurretPos = Math.toDegrees(Math.atan2(72.0-robotPose.position.y+1.25, -72.0-robotPose.position.x+4.5));
     telemetry.addData("Target Abs Turret Pos", targetTurretPos);
     telemetry.addData("Target Rel Turret Pos", targetTurretPos-Math.toDegrees(robotPose.heading.toDouble()));
-    double angle = (targetTurretPos-Math.toDegrees(robotPose.heading.toDouble())) % 360;
-    if(angle > 180){
-      angle -= 360;
+    double angle = (targetTurretPos-Math.toDegrees(robotPose.heading.toDouble())) % 360.0;
+    if(angle > 180.0){
+      angle -= 360.0;
     }
     telemetry.addData("Target Angle", angle);
     outtakeTurret.setPos(angle);
@@ -120,16 +120,16 @@ public class Robot{
   }
 
   public static void shootOuttake(Pose2d robotPose){
-    double currDistance = Math.sqrt(Math.pow(72-robotPose.position.y+1.25, 2)+Math.pow(-72-robotPose.position.x+4.5, 2));
+    double currDistance = Math.sqrt(Math.pow(72.0-robotPose.position.y+1.25, 2)+Math.pow(-72.0-robotPose.position.x+4.5, 2));
     telemetry.addData("Curr Distance (ft)", currDistance);
-    double targetArtifactVel = BinarySearch.binarySearch(0, 1000,
-            (vel) -> 40 > artifactPos(vel, 45, currDistance/12));
+    double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
+            (vel) -> 40.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
     telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
-    double targetOuttakeVel = 2.5*(targetArtifactVel/0.8);
+    double targetOuttakeVel = (targetArtifactVel/0.8);
     telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
-    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360;
+    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
     telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
-    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741+1000;
+    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
     outtake.setPos(0, targetOuttakeAngVelInitial);
