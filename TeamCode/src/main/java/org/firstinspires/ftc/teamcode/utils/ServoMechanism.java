@@ -42,6 +42,7 @@ public class ServoMechanism extends Mechanism{
         prevPos = getPos();
         time.reset();
         servo.setPosition(toServoPos(Clamp.clamp(angle, minPos, maxPos)));
+        targetVel = maxVel;
     }
 
     @Override
@@ -49,5 +50,10 @@ public class ServoMechanism extends Mechanism{
         return prevPos > toDegrees(servo.getPosition()) ?
                 Math.max(prevPos - time.seconds() * maxVel, toDegrees(servo.getPosition())) :
                 Math.min(prevPos + time.seconds() * maxVel, toDegrees(servo.getPosition()));
+    }
+
+    @Override
+    public double getVel(){
+        return 0; //Not implemented
     }
 }

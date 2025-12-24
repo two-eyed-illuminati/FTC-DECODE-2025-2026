@@ -98,15 +98,14 @@ public class Robot{
     return y;
   }
 
-  public static void aimOuttakeTurret(){
-    Pose2d pose = drive.localizer.getPose();
-    telemetry.addData("x", pose.position.x);
-    telemetry.addData("y", pose.position.y);
-    telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-    double targetTurretPos = Math.toDegrees(Math.atan2(72-pose.position.y+1.25, -72-pose.position.x+4.5));
+  public static void aimOuttakeTurret(Pose2d robotPose){
+    telemetry.addData("x", robotPose.position.x);
+    telemetry.addData("y", robotPose.position.y);
+    telemetry.addData("heading (deg)", Math.toDegrees(robotPose.heading.toDouble()));
+    double targetTurretPos = Math.toDegrees(Math.atan2(72-robotPose.position.y+1.25, -72-robotPose.position.x+4.5));
     telemetry.addData("Target Abs Turret Pos", targetTurretPos);
-    telemetry.addData("Target Rel Turret Pos", targetTurretPos-Math.toDegrees(pose.heading.toDouble()));
-    double angle = (targetTurretPos-Math.toDegrees(pose.heading.toDouble())) % 360;
+    telemetry.addData("Target Rel Turret Pos", targetTurretPos-Math.toDegrees(robotPose.heading.toDouble()));
+    double angle = (targetTurretPos-Math.toDegrees(robotPose.heading.toDouble())) % 360;
     if(angle > 180){
       angle -= 360;
     }
@@ -115,9 +114,13 @@ public class Robot{
     telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
   }
 
-  public static void shootOuttake(){
+  public static void aimOuttakeTurret(){
     Pose2d pose = drive.localizer.getPose();
-    double currDistance = Math.sqrt(Math.pow(72-pose.position.y+1.25, 2)+Math.pow(-72-pose.position.x+4.5, 2));
+    aimOuttakeTurret(pose);
+  }
+
+  public static void shootOuttake(Pose2d robotPose){
+    double currDistance = Math.sqrt(Math.pow(72-robotPose.position.y+1.25, 2)+Math.pow(-72-robotPose.position.x+4.5, 2));
     telemetry.addData("Curr Distance (ft)", currDistance);
     double targetArtifactVel = BinarySearch.binarySearch(0, 1000,
             (vel) -> 40 > artifactPos(vel, 45, currDistance/12));
@@ -128,7 +131,34 @@ public class Robot{
     telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
     double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741+1000;
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
-    telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.motor.getVelocity()*(360/28));
+    telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
     outtake.setPos(0, targetOuttakeAngVelInitial);
+  }
+
+  public static void shootOuttake(){
+    Pose2d pose = drive.localizer.getPose();
+    shootOuttake(pose);
+  }
+
+  public static void shootSequence(){
+    aimOuttakeTurret();
+    shootOuttake();
+    boolean readyToShoot = true;
+    int shots = 0;
+    while(shots < 3){
+      if(Math.abs(outtake.getVel()-outtake.targetVel) < 200){
+        transferIn.setPower(1.0);
+        transferUp.motor.setPower(1.0);
+        readyToShoot = true;
+      }
+      else{
+        transferIn.setPower(0.0);
+        transferUp.motor.setPower(0.0);
+        if(readyToShoot){
+          shots++;
+        }
+        readyToShoot = false;
+      }
+    }
   }
 }

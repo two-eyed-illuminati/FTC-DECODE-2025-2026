@@ -25,11 +25,17 @@ public class ContinuousMotorMechanism extends Mechanism{
     @Override
     public void setPos(double pos, double maxVel){
         motor.setVelocity(maxVel*(1/posPerEncoderTick));
+        targetVel = maxVel;
         return;
     }
 
     @Override
     public double getPos(){
         return motor.getCurrentPosition()*posPerEncoderTick;
+    }
+
+    @Override
+    public double getVel(){
+        return motor.getVelocity()*posPerEncoderTick;
     }
 }
