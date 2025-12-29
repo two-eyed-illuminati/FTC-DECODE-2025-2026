@@ -22,23 +22,43 @@ public class MainTeleOp extends OpMode {
         Robot.drive.updatePoseEstimate();
 
         Vector2d driveVector = new Vector2d(0, 0);
-        driveVector = new Vector2d(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x
-        );
         if(FIELD_CENTRIC){
-            driveVector = Robot.drive.localizer.getPose().heading.times(driveVector);
+            double theta = Math.atan2(-gamepad1.left_stick_x, -gamepad1.left_stick_y);
+            if(Robot.alliance == Robot.Alliance.BLUE){
+                theta -= Math.toRadians(90);
+            }
+            else{
+                theta += Math.toRadians(90);
+            }
+            double mag = Math.sqrt(
+                    gamepad1.left_stick_y*gamepad1.left_stick_y+
+                    gamepad1.left_stick_x*gamepad1.left_stick_x);
+
+            double newTheta = theta - Robot.drive.localizer.getPose().heading.log();
+            driveVector = new Vector2d(
+                    mag*Math.cos(newTheta),
+                    mag*Math.sin(newTheta)
+            );
+        }
+        else{
+            driveVector = new Vector2d(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x
+            );
         }
         Robot.drive.setDrivePowers(new PoseVelocity2d(
                 driveVector,
                 -gamepad1.right_stick_x
         ));
 
-        double power = gamepad1.a ? 1.0 : 0.0;
-        Robot.intake.setPower(power);
-        Robot.transferIn.setPower(power);
-        Robot.transferUp.motor.setPower(power);
-        Robot.telemetry.addData("Intake/Transfer Power", power);
+        double requestedPower = gamepad1.a ? 1.0 : (gamepad1.x ? -1.0 : 0.0);
+        double upPower = Math.abs(Robot.outtake.getVel() - Robot.outtake.targetVel) < 200 ? requestedPower : 0.0;
+        Robot.intake.setPower(requestedPower);
+        Robot.transferIn.setPower(requestedPower);
+        Robot.transferUp.setPos(0, Robot.transferUp.maxVel*upPower);
+        Robot.telemetry.addData("Intake/Transfer Power", requestedPower);
+        Robot.telemetry.addData("Target transfer Up Vel", Robot.transferUp.maxVel*upPower);
+        Robot.telemetry.addData("Actual Transfer Up Vel (deg/s)", Robot.transferUp.getVel());
 
         Robot.aimOuttakeTurret();
         if(gamepad1.y){
@@ -47,5 +67,7 @@ public class MainTeleOp extends OpMode {
         else{
             Robot.outtake.setPos(0, 0);
         }
+
+        Robot.telemetry.update();
     }
 }
