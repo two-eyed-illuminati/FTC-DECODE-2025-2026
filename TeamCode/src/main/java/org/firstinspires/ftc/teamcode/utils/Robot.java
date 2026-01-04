@@ -88,6 +88,14 @@ public class Robot{
     if(initialized) {
       outtakeTurret.motor.setTargetPosition(outtake.motor.getCurrentPosition());
       outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+      drive.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      drive.leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      drive.rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      drive.rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+      drive.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+      drive.leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
     }
   }
 
@@ -103,8 +111,8 @@ public class Robot{
   }
 
   public static void aimOuttakeTurret(Pose2d robotPose){
-    telemetry.addData("x", robotPose.position.x);
-    telemetry.addData("y", robotPose.position.y);
+    telemetry.addData("X", robotPose.position.x);
+    telemetry.addData("Y", robotPose.position.y);
     telemetry.addData("heading (deg)", Math.toDegrees(robotPose.heading.toDouble()));
     double turretXOffset = 4.67*Math.cos(Math.toRadians(-164.475)+robotPose.heading.log());
     double turretYOffset = 4.67*Math.sin(Math.toRadians(-164.475)+robotPose.heading.log());
@@ -114,8 +122,8 @@ public class Robot{
                     -72.0-robotPose.position.x-turretXOffset
             )
     );
-    telemetry.addData("Turret x", robotPose.position.x+turretXOffset);
-    telemetry.addData("Turret y", robotPose.position.y+turretYOffset);
+    telemetry.addData("Turret X", robotPose.position.x+turretXOffset);
+    telemetry.addData("Turret Y", robotPose.position.y+turretYOffset);
     telemetry.addData("Target Abs Turret Pos", targetTurretPos);
     telemetry.addData("Target Rel Turret Pos", targetTurretPos-Math.toDegrees(robotPose.heading.toDouble()));
     double angle = (targetTurretPos-Math.toDegrees(robotPose.heading.toDouble())) % 360.0;
@@ -136,7 +144,7 @@ public class Robot{
     aimOuttakeTurret(pose);
   }
 
-  public static void shootOuttake(Pose2d robotPose){
+  public static double shootOuttake(Pose2d robotPose){
     double turretXOffset = 4.67*Math.cos(Math.toRadians(-164.475)+robotPose.heading.log());
     double turretYOffset = 4.67*Math.sin(Math.toRadians(-164.475)+robotPose.heading.log());
     double currDistance = Math.sqrt(
@@ -145,7 +153,7 @@ public class Robot{
     );
     telemetry.addData("Curr Distance (ft)", currDistance);
     double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> 40.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+            (vel) -> 50.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
     telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
     double targetOuttakeVel = 1.4*(targetArtifactVel/0.8);
     telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
@@ -155,20 +163,31 @@ public class Robot{
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
     outtake.setPos(0, targetOuttakeAngVelInitial);
+
+    double minArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
+            (vel) -> 40.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+    telemetry.addData("Min Artifact Vel (ft/s)", minArtifactVel);
+    double minOuttakeVel = 1.4*(minArtifactVel/0.8);
+    telemetry.addData("Min Outtake Vel (ft/s)", minOuttakeVel);
+    double minOuttakeAngVel = minOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
+    telemetry.addData("Min Outtake Ang Vel (deg/s)", minOuttakeAngVel);
+    double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
+    telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
+    return minOuttakeAngVelInitial;
   }
 
-  public static void shootOuttake(){
+  public static double shootOuttake(){
     Pose2d pose = drive.localizer.getPose();
-    shootOuttake(pose);
+    return shootOuttake(pose);
   }
 
   public static void shootSequence(){
     aimOuttakeTurret();
-    shootOuttake();
+    double minOuttakeVel = shootOuttake();
     boolean readyToShoot = true;
     int shots = 0;
     while(shots < 3){
-      if(Math.abs(outtake.getVel()-outtake.targetVel) < 200){
+      if(outtake.getVel() >= minOuttakeVel){
         transferIn.setPower(1.0);
         transferUp.motor.setPower(1.0);
         readyToShoot = true;
