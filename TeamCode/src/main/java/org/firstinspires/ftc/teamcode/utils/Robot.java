@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utils.rr.MecanumDrive;
@@ -34,6 +35,7 @@ public class Robot{
     BLUE, RED
   }
   public static Alliance alliance = Alliance.BLUE; //0 = blue, 1 = red
+  public static Pose2d pose = new Pose2d(0, 0, 0);
   public static boolean initialized = false;
 
   public static void initialize(HardwareMap hardwareMap, Telemetry dsTelemetry){
@@ -53,6 +55,7 @@ public class Robot{
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -90, 90, -537.7/4*4, 537.7/4*4, 1872);
       DcMotorEx outtakeMotor = hardwareMap.get(DcMotorEx.class, "outtake");
+      outtakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
       outtake = new ContinuousMotorMechanism(outtakeMotor,
               360.0/28.0, 36000.0
       );
@@ -87,6 +90,8 @@ public class Robot{
       outtakeTurret.motor.setTargetPosition(outtake.motor.getCurrentPosition());
       outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+      outtake.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
       drive.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
       drive.leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
       drive.rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -94,6 +99,8 @@ public class Robot{
 
       drive.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
       drive.leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+      drive.localizer.setPose(pose);
     }
   }
 
@@ -112,8 +119,8 @@ public class Robot{
     telemetry.addData("X", robotPose.position.x);
     telemetry.addData("Y", robotPose.position.y);
     telemetry.addData("heading (deg)", Math.toDegrees(robotPose.heading.toDouble()));
-    double turretXOffset = 4.67*Math.cos(Math.toRadians(-164.475)+robotPose.heading.log());
-    double turretYOffset = 4.67*Math.sin(Math.toRadians(-164.475)+robotPose.heading.log());
+    double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
+    double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double targetTurretPos = Math.toDegrees(
             Math.atan2(
                     (alliance == Alliance.BLUE ? -72.0 : 72.0)-robotPose.position.y-turretYOffset,
@@ -142,16 +149,16 @@ public class Robot{
     aimOuttakeTurret(pose);
   }
 
-  public static double shootOuttake(Pose2d robotPose){
-    double turretXOffset = 4.67*Math.cos(Math.toRadians(-164.475)+robotPose.heading.log());
-    double turretYOffset = 4.67*Math.sin(Math.toRadians(-164.475)+robotPose.heading.log());
+  public static double[] shootOuttake(Pose2d robotPose){
+    double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
+    double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double currDistance = Math.sqrt(
             Math.pow((alliance == Alliance.BLUE ? -72.0 : 72.0)-robotPose.position.y-turretYOffset, 2)+
             Math.pow(-72.0-robotPose.position.x-turretXOffset, 2)
     );
-    telemetry.addData("Curr Distance (ft)", currDistance);
+    telemetry.addData("Curr Distance (in)", currDistance);
     double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> 50.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+            (vel) -> 46.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
     telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
     double targetOuttakeVel = 1.4*(targetArtifactVel/0.8);
     telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
@@ -171,31 +178,35 @@ public class Robot{
     telemetry.addData("Min Outtake Ang Vel (deg/s)", minOuttakeAngVel);
     double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
-    return minOuttakeAngVelInitial;
+
+    return new double[]{minOuttakeAngVelInitial, targetOuttakeAngVelInitial};
   }
 
-  public static double shootOuttake(){
+  public static double[] shootOuttake(){
     Pose2d pose = drive.localizer.getPose();
     return shootOuttake(pose);
   }
 
   public static void shootSequence(){
     aimOuttakeTurret();
-    double minOuttakeVel = shootOuttake();
-    boolean readyToShoot = true;
-    int shots = 0;
-    while(shots < 3){
-      if(outtake.getVel() >= minOuttakeVel){
-        transfer.motor.setPower(1.0);
-        readyToShoot = true;
+    double[] outtakeVels = shootOuttake();
+    ElapsedTime elapsedTime = new ElapsedTime();
+    while(elapsedTime.seconds() < 3.5){
+      if(elapsedTime.seconds() > 2 && elapsedTime.seconds() < 2.24){
+        Robot.intake.setPower(-1.0);
+      }
+      else {
+        Robot.intake.setPower(1.0);
+      }
+      if(outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]){
+        Robot.transfer.setPos(0, Robot.transfer.maxVel);
       }
       else{
-        transfer.motor.setPower(0.0);
-        if(readyToShoot){
-          shots++;
-        }
-        readyToShoot = false;
+        Robot.transfer.setPos(0, 0);
       }
     }
+    intake.setPower(0);
+    transfer.motor.setPower(0);
+    outtake.setPos(0,0);
   }
 }

@@ -10,14 +10,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
+import org.firstinspires.ftc.teamcode.utils.Robot;
 
 import java.util.Objects;
 
 @Config
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks = -412.54191089364735; // y position of the parallel encoder (in tick units)
-        public double perpXTicks = 220.19770614404231; // x position of the perpendicular encoder (in tick units)
+        public double parYTicks = -600.201219882461; // y position of the parallel encoder (in tick units)
+        public double perpXTicks = -2335.9559044274897; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
@@ -51,6 +52,7 @@ public final class PinpointLocalizer implements Localizer {
     @Override
     public void setPose(Pose2d pose) {
         txWorldPinpoint = pose.times(txPinpointRobot.inverse());
+        Robot.pose = getPose();
     }
 
     @Override
@@ -65,6 +67,8 @@ public final class PinpointLocalizer implements Localizer {
             txPinpointRobot = new Pose2d(driver.getPosX(DistanceUnit.INCH), driver.getPosY(DistanceUnit.INCH), driver.getHeading(UnnormalizedAngleUnit.RADIANS));
             Vector2d worldVelocity = new Vector2d(driver.getVelX(DistanceUnit.INCH), driver.getVelY(DistanceUnit.INCH));
             Vector2d robotVelocity = Rotation2d.fromDouble(-txPinpointRobot.heading.log()).times(worldVelocity);
+
+            Robot.pose = getPose();
 
             return new PoseVelocity2d(robotVelocity, driver.getHeadingVelocity(UnnormalizedAngleUnit.RADIANS));
         }

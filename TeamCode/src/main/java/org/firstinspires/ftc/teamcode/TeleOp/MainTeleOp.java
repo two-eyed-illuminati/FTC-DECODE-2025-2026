@@ -62,7 +62,7 @@ public class MainTeleOp extends OpMode {
 
         Robot.aimOuttakeTurret();
         if(gamepad1.y){
-            currentMinOuttakeVel = Robot.shootOuttake();
+            currentMinOuttakeVel = Robot.shootOuttake()[0];
         }
         else{
             Robot.outtake.setPos(0, 0);
