@@ -39,12 +39,10 @@ public class AutoGoalZone extends LinearOpMode {
     TrajectoryActionBuilder intakeFromSpike(TrajectoryActionBuilder builder){
         return builder.afterDisp(0, () -> {
             Robot.intake.setPower(1);
-            Robot.transferIn.setPower(1);
-            Robot.transferUp.motor.setPower(1);
+            Robot.transfer.motor.setPower(1);
         }).lineToY(SPIKE_END_Y).afterDisp(0, () -> {
             Robot.intake.setPower(0);
-            Robot.transferIn.setPower(0);
-            Robot.transferUp.motor.setPower(0);
+            Robot.transfer.motor.setPower(0);
         });
     }
 

@@ -15,15 +15,12 @@ public class TestTransfer extends OpMode {
 
     @Override
     public void loop() {
-        if(gamepad1.x){
-            Robot.transferIn.setPower(1);
-            Robot.transferUp.motor.setPower(1);
+        if(gamepad1.x) {
+            Robot.transfer.motor.setPower(1);
         }
         else {
-            Robot.transferIn.setPower(gamepad1.left_stick_x);
-            Robot.transferUp.motor.setPower(gamepad1.left_stick_y);
+            Robot.transfer.motor.setPower(gamepad1.left_stick_y);
         }
-        Robot.telemetry.addData("transferIn Power", Robot.transferIn.getPower());
-        Robot.telemetry.addData("transferUp Power", Robot.transferUp.motor.getPower());
+        Robot.telemetry.addData("transfer Power", Robot.transfer.motor.getPower());
     }
 }

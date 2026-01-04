@@ -55,11 +55,10 @@ public class MainTeleOp extends OpMode {
         double requestedPower = gamepad1.a ? 1.0 : (gamepad1.x ? -1.0 : 0.0);
         double upPower = Robot.outtake.getVel() >= currentMinOuttakeVel ? requestedPower : 0.0;
         Robot.intake.setPower(requestedPower);
-        Robot.transferIn.setPower(requestedPower);
-        Robot.transferUp.setPos(0, Robot.transferUp.maxVel*upPower);
+        Robot.transfer.setPos(0, Robot.transfer.maxVel*upPower);
         Robot.telemetry.addData("Intake/Transfer Power", requestedPower);
-        Robot.telemetry.addData("Target Transfer Up Vel", Robot.transferUp.maxVel*upPower);
-        Robot.telemetry.addData("Actual Transfer Up Vel (deg/s)", Robot.transferUp.getVel());
+        Robot.telemetry.addData("Target Transfer Up Vel", Robot.transfer.maxVel*upPower);
+        Robot.telemetry.addData("Actual Transfer Up Vel (deg/s)", Robot.transfer.getVel());
 
         Robot.aimOuttakeTurret();
         if(gamepad1.y){

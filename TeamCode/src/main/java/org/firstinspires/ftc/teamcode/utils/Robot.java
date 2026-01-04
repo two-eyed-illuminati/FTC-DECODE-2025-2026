@@ -24,8 +24,7 @@ public class Robot{
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
   public static DcMotorEx intake;
-  public static CRServo transferIn;
-  public static ContinuousMotorMechanism transferUp;
+  public static ContinuousMotorMechanism transfer;
   public static MotorMechanism outtakeTurret;
   public static ContinuousMotorMechanism outtake;
   public static Limelight3A limelight;
@@ -43,9 +42,8 @@ public class Robot{
     if(!initialized) {
       drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
       intake = hardwareMap.get(DcMotorEx.class, "intake");
-      transferIn = hardwareMap.get(CRServo.class, "transferIn");
-      DcMotorEx transferUpMotor = hardwareMap.get(DcMotorEx.class, "transferUp");
-      transferUp = new ContinuousMotorMechanism(transferUpMotor,
+      DcMotorEx transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
+      transfer = new ContinuousMotorMechanism(transferMotor,
               360.0/145.1, 6900
       );
       DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "outtakeTurret");
@@ -188,13 +186,11 @@ public class Robot{
     int shots = 0;
     while(shots < 3){
       if(outtake.getVel() >= minOuttakeVel){
-        transferIn.setPower(1.0);
-        transferUp.motor.setPower(1.0);
+        transfer.motor.setPower(1.0);
         readyToShoot = true;
       }
       else{
-        transferIn.setPower(0.0);
-        transferUp.motor.setPower(0.0);
+        transfer.motor.setPower(0.0);
         if(readyToShoot){
           shots++;
         }
