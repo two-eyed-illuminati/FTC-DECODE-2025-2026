@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 public class MainTeleOp extends OpMode {
     public static boolean FIELD_CENTRIC = true;
     public double currentMinOuttakeVel = 0.0;
-    public boolean gamepad1yState = false;
 
     @Override
     public void init(){
@@ -53,7 +52,7 @@ public class MainTeleOp extends OpMode {
                 -gamepad1.right_stick_x
         ));
 
-        double requestedPower = gamepad1.a ? 1.0 : (gamepad1.x ? -1.0 : 0.0);
+        double requestedPower = (gamepad1.a || gamepad1.y) ? 1.0 : (gamepad1.x ? -1.0 : 0.0);
         double upPower = Robot.outtake.getVel() >= currentMinOuttakeVel ? requestedPower : 0.0;
         Robot.intake.setPower(requestedPower);
         Robot.transfer.setPos(0, Robot.transfer.maxVel*upPower);
@@ -62,17 +61,13 @@ public class MainTeleOp extends OpMode {
         Robot.telemetry.addData("Actual Transfer Up Vel (deg/s)", Robot.transfer.getVel());
 
         Robot.aimOuttakeTurret();
-        if(gamepad1.y && !gamepad1yState){
-            gamepad1yState = true;
-            if(currentMinOuttakeVel == 0.0) {
-                currentMinOuttakeVel = Robot.shootOuttake()[0];
-            }
-            else {
-                Robot.outtake.setPos(0, 0);
-                currentMinOuttakeVel = 0.0;
-            }
+        if(Robot.drive.localizer.getPose().position.x < 0 && !gamepad1.a){
+            currentMinOuttakeVel = Robot.shootOuttake()[0];
         }
-        gamepad1yState = gamepad1.y;
+        else{
+            Robot.outtake.setPos(0, 0);
+            currentMinOuttakeVel = 0.0;
+        }
 
         Robot.telemetry.update();
     }
