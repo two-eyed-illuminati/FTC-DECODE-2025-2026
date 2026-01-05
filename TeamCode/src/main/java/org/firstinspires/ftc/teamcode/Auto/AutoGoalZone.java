@@ -2,9 +2,12 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.IdentityPoseMap;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
+import com.acmerobotics.roadrunner.PoseMap;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -54,17 +57,19 @@ public class AutoGoalZone extends LinearOpMode {
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
         Robot.initialize(hardwareMap, telemetry);
         Robot.drive.localizer.setPose(startPose);
-        waitForStart();
+        while(!isStarted()){
+            if(gamepad1.x){
+                Robot.alliance = Robot.Alliance.BLUE;
+            }
+            else{
+                Robot.alliance = Robot.Alliance.RED;
+            }
+        }
 
-//        TrajectoryActionBuilder goToOrigin = Robot.drive.actionBuilder(startPose).strafeToLinearHeading(
-//                new Vector2d(0, 0),
-//                0
-//        );
-//        Actions.runBlocking(
-//                goToOrigin.build()
-//        );
+        PoseMap poseMap = Robot.alliance == Robot.Alliance.BLUE ? new IdentityPoseMap() :
+                pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
 
-        TrajectoryActionBuilder preloadShoot = trajToShoot(Robot.drive.actionBuilder(startPose))
+        TrajectoryActionBuilder preloadShoot = trajToShoot(Robot.drive.actionBuilder(startPose, poseMap))
                 .afterDisp(0, new InstantAction(Robot::shootSequence));
         TrajectoryActionBuilder toSpike1 = preloadShoot.fresh().splineToLinearHeading(
                 new Pose2d(SHOOT_X, SHOOT_Y + 10.0, Math.toRadians(SPIKE_HEADING)),
