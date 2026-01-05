@@ -192,22 +192,25 @@ public class Robot{
     aimOuttakeTurret();
     double[] outtakeVels = shootOuttake();
     ElapsedTime elapsedTime = new ElapsedTime();
-    while(elapsedTime.seconds() < 3.5){
-      if(elapsedTime.seconds() > 2 && elapsedTime.seconds() < 2.24){
+    while(elapsedTime.seconds() < 2.5){
+      if(elapsedTime.seconds() < 2.2 && elapsedTime.seconds() % 0.8 < 0.15){
         Robot.intake.setPower(-1.0);
+        Robot.transfer.setPos(0, -Robot.transfer.maxVel);
       }
       else {
         Robot.intake.setPower(1.0);
+        if((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
+                elapsedTime.seconds() > 2.2
+        ){
+          Robot.transfer.setPos(0, 0.75*Robot.transfer.maxVel);
+        }
+        else{
+          Robot.transfer.setPos(0, 0);
+        }
       }
-      if(outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]){
-        Robot.transfer.setPos(0, Robot.transfer.maxVel);
-      }
-      else{
-        Robot.transfer.setPos(0, 0);
-      }
+      telemetry.addData("Outtake Vel (deg/s)", outtake.getVel());
     }
     intake.setPower(0);
     transfer.motor.setPower(0);
-    outtake.setPos(0,0);
   }
 }

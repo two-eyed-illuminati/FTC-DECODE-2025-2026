@@ -62,7 +62,7 @@ public class MainTeleOp extends OpMode {
         else if(gamepad1.y){
             Robot.intake.setPower(1.0);
             if(currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel) {
-                Robot.transfer.setPos(0, Robot.transfer.maxVel);
+                Robot.transfer.setPos(0, 0.75*Robot.transfer.maxVel);
             }
             else{
                 Robot.transfer.setPos(0, 0.0);
@@ -85,7 +85,7 @@ public class MainTeleOp extends OpMode {
                 currentMaxOuttakeVel = outtakeVels[1];
             }
             else{
-                Robot.outtake.setPos(0, -360.0);
+                Robot.outtake.setPos(0, -720.0);
                 currentMinOuttakeVel = 0.0;
                 currentMaxOuttakeVel = 0.0;
             }
