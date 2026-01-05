@@ -27,7 +27,8 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SHOOT_Y = -29.6497;
     public static double SHOOT_HEADING = -131.9655;
     public static double SPIKE_START_Y = -22.1017;
-    public static double SPIKE_END_Y = -51.1282;
+    public static double SPIKE_RAMP_END_Y = -51.1282;
+    public static double SPIKE_TUNNEL_END_Y = -55.1282;
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -14.3457;
     public static double SPIKE_2_X = 10.3457;
@@ -44,10 +45,10 @@ public class AutoGoalZone extends LinearOpMode {
         );
     }
 
-    TrajectoryActionBuilder intakeFromSpike(TrajectoryActionBuilder builder){
+    TrajectoryActionBuilder intakeFromSpike(TrajectoryActionBuilder builder, int spike){
         return builder.afterDisp(0, () -> {
             Robot.intake.setPower(1.0);
-        }).lineToY(SPIKE_END_Y).afterDisp(0, () -> {
+        }).lineToY(spike <= 1 ? SPIKE_RAMP_END_Y : SPIKE_TUNNEL_END_Y).afterDisp(0, () -> {
             Robot.intake.setPower(0.0);
         }).lineToY(SPIKE_START_Y);
     }
@@ -61,7 +62,7 @@ public class AutoGoalZone extends LinearOpMode {
             if(gamepad1.x){
                 Robot.alliance = Robot.Alliance.BLUE;
             }
-            else{
+            else if(gamepad1.b){
                 Robot.alliance = Robot.Alliance.RED;
             }
         }
@@ -78,21 +79,21 @@ public class AutoGoalZone extends LinearOpMode {
                 new Pose2d(SPIKE_1_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
                 Math.toRadians(SPIKE_HEADING)
         );
-        TrajectoryActionBuilder intake1 = intakeFromSpike(toSpike1.fresh());
+        TrajectoryActionBuilder intake1 = intakeFromSpike(toSpike1.fresh(), 1);
         TrajectoryActionBuilder spike1IntakeAndShoot = trajToShoot(intake1)
                 .afterDisp(0, new InstantAction(Robot::shootSequence));
         TrajectoryActionBuilder toSpike2 = spike1IntakeAndShoot.fresh().splineToLinearHeading(
                 new Pose2d(SPIKE_2_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
                 Math.toRadians(SPIKE_HEADING)
         );
-        TrajectoryActionBuilder intake2 = intakeFromSpike(toSpike2.fresh());
+        TrajectoryActionBuilder intake2 = intakeFromSpike(toSpike2.fresh(), 2);
         TrajectoryActionBuilder spike2IntakeAndShoot = trajToShoot(intake2)
                 .afterDisp(0, new InstantAction(Robot::shootSequence));
         TrajectoryActionBuilder toSpike3 = spike2IntakeAndShoot.fresh().splineToLinearHeading(
                 new Pose2d(SPIKE_3_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
                 Math.toRadians(SPIKE_HEADING)
         );
-        TrajectoryActionBuilder intake3 = intakeFromSpike(toSpike3.fresh());
+        TrajectoryActionBuilder intake3 = intakeFromSpike(toSpike3.fresh(), 3);
         TrajectoryActionBuilder spike3IntakeAndShoot = trajToShoot(intake3)
                 .afterDisp(0, new InstantAction(Robot::shootSequence));
         TrajectoryActionBuilder leaveLaunchZone = spike3IntakeAndShoot.fresh().strafeTo(
