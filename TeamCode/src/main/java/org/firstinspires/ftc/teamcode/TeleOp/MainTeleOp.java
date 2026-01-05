@@ -53,26 +53,45 @@ public class MainTeleOp extends OpMode {
                 -gamepad1.right_stick_x
         ));
 
-        double requestedPower = (gamepad1.a || gamepad1.y) ? 1.0 : (gamepad1.x ? -1.0 : 0.0);
-        double upPower = currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel ? requestedPower : 0.0;
-        Robot.intake.setPower(requestedPower);
-        Robot.transfer.setPos(0, Robot.transfer.maxVel*upPower);
-        Robot.telemetry.addData("Intake/Transfer Power", requestedPower);
-        Robot.telemetry.addData("Target Transfer Up Vel", Robot.transfer.maxVel*upPower);
-        Robot.telemetry.addData("Actual Transfer Up Vel (deg/s)", Robot.transfer.getVel());
-
-        Robot.aimOuttakeTurret();
-        if(Robot.drive.localizer.getPose().position.x + Math.abs(Robot.drive.localizer.getPose().position.y) < 10
-                && !gamepad1.a){
-            double[] outtakeVels = Robot.shootOuttake();
-            currentMinOuttakeVel = outtakeVels[0];
-            currentMaxOuttakeVel = outtakeVels[1];
+        if(gamepad1.a){
+            Robot.intake.setPower(1.0);
+            Robot.transfer.setPos(0, 0.25*Robot.transfer.maxVel);
+            Robot.aimOuttakeTurret();
+            Robot.outtake.setPos(0, -360.0);
+        }
+        else if(gamepad1.y){
+            Robot.intake.setPower(1.0);
+            if(currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel) {
+                Robot.transfer.setPos(0, Robot.transfer.maxVel);
+            }
+            else{
+                Robot.transfer.setPos(0, 0.0);
+            }
+            Robot.aimOuttakeTurret();
+        }
+        else if(gamepad1.x){
+            Robot.intake.setPower(-1.0);
+            Robot.transfer.setPos(0, -Robot.transfer.maxVel);
+            Robot.aimOuttakeTurret();
         }
         else{
-            Robot.outtake.setPos(0, -360.0);
-            currentMinOuttakeVel = 0.0;
-            currentMaxOuttakeVel = 0.0;
+            Robot.intake.setPower(0.0);
+            Robot.transfer.setPos(0, 0.0);
+            Robot.aimOuttakeTurret();
+            if(Robot.drive.localizer.getPose().position.x + Math.abs(Robot.drive.localizer.getPose().position.y) < 10
+                    && !gamepad1.a){
+                double[] outtakeVels = Robot.shootOuttake();
+                currentMinOuttakeVel = outtakeVels[0];
+                currentMaxOuttakeVel = outtakeVels[1];
+            }
+            else{
+                Robot.outtake.setPos(0, -360.0);
+                currentMinOuttakeVel = 0.0;
+                currentMaxOuttakeVel = 0.0;
+            }
         }
+        Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());
+        Robot.telemetry.addData("Actual Transfer Up Vel (deg/s)", Robot.transfer.getVel());
 
         Robot.telemetry.update();
     }
