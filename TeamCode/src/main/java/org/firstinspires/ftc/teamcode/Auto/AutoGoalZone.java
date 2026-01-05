@@ -79,21 +79,21 @@ public class AutoGoalZone extends LinearOpMode {
                 Math.toRadians(SPIKE_HEADING)
         );
         TrajectoryActionBuilder intake1 = intakeFromSpike(toSpike1.fresh());
-        TrajectoryActionBuilder spike1Shoot = trajToShoot(intake1.fresh())
+        TrajectoryActionBuilder spike1IntakeAndShoot = trajToShoot(intake1)
                 .afterDisp(0, new InstantAction(Robot::shootSequence));
-        TrajectoryActionBuilder toSpike2 = spike1Shoot.fresh().splineToLinearHeading(
+        TrajectoryActionBuilder toSpike2 = spike1IntakeAndShoot.fresh().splineToLinearHeading(
                 new Pose2d(SPIKE_2_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
                 Math.toRadians(SPIKE_HEADING)
         );
         TrajectoryActionBuilder intake2 = intakeFromSpike(toSpike2.fresh());
-        TrajectoryActionBuilder spike2Shoot = trajToShoot(intake2.fresh())
+        TrajectoryActionBuilder spike2IntakeAndShoot = trajToShoot(intake2)
                 .afterDisp(0, new InstantAction(Robot::shootSequence));
-        TrajectoryActionBuilder toSpike3 = spike2Shoot.fresh().splineToLinearHeading(
+        TrajectoryActionBuilder toSpike3 = spike2IntakeAndShoot.fresh().splineToLinearHeading(
                 new Pose2d(SPIKE_3_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
                 Math.toRadians(SPIKE_HEADING)
         );
         TrajectoryActionBuilder intake3 = intakeFromSpike(toSpike3.fresh());
-        TrajectoryActionBuilder spike3Shoot = trajToShoot(intake3.fresh())
+        TrajectoryActionBuilder spike3IntakeAndShoot = trajToShoot(intake3)
                 .afterDisp(0, new InstantAction(Robot::shootSequence));
 
 
@@ -101,14 +101,12 @@ public class AutoGoalZone extends LinearOpMode {
                 new SequentialAction(
                         preloadShoot.build(),
                         toSpike1.build(),
-                        intake1.build(),
-                        spike1Shoot.build(),
+                        spike1IntakeAndShoot.build(),
                         toSpike2.build(),
-                        intake2.build(),
-                        spike2Shoot.build(),
+                        spike2IntakeAndShoot.build(),
                         toSpike3.build(),
-                        intake3.build(),
-                        spike3Shoot.build()
+                        spike3IntakeAndShoot.build(),
+                        leaveLaunchZone.build()
                 )
         );
     }
