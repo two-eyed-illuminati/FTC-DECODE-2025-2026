@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
@@ -13,6 +14,8 @@ public class MainTeleOp extends OpMode {
     public static boolean FIELD_CENTRIC = true;
     public double currentMinOuttakeVel = 0.0;
     public double currentMaxOuttakeVel = 0.0;
+    public boolean gamepad1xState = false;
+    public ElapsedTime timeSinceIntakeReverse = new ElapsedTime();
 
     @Override
     public void init(){
@@ -53,7 +56,10 @@ public class MainTeleOp extends OpMode {
                 -gamepad1.right_stick_x
         ));
 
-        double requestedPower = (gamepad1.a || gamepad1.y) ? 1.0 : (gamepad1.x ? -1.0 : 0.0);
+        if(gamepad1.x && !gamepad1xState){
+            timeSinceIntakeReverse.reset();
+        }
+        double requestedPower = (gamepad1.a || gamepad1.y) ? 1.0 : (timeSinceIntakeReverse.seconds() < 0.3 ? -1.0 : 0.0);
         double upPower = currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel ? requestedPower : 0.0;
         Robot.intake.setPower(requestedPower);
         Robot.transfer.setPos(0, Robot.transfer.maxVel*upPower);
@@ -73,6 +79,8 @@ public class MainTeleOp extends OpMode {
             currentMinOuttakeVel = 0.0;
             currentMaxOuttakeVel = 0.0;
         }
+
+        gamepad1xState = gamepad1.x;
 
         Robot.telemetry.update();
     }
