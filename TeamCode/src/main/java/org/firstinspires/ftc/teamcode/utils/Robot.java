@@ -21,7 +21,9 @@ import org.firstinspires.ftc.teamcode.utils.rr.MecanumDrive;
 @Config
 public class Robot{
   //Constants
-
+  public static double START_X = -58.0586;
+  public static double START_Y = -40.7964;
+  public static double START_HEADING = -128.71;
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
   public static DcMotorEx intake;
@@ -42,7 +44,7 @@ public class Robot{
     initializeOpMode(hardwareMap, dsTelemetry);
 
     if(!initialized) {
-      drive = new MecanumDrive(hardwareMap, new Pose2d(-58.0586, -40.7964, Math.toRadians(-128.71)));
+      drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
       intake = hardwareMap.get(DcMotorEx.class, "intake");
       DcMotorEx transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
       transfer = new ContinuousMotorMechanism(transferMotor,
@@ -63,14 +65,13 @@ public class Robot{
       limelight.pipelineSwitch(5);
       limelight.start();
 
-      LLResult llResult;
-      llResult = limelight.getLatestResult();
-      if(llResult != null && llResult.isValid()){
-        alliance = llResult.getFiducialResults().get(0).getFiducialId() == 24 ? Alliance.RED : Alliance.BLUE;
-      }
+      drive.localizer.setPose(new Pose2d(
+              START_X,
+              alliance == Alliance.BLUE ? START_Y : -START_Y,
+              alliance == Alliance.BLUE ? Math.toRadians(START_HEADING) : -Math.toRadians(START_HEADING)
+      ));
 
       telemetry.addLine("Robot successfully initialized");
-      telemetry.addLine("Detected as " + (alliance == Alliance.RED ? "RED" : "BLUE") + " alliance");
     }
     else{
       telemetry.addLine("Robot using previous initialization state");
