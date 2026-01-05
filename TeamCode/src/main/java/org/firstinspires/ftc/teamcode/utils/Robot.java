@@ -42,7 +42,7 @@ public class Robot{
     initializeOpMode(hardwareMap, dsTelemetry);
 
     if(!initialized) {
-      drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+      drive = new MecanumDrive(hardwareMap, new Pose2d(-58.0586, -40.7964, -128.71));
       intake = hardwareMap.get(DcMotorEx.class, "intake");
       DcMotorEx transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
       transfer = new ContinuousMotorMechanism(transferMotor,
