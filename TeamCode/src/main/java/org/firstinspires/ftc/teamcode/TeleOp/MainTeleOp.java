@@ -61,7 +61,7 @@ public class MainTeleOp extends OpMode {
         Robot.telemetry.addData("Actual Transfer Up Vel (deg/s)", Robot.transfer.getVel());
 
         Robot.aimOuttakeTurret();
-        if(gamepad1.y){
+        if(Robot.drive.localizer.getPose().position.x < 0){
             currentMinOuttakeVel = Robot.shootOuttake()[0];
         }
         else{
