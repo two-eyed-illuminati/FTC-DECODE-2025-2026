@@ -65,7 +65,7 @@ public class MainTeleOp extends OpMode {
             currentMinOuttakeVel = Robot.shootOuttake()[0];
         }
         else{
-            Robot.outtake.setPos(0, 0);
+            Robot.outtake.setPos(0, -100.0);
             currentMinOuttakeVel = 0.0;
         }
 
