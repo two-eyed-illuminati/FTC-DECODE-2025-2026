@@ -186,7 +186,7 @@ public class Robot{
     double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
     if(aimBetween){
-      outtake.setPos(0, (minOuttakeAngVelInitial+targetOuttakeAngVelInitial)/2.0);
+      outtake.setPos(0, (minOuttakeAngVelInitial));
     }
 
     return new double[]{minOuttakeAngVelInitial, targetOuttakeAngVelInitial};
