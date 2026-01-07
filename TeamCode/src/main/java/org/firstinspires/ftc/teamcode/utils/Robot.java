@@ -154,7 +154,7 @@ public class Robot{
     aimOuttakeTurret(pose);
   }
 
-  public static double[] shootOuttake(Pose2d robotPose){
+  public static double[] shootOuttake(Pose2d robotPose, boolean aimBetween){
     double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
     double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double currDistance = Math.sqrt(
@@ -172,7 +172,9 @@ public class Robot{
     double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
-    outtake.setPos(0, targetOuttakeAngVelInitial);
+    if(!aimBetween) {
+      outtake.setPos(0, targetOuttakeAngVelInitial);
+    }
 
     double minArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
             (vel) -> 40.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
@@ -183,8 +185,15 @@ public class Robot{
     telemetry.addData("Min Outtake Ang Vel (deg/s)", minOuttakeAngVel);
     double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
+    if(aimBetween){
+      outtake.setPos(0, (minOuttakeAngVelInitial+targetOuttakeAngVelInitial)/2.0);
+    }
 
     return new double[]{minOuttakeAngVelInitial, targetOuttakeAngVelInitial};
+  }
+
+  public static double[] shootOuttake(Pose2d robotPose){
+    return shootOuttake(robotPose, false);
   }
 
   public static double[] shootOuttake(){
@@ -209,7 +218,7 @@ public class Robot{
       }
       Robot.aimOuttakeTurret();
       double[] outtakeVels = Robot.shootOuttake();
-      if(elapsedTime.seconds() < 2.2 && elapsedTime.seconds() % 0.8 < 0.2){
+      if(elapsedTime.seconds() < 2.2 && elapsedTime.seconds() % 0.8 < 0.175){
         Robot.intake.setPower(-1.0);
         Robot.transfer.setPos(0, -Robot.transfer.maxVel);
       }

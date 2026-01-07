@@ -39,7 +39,7 @@ public class AutoGoalZone extends LinearOpMode {
         Pose2d endRobotPose = new Pose2d(SHOOT_X, SHOOT_Y, Math.toRadians(SHOOT_HEADING));
         return builder.afterDisp(0, () -> {
             Robot.aimOuttakeTurret(endRobotPose);
-            Robot.shootOuttake(endRobotPose);
+            Robot.shootOuttake(endRobotPose, true);
         }).splineToSplineHeading(
                 endRobotPose,
                 Math.toRadians(preload ? 180-SHOOT_HEADING : SHOOT_HEADING)
