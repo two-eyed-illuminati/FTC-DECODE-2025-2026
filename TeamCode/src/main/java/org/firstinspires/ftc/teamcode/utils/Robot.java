@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -188,11 +192,22 @@ public class Robot{
     return shootOuttake(pose);
   }
 
-  public static void shootSequence(){
-    aimOuttakeTurret();
-    double[] outtakeVels = shootOuttake();
+  public static class ShootSequenceAction implements Action {
     ElapsedTime elapsedTime = new ElapsedTime();
-    while(elapsedTime.seconds() < 2.5){
+    boolean started = false;
+    @Override
+    public boolean run(@NonNull TelemetryPacket packet) {
+      if(!started) {
+        elapsedTime.reset();
+        started = true;
+      }
+      if(elapsedTime.seconds() > 2.5){
+        intake.setPower(0);
+        transfer.setPos(0, 0);
+        return false;
+      }
+      Robot.aimOuttakeTurret();
+      double[] outtakeVels = Robot.shootOuttake();
       if(elapsedTime.seconds() < 2.2 && elapsedTime.seconds() % 0.8 < 0.15){
         Robot.intake.setPower(-1.0);
         Robot.transfer.setPos(0, -Robot.transfer.maxVel);
@@ -208,9 +223,8 @@ public class Robot{
           Robot.transfer.setPos(0, 0);
         }
       }
-      telemetry.addData("Outtake Vel (deg/s)", outtake.getVel());
+      packet.put("Outtake Vel (deg/s)", outtake.getVel());
+      return true;
     }
-    intake.setPower(0);
-    transfer.motor.setPower(0);
   }
 }

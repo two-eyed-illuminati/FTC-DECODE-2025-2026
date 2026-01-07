@@ -70,7 +70,7 @@ public class AutoGoalZone extends LinearOpMode {
                 pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
 
         TrajectoryActionBuilder preloadShoot = trajToShoot(Robot.drive.actionBuilder(startPose, poseMap), true)
-                .afterDisp(0, new InstantAction(Robot::shootSequence));
+                .afterDisp(0, new Robot.ShootSequenceAction());
         TrajectoryActionBuilder toSpike1 = preloadShoot.fresh().afterDisp(0, () -> {
             Robot.intake.setPower(1.0);
         }).splineToSplineHeading(
@@ -82,7 +82,7 @@ public class AutoGoalZone extends LinearOpMode {
         );
         TrajectoryActionBuilder toSpike1Intake = intakeFromSpike(toSpike1, 1);
         TrajectoryActionBuilder toSpike1IntakeAndShoot = trajToShoot(toSpike1Intake, false)
-                .afterDisp(0, new InstantAction(Robot::shootSequence));
+                .afterDisp(0, new Robot.ShootSequenceAction());
         TrajectoryActionBuilder toSpike2 = toSpike1IntakeAndShoot.fresh().afterDisp(0, () -> {
             Robot.intake.setPower(1.0);
         }).splineToSplineHeading(
@@ -91,7 +91,7 @@ public class AutoGoalZone extends LinearOpMode {
         );
         TrajectoryActionBuilder toSpike2Intake = intakeFromSpike(toSpike2, 2);
         TrajectoryActionBuilder toSpike2IntakeAndShoot = trajToShoot(toSpike2Intake, false)
-                .afterDisp(0, new InstantAction(Robot::shootSequence));
+                .afterDisp(0, new Robot.ShootSequenceAction());
         TrajectoryActionBuilder toSpike3 = toSpike2IntakeAndShoot.fresh().afterDisp(0, () -> {
             Robot.intake.setPower(1.0);
         }).splineToSplineHeading(
@@ -100,7 +100,7 @@ public class AutoGoalZone extends LinearOpMode {
         );
         TrajectoryActionBuilder toSpike3Intake = intakeFromSpike(toSpike3, 3);
         TrajectoryActionBuilder toSpike3IntakeAndShoot = trajToShoot(toSpike3Intake, false)
-                .afterDisp(0, new InstantAction(Robot::shootSequence));
+                .afterDisp(0, new Robot.ShootSequenceAction());
         TrajectoryActionBuilder leaveLaunchZone = toSpike3IntakeAndShoot.fresh().strafeTo(
                 new Vector2d(SHOOT_X+25, SHOOT_Y)
         );
