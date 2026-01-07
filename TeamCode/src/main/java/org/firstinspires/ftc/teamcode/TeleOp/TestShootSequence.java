@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -27,7 +28,9 @@ public class TestShootSequence extends OpMode {
         Robot.drive.updatePoseEstimate();
 
         if(gamepad1.y){
-            Robot.shootSequence();
+            Actions.runBlocking(
+                    new Robot.ShootSequenceAction()
+            );
         }
     }
 }
