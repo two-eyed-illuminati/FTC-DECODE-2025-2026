@@ -204,6 +204,7 @@ public class Robot{
       if(elapsedTime.seconds() > 2.5){
         intake.setPower(0);
         transfer.setPos(0, 0);
+        outtake.setPos(0, 0);
         return false;
       }
       Robot.aimOuttakeTurret();
