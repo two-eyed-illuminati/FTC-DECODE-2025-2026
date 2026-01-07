@@ -208,7 +208,7 @@ public class Robot{
       }
       Robot.aimOuttakeTurret();
       double[] outtakeVels = Robot.shootOuttake();
-      if(elapsedTime.seconds() < 2.2 && elapsedTime.seconds() % 0.8 < 0.15){
+      if(elapsedTime.seconds() < 2.2 && elapsedTime.seconds() % 0.8 < 0.2){
         Robot.intake.setPower(-1.0);
         Robot.transfer.setPos(0, -Robot.transfer.maxVel);
       }
