@@ -164,15 +164,15 @@ public class Robot{
     telemetry.addData("Curr Distance (in)", currDistance);
     double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
             (vel) -> 46.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
-    telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
+    telemetry.addData("Max Artifact Vel (ft/s)", targetArtifactVel);
     double targetOuttakeVel = 1.4*(targetArtifactVel/0.8);
-    telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
+    telemetry.addData("Max Outtake Vel (ft/s)", targetOuttakeVel);
     double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
-    telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
+    telemetry.addData("Max Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
     double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
-    telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
+    telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
-    outtake.setPos(0, targetOuttakeAngVelInitial);
+    outtake.setPos(0, targetOuttakeAngVelInitial-200.0);
 
     double minArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
             (vel) -> 40.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
@@ -221,22 +221,21 @@ public class Robot{
       }
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
-      if(elapsedTime.seconds() < time - 0.3 && elapsedTime.seconds() % 0.8 < 0.16){
+      if((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1] && accel < 2000) ||
+              elapsedTime.seconds() > time - 0.3
+      ){
+        intake.setPower(1.0);
+        transfer.setPos(0, 0.75*transfer.maxVel);
+      }
+      else if(elapsedTime.seconds() < time - 0.3 && elapsedTime.seconds() % 0.8 < 0.16){
         intake.setPower(-1.0);
         transfer.setPos(0, -transfer.maxVel);
       }
-      else {
+      else{
         intake.setPower(1.0);
-
-        if((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1] && accel < 2000) ||
-                elapsedTime.seconds() > time - 0.3
-        ){
-          transfer.setPos(0, 0.75*transfer.maxVel);
-        }
-        else{
-          transfer.setPos(0, 0);
-        }
+        transfer.setPos(0, 0);
       }
+
       packet.put("Elapsed Time (s)", elapsedTime.seconds());
       packet.put("Outtake Vel (deg/s)", outtake.getVel());
       packet.put("Transfer Vel (deg/s)", transfer.getVel());
