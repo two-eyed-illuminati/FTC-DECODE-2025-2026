@@ -238,6 +238,7 @@ public class Robot{
       }
       packet.put("Elapsed Time (s)", elapsedTime.seconds());
       packet.put("Outtake Vel (deg/s)", outtake.getVel());
+      packet.put("Transfer Up Vel (deg/s)", transfer.getVel());
       packet.put("Accel (deg/s^2)", accel);
       return true;
     }
