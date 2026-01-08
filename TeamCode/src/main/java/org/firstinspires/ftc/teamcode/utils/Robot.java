@@ -172,9 +172,7 @@ public class Robot{
     double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
-    if(!aimBetween) {
-      outtake.setPos(0, targetOuttakeAngVelInitial);
-    }
+    outtake.setPos(0, targetOuttakeAngVelInitial);
 
     double minArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
             (vel) -> 40.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
@@ -185,15 +183,8 @@ public class Robot{
     telemetry.addData("Min Outtake Ang Vel (deg/s)", minOuttakeAngVel);
     double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
-    if(aimBetween){
-      outtake.setPos(0, (minOuttakeAngVelInitial));
-    }
 
     return new double[]{minOuttakeAngVelInitial, targetOuttakeAngVelInitial};
-  }
-
-  public static double[] shootOuttake(Pose2d robotPose){
-    return shootOuttake(robotPose, false);
   }
 
   public static double[] shootOuttake(){
@@ -204,36 +195,50 @@ public class Robot{
   public static class ShootSequenceAction implements Action {
     ElapsedTime elapsedTime = new ElapsedTime();
     boolean started = false;
+    double accel = 0.0;
+    double lastVel = 0.0;
+    double lastElapsed = 0.0;
+    double time = 3.0;
+
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
       if(!started) {
         elapsedTime.reset();
         started = true;
       }
-      if(elapsedTime.seconds() > 2.5){
+      if(elapsedTime.seconds() > time){
         intake.setPower(0);
         transfer.setPos(0, 0);
         outtake.setPos(0, 0);
         return false;
       }
-      Robot.aimOuttakeTurret();
-      double[] outtakeVels = Robot.shootOuttake();
-      if(elapsedTime.seconds() < 2.2 && elapsedTime.seconds() % 0.8 < 0.175){
-        Robot.intake.setPower(-1.0);
-        Robot.transfer.setPos(0, -Robot.transfer.maxVel);
+      aimOuttakeTurret();
+      double[] outtakeVels = shootOuttake();
+      if(elapsedTime.seconds() < time - 0.3 && elapsedTime.seconds() % 0.8 < 0.175){
+        intake.setPower(-1.0);
+        transfer.setPos(0, -transfer.maxVel);
       }
       else {
-        Robot.intake.setPower(1.0);
-        if((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
-                elapsedTime.seconds() > 2.2
+        intake.setPower(1.0);
+
+        double newWeight = 0.1;
+        accel = newWeight * (outtake.getVel() - lastVel) / (elapsedTime.seconds() - lastElapsed)
+                + (1 - newWeight) * accel;
+        lastVel = outtake.getVel();
+        lastElapsed = elapsedTime.seconds();
+
+        if((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1] && accel < 2000) ||
+                elapsedTime.seconds() > time - 0.3
         ){
-          Robot.transfer.setPos(0, 0.75*Robot.transfer.maxVel);
+          transfer.setPos(0, 0.75*transfer.maxVel);
         }
         else{
-          Robot.transfer.setPos(0, 0);
+          transfer.setPos(0, 0);
         }
       }
+      packet.put("Elapsed Time (s)", elapsedTime.seconds());
       packet.put("Outtake Vel (deg/s)", outtake.getVel());
+      packet.put("Accel (deg/s^2)", accel);
       return true;
     }
   }
