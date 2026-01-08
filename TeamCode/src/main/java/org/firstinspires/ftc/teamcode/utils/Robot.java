@@ -198,7 +198,7 @@ public class Robot{
     double accel = 0.0;
     double lastVel = 0.0;
     double lastElapsed = 0.0;
-    double time = 3.0;
+    double time = 3.5;
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {

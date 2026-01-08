@@ -55,9 +55,9 @@ public class MainTeleOp extends OpMode {
 
         if(gamepad1.a){
             Robot.intake.setPower(1.0);
-            Robot.transfer.setPos(0, 0.25*Robot.transfer.maxVel);
+            Robot.transfer.setPos(0, 0.15*Robot.transfer.maxVel);
             Robot.aimOuttakeTurret();
-            Robot.outtake.setPos(0, -720.0);
+            Robot.outtake.setPos(0, -1440.0);
         }
         else if(gamepad1.y){
             Robot.intake.setPower(1.0);
@@ -79,6 +79,12 @@ public class MainTeleOp extends OpMode {
             Robot.transfer.setPos(0, -Robot.transfer.maxVel);
             Robot.aimOuttakeTurret();
         }
+        else if(gamepad1.b){
+            Robot.intake.setPower(-1.0);
+            Robot.transfer.setPos(0, -Robot.transfer.maxVel);
+            Robot.aimOuttakeTurret();
+            Robot.outtake.setPos(0, -Robot.outtake.maxVel);
+        }
         else{
             Robot.intake.setPower(0.0);
             Robot.transfer.setPos(0, 0.0);
@@ -89,7 +95,7 @@ public class MainTeleOp extends OpMode {
                 currentMaxOuttakeVel = outtakeVels[1];
             }
             else{
-                Robot.outtake.setPos(0, -720.0);
+                Robot.outtake.setPos(0, -1440.0);
                 currentMinOuttakeVel = 0.0;
                 currentMaxOuttakeVel = 0.0;
             }
