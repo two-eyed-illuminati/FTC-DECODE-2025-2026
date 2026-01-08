@@ -162,17 +162,15 @@ public class Robot{
             Math.pow(-72.0-robotPose.position.x-turretXOffset, 2)
     );
     telemetry.addData("Curr Distance (in)", currDistance);
-    double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
+    double maxArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
             (vel) -> 46.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
-    telemetry.addData("Max Artifact Vel (ft/s)", targetArtifactVel);
-    double targetOuttakeVel = 1.4*(targetArtifactVel/0.8);
-    telemetry.addData("Max Outtake Vel (ft/s)", targetOuttakeVel);
-    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
-    telemetry.addData("Max Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
-    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
-    telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
-    telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
-    outtake.setPos(0, targetOuttakeAngVelInitial-200.0);
+    telemetry.addData("Max Artifact Vel (ft/s)", maxArtifactVel);
+    double maxOuttakeVel = 1.4*(maxArtifactVel/0.8);
+    telemetry.addData("Max Outtake Vel (ft/s)", maxOuttakeVel);
+    double maxOuttakeAngVel = maxOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
+    telemetry.addData("Max Outtake Ang Vel (deg/s)", maxOuttakeAngVel);
+    double maxOuttakeAngVelInitial = maxOuttakeAngVel/0.740740741;
+    telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", maxOuttakeAngVelInitial);
 
     double minArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
             (vel) -> 40.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
@@ -184,7 +182,19 @@ public class Robot{
     double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
-    return new double[]{minOuttakeAngVelInitial, targetOuttakeAngVelInitial};
+    double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
+            (vel) -> 45.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+    telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
+    double targetOuttakeVel = 1.4*(targetArtifactVel/0.8);
+    telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
+    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
+    telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
+    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
+    telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
+    outtake.setPos(0, (maxOuttakeAngVelInitial+minOuttakeAngVelInitial);
+    telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
+
+    return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
   }
 
   public static double[] shootOuttake(){
