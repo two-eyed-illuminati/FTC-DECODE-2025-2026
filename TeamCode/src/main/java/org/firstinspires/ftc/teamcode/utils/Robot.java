@@ -154,7 +154,7 @@ public class Robot{
     aimOuttakeTurret(pose);
   }
 
-  public static double[] shootOuttake(Pose2d robotPose, boolean aimBetween){
+  public static double[] shootOuttake(Pose2d robotPose){
     double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
     double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double currDistance = Math.sqrt(
