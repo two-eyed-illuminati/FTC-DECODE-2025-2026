@@ -206,6 +206,13 @@ public class Robot{
         elapsedTime.reset();
         started = true;
       }
+
+      double newWeight = 0.1;
+      accel = newWeight * (outtake.getVel() - lastVel) / (elapsedTime.seconds() - lastElapsed)
+              + (1 - newWeight) * accel;
+      lastVel = outtake.getVel();
+      lastElapsed = elapsedTime.seconds();
+
       if(elapsedTime.seconds() > time){
         intake.setPower(0);
         transfer.setPos(0, 0);
@@ -221,12 +228,6 @@ public class Robot{
       else {
         intake.setPower(1.0);
 
-        double newWeight = 0.1;
-        accel = newWeight * (outtake.getVel() - lastVel) / (elapsedTime.seconds() - lastElapsed)
-                + (1 - newWeight) * accel;
-        lastVel = outtake.getVel();
-        lastElapsed = elapsedTime.seconds();
-
         if((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1] && accel < 2000) ||
                 elapsedTime.seconds() > time - 0.3
         ){
@@ -238,7 +239,7 @@ public class Robot{
       }
       packet.put("Elapsed Time (s)", elapsedTime.seconds());
       packet.put("Outtake Vel (deg/s)", outtake.getVel());
-      packet.put("Transfer Up Vel (deg/s)", transfer.getVel());
+      packet.put("Transfer Vel (deg/s)", transfer.getVel());
       packet.put("Target Outtake Vel Min (deg/s)", outtakeVels[0]);
       packet.put("Target Outtake Vel Max (deg/s)", outtakeVels[1]);
       packet.put("Accel (deg/s^2)", accel);
