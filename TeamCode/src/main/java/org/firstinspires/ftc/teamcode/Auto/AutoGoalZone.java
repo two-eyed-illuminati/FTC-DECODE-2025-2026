@@ -56,18 +56,30 @@ public class AutoGoalZone extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
         Robot.initialize(hardwareMap, telemetry);
-        Robot.drive.localizer.setPose(startPose);
+        Robot.Alliance selectedAlliance = null;
         while(!isStarted()){
+            Robot.telemetry.addLine("Press X for BLUE alliance, B for RED alliance");
+            Robot.telemetry.addData("Current Alliance", selectedAlliance == Robot.Alliance.BLUE ? "BLUE" : "RED");
+            Robot.telemetry.update();
             if(gamepad1.x){
-                Robot.alliance = Robot.Alliance.BLUE;
+                selectedAlliance = Robot.Alliance.BLUE;
             }
             else if(gamepad1.b){
-                Robot.alliance = Robot.Alliance.RED;
+                selectedAlliance = Robot.Alliance.RED;
             }
+        }
+        if(selectedAlliance != null){
+            Robot.alliance = selectedAlliance;
+        }
+        else{
+            return;
         }
 
         PoseMap poseMap = Robot.alliance == Robot.Alliance.BLUE ? new IdentityPoseMap() :
                 pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
+
+        Robot.drive.localizer.setPose(Robot.alliance == Robot.Alliance.BLUE ? startPose :
+                new Pose2d(startPose.position.x, -startPose.position.y, -startPose.heading.toDouble()));
 
         TrajectoryActionBuilder preloadShoot = trajToShoot(Robot.drive.actionBuilder(startPose, poseMap), true)
                 .afterDisp(0, new Robot.ShootSequenceAction());
