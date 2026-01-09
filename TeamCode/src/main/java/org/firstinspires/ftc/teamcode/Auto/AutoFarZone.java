@@ -15,9 +15,9 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 
 @Autonomous(name="Auto Far Zone", group="Auto")
 public class AutoFarZone extends LinearOpMode {
-    public static double START_X = -64.0;
+    public static double START_X = 64.0;
     public static double START_Y = -8.7964;
-    public static double START_HEADING = -180.0;
+    public static double START_HEADING = 180.0;
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
