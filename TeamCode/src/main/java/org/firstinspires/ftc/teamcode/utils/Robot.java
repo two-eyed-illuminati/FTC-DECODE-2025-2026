@@ -226,7 +226,7 @@ public class Robot{
               elapsedTime.seconds() > time - 0.3
       ){
         intake.setPower(1.0);
-        transfer.setPos(0, 0.75*transfer.maxVel);
+        transfer.setPos(0, 0.65*transfer.maxVel);
       }
       else if(elapsedTime.seconds() < time - 0.3 && elapsedTime.seconds() % 0.8 < 0.16){
         intake.setPower(-1.0);
