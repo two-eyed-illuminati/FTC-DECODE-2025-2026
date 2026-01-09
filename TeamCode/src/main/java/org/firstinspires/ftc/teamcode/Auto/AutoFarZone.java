@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseMap;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -50,5 +51,9 @@ public class AutoFarZone extends LinearOpMode {
                 new Pose2d(startPose.position.x, -startPose.position.y, -startPose.heading.toDouble()));
 
         TrajectoryActionBuilder leave = Robot.drive.actionBuilder(startPose, poseMap).lineToX(START_X-5.0).lineToY(-32.0);
+
+        Actions.runBlocking(
+                leave.build()
+        );
     }
 }

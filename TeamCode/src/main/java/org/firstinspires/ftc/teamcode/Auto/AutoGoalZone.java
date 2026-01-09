@@ -122,7 +122,6 @@ public class AutoGoalZone extends LinearOpMode {
                 new Vector2d(SHOOT_X+25, SHOOT_Y)
         );
 
-
         Actions.runBlocking(
                 new SequentialAction(
                         preloadShoot.build(),
