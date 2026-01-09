@@ -59,7 +59,12 @@ public class AutoGoalZone extends LinearOpMode {
         Robot.Alliance selectedAlliance = null;
         while(!isStarted()){
             Robot.telemetry.addLine("Press X for BLUE alliance, B for RED alliance");
-            Robot.telemetry.addData("Current Alliance", selectedAlliance == Robot.Alliance.BLUE ? "BLUE" : "RED");
+            if(selectedAlliance == null) {
+                Robot.telemetry.addLine("WARNING: No current alliance selected!");
+            }
+            else{
+                Robot.telemetry.addData("Current Alliance", selectedAlliance == Robot.Alliance.BLUE ? "BLUE" : "RED");
+            }
             Robot.telemetry.update();
             if(gamepad1.x){
                 selectedAlliance = Robot.Alliance.BLUE;
