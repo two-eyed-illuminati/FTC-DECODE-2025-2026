@@ -182,7 +182,16 @@ public class Robot{
     double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
-    outtake.setPos(0, Math.max(maxOuttakeAngVelInitial-200.0, minOuttakeAngVelInitial));
+    double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
+            (vel) -> 45.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+    telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
+    double targetOuttakeVel = 1.4*(targetArtifactVel/0.8);
+    telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
+    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
+    telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
+    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
+    telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
+    outtake.setPos(0, targetOuttakeAngVelInitial);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
 
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
