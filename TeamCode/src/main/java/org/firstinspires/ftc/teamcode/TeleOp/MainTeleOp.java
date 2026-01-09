@@ -3,24 +3,36 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
+
+import java.util.List;
 
 @TeleOp(name="Main TeleOp", group="Main")
 public class MainTeleOp extends OpMode {
     public static boolean FIELD_CENTRIC = true;
     public double currentMinOuttakeVel = 0.0;
     public double currentMaxOuttakeVel = 0.0;
+    List<LynxModule> allHubs;
 
     @Override
     public void init(){
         Robot.initialize(hardwareMap, telemetry);
+        allHubs = hardwareMap.getAll(LynxModule.class);
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
     }
 
     @Override
     public void loop(){
+        for (LynxModule hub : allHubs) {
+            hub.clearBulkCache();
+        }
+
         Robot.drive.updatePoseEstimate();
 
         Vector2d driveVector = new Vector2d(0, 0);
