@@ -34,6 +34,7 @@ public class Robot{
   public static ContinuousMotorMechanism transfer;
   public static MotorMechanism outtakeTurret;
   public static ContinuousMotorMechanism outtake;
+  public static PIDFController outtakeController;
   public static Limelight3A limelight;
   public static MultipleTelemetry telemetry;
   //Stored Values
@@ -65,6 +66,7 @@ public class Robot{
       outtake = new ContinuousMotorMechanism(outtakeMotor,
               360.0/28.0, 36000.0
       );
+      outtakeController = new PIDFController(1.0/8000.0, 1.0/30345.0);
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
       limelight.start();
@@ -154,7 +156,7 @@ public class Robot{
     aimOuttakeTurret(pose);
   }
 
-  public static double[] shootOuttake(Pose2d robotPose){
+  public static double[] shootOuttake(Pose2d robotPose, boolean pid){
     double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
     double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double currDistance = Math.sqrt(
@@ -191,37 +193,43 @@ public class Robot{
     telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
     double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
-    outtake.setPos(0, targetOuttakeAngVelInitial);
+    if(pid) {
+      double targetPower = outtakeController.getPower(outtake.getVel(), targetOuttakeAngVelInitial);
+      telemetry.addData("Target Outtake Power", targetPower);
+      outtake.motor.setPower(targetPower);
+    }
+    else{
+      outtake.setPos(0, targetOuttakeAngVelInitial);
+    }
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
+    telemetry.addData("Actual Outtake Power", outtake.motor.getPower());
 
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
   }
 
+  public static double[] shootOuttake(Pose2d robotPose){
+    return shootOuttake(robotPose, true);
+  }
+
   public static double[] shootOuttake(){
     Pose2d pose = drive.localizer.getPose();
-    return shootOuttake(pose);
+    return shootOuttake(pose, true);
   }
 
   public static class ShootSequenceAction implements Action {
     ElapsedTime elapsedTime = new ElapsedTime();
+    ElapsedTime elapsedSinceTimeStartAttemptToShoot = new ElapsedTime();
+    boolean attemptingToShoot = false;
     boolean started = false;
-    double accel = 0.0;
-    double lastVel = 0.0;
-    double lastElapsed = 0.0;
     double time = 3.5;
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
       if(!started) {
         elapsedTime.reset();
+        elapsedSinceTimeStartAttemptToShoot.reset();
         started = true;
       }
-
-      double newWeight = 0.1;
-      accel = newWeight * (outtake.getVel() - lastVel) / (elapsedTime.seconds() - lastElapsed)
-              + (1 - newWeight) * accel;
-      lastVel = outtake.getVel();
-      lastElapsed = elapsedTime.seconds();
 
       if(elapsedTime.seconds() > time){
         intake.setPower(0);
@@ -231,19 +239,30 @@ public class Robot{
       }
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
-      if((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1] && accel < 2000) ||
-              elapsedTime.seconds() > time - 0.3
+
+      if(elapsedTime.seconds() < 0.2){
+        attemptingToShoot = false;
+      }
+      else if(((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
+              elapsedTime.seconds() > time - 0.3) &&
+              elapsedSinceTimeStartAttemptToShoot.seconds() < 0.6
       ){
+        if(!attemptingToShoot){
+          elapsedSinceTimeStartAttemptToShoot.reset();
+        }
+        attemptingToShoot = true;
         intake.setPower(1.0);
         transfer.setPos(0, 0.65*transfer.maxVel);
       }
-      else if(elapsedTime.seconds() < time - 0.3 && elapsedTime.seconds() % 0.8 < 0.16){
+      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175){
+        attemptingToShoot = false;
         intake.setPower(-1.0);
         transfer.setPos(0, -transfer.maxVel);
       }
       else{
+        attemptingToShoot = false;
         intake.setPower(1.0);
-        transfer.setPos(0, 0);
+        transfer.setPos(0, (outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ? transfer.maxVel : 0.0);
       }
 
       packet.put("Elapsed Time (s)", elapsedTime.seconds());
@@ -251,7 +270,6 @@ public class Robot{
       packet.put("Transfer Vel (deg/s)", transfer.getVel());
       packet.put("Min Outtake Vel (deg/s)", outtakeVels[0]);
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
-      packet.put("Accel (deg/s^2)", accel);
       return true;
     }
   }
