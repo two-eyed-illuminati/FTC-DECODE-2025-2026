@@ -270,6 +270,8 @@ public class Robot{
       packet.put("Transfer Vel (deg/s)", transfer.getVel());
       packet.put("Min Outtake Vel (deg/s)", outtakeVels[0]);
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
+      packet.put("Outtake Turret Pos (deg)", outtakeTurret.getPos());
+
       return true;
     }
   }
