@@ -34,6 +34,7 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -14.3457;
     public static double SPIKE_2_X = 10.3457;
+    public static double SPIKE_2_END_X = 11.3457;
     public static double SPIKE_3_X = 34.3457;
 
     TrajectoryActionBuilder trajToShoot(TrajectoryActionBuilder builder, boolean preload) {
@@ -49,8 +50,9 @@ public class AutoGoalZone extends LinearOpMode {
 
     TrajectoryActionBuilder intakeFromSpike(TrajectoryActionBuilder builder, int spike){
         double currSpikeX = spike == 1 ? SPIKE_1_X : (spike == 2 ? SPIKE_2_X : SPIKE_3_X);
-        return builder.lineToY(spike <= 1 ? SPIKE_RAMP_END_Y : SPIKE_TUNNEL_END_Y, new TranslationalVelConstraint(25.0), builder.getBaseAccelConstraint())
-                .splineToSplineHeading(new Pose2d(currSpikeX, SPIKE_START_Y, Math.toRadians((SPIKE_HEADING+SHOOT_HEADING)/2.0)), -SPIKE_HEADING)
+        double endSpikeX = spike == 2 ? SPIKE_2_END_X : currSpikeX;
+        return builder.strafeTo(new Vector2d(endSpikeX, spike <= 1 ? SPIKE_RAMP_END_Y : SPIKE_TUNNEL_END_Y), new TranslationalVelConstraint(25.0), builder.getBaseAccelConstraint())
+                .splineToSplineHeading(new Pose2d(endSpikeX, SPIKE_START_Y, Math.toRadians((SPIKE_HEADING+SHOOT_HEADING)/2.0)), -SPIKE_HEADING)
                 .afterDisp(
                         0,
                         () -> {
