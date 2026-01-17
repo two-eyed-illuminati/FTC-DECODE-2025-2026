@@ -33,8 +33,8 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_TUNNEL_END_Y = -58.1282;
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -12.3457;
-    public static double SPIKE_2_X = 11.3457;
-    public static double SPIKE_2_END_X = 12.8457;
+    public static double SPIKE_2_X = 12.3457;
+    public static double SPIKE_2_END_X = 13.8457;
     public static double SPIKE_3_X = 34.3457;
 
     TrajectoryActionBuilder trajToShoot(TrajectoryActionBuilder builder, boolean preload) {
