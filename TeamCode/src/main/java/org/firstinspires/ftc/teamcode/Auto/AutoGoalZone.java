@@ -117,7 +117,7 @@ public class AutoGoalZone extends LinearOpMode {
         TrajectoryActionBuilder toSpike1 = preloadShoot.fresh()
                 .afterDisp(0, () -> {
                     Robot.intake.setPower(1.0);
-                    Robot.transfer.setPos(0, 0.15*Robot.transfer.maxVel);
+                    Robot.transfer.setPos(0, 0.1*Robot.transfer.maxVel);
                     Robot.outtake.setPos(0, -1440.0);
                 })
                 .setTangent(Math.toRadians(20))
@@ -132,7 +132,7 @@ public class AutoGoalZone extends LinearOpMode {
         TrajectoryActionBuilder toSpike2 = toSpike1IntakeAndShoot.fresh()
                 .afterDisp(0, () -> {
                     Robot.intake.setPower(1.0);
-                    Robot.transfer.setPos(0, 0.15*Robot.transfer.maxVel);
+                    Robot.transfer.setPos(0, 0.1*Robot.transfer.maxVel);
                     Robot.outtake.setPos(0, -1440.0);
                 })
                 .setTangent(Math.toRadians(0))
