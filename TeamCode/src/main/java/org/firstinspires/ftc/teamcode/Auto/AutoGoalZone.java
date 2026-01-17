@@ -30,7 +30,7 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_SHOOT_HEADING = -90;
     public static double SPIKE_START_Y = -22.1017;
     public static double SPIKE_RAMP_END_Y = -52.1282;
-    public static double SPIKE_TUNNEL_END_Y = -57.1282;
+    public static double SPIKE_TUNNEL_END_Y = -58.1282;
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -12.3457;
     public static double SPIKE_2_X = 11.3457;
@@ -144,7 +144,7 @@ public class AutoGoalZone extends LinearOpMode {
         Action doSpike2Shoot = new Robot.ShootSequenceAction();
 
         TrajectoryActionBuilder leaveLaunchZone = toSpike2IntakeAndShoot.fresh().strafeToLinearHeading(
-                new Vector2d(SPIKE_SHOOT_X + 25, SPIKE_SHOOT_Y),
+                new Vector2d(SPIKE_SHOOT_X + 20, SPIKE_SHOOT_Y),
                 0
         );
 
