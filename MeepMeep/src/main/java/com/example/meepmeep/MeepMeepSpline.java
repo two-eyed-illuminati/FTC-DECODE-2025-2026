@@ -57,7 +57,8 @@ public class MeepMeepSpline {
                 )
                 .splineToSplineHeading(
                         new Pose2d(endSpikeX, endSpikeY+5, Math.toRadians((SPIKE_HEADING*4 + SPIKE_SHOOT_HEADING) / 5.0)),
-                        Math.toRadians(-SPIKE_HEADING)
+                        Math.toRadians(-SPIKE_HEADING),
+                        new TranslationalVelConstraint(25.0)
                 );
     }
 
