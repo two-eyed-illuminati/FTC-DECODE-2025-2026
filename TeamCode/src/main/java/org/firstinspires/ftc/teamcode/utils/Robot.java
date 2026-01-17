@@ -145,6 +145,9 @@ public class Robot{
     if(angle > 180.0){
       angle -= 360.0;
     }
+    if(angle < -180.0){
+      angle += 360.0;
+    }
     telemetry.addData("Target Angle", angle);
     if(Math.abs(Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos)-angle) > 20){
       angle = outtakeTurret.getPos();
