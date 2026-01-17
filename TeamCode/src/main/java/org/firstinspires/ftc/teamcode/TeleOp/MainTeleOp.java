@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 
 import java.util.List;
 
-@TeleOp(name="Main TeleOp", group="Main")
+@TeleOp(name="Main TeleOp 1", group="Main")
 public class MainTeleOp extends OpMode {
     public static boolean FIELD_CENTRIC = true;
     public double currentMinOuttakeVel = 0.0;

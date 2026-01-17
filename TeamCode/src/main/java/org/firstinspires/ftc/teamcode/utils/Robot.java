@@ -25,9 +25,9 @@ import org.firstinspires.ftc.teamcode.utils.rr.MecanumDrive;
 @Config
 public class Robot{
   //Constants
-  public static double START_X = -58.0586;
-  public static double START_Y = -40.7964;
-  public static double START_HEADING = -128.71;
+  public static double START_X = -57.0586;
+  public static double START_Y = -43.8964;
+  public static double START_HEADING = -126.5;
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
   public static DcMotorEx intake;
