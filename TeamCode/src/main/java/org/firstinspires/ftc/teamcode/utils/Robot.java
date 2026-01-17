@@ -110,7 +110,6 @@ public class Robot{
       drive.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
       drive.leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-      drive.localizer.update();
       drive.localizer.setPose(pose);
     }
   }
@@ -169,7 +168,7 @@ public class Robot{
     );
     telemetry.addData("Curr Distance (in)", currDistance);
     double maxArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> 50.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+            (vel) -> 49.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
     telemetry.addData("Max Artifact Vel (ft/s)", maxArtifactVel);
     double maxOuttakeVel = 1.4*(maxArtifactVel/0.8);
     telemetry.addData("Max Outtake Vel (ft/s)", maxOuttakeVel);
@@ -189,7 +188,7 @@ public class Robot{
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
     double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> 48.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+            (vel) -> 47.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
     telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
     double targetOuttakeVel = 1.4*(targetArtifactVel/0.8);
     telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
