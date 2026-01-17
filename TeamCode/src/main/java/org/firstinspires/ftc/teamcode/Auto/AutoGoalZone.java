@@ -3,13 +3,10 @@ package org.firstinspires.ftc.teamcode.Auto;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.IdentityPoseMap;
-import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseMap;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -25,9 +22,13 @@ public class AutoGoalZone extends LinearOpMode {
     public static double START_X = -58.0586;
     public static double START_Y = -40.7964;
     public static double START_HEADING = -128.71;
-    public static double SHOOT_X = -41.0621;
-    public static double SHOOT_Y = -29.6497;
-    public static double SHOOT_HEADING = -131.9655;
+    public static double PRELOAD_SHOOT_X = -45.3370432609;
+    public static double PRELOAD_SHOOT_Y = -24.9996985274;
+    public static double PRELOAD_SHOOT_HEADING = -128.71;
+    public static double SPIKE_SHOOT_X = -20.3370432609;
+    public static double SPIKE_SHOOT_Y = -24.9996985274;
+    public static double SPIKE_SHOOT_HEADING = -90;
+
     public static double SPIKE_START_Y = -22.1017;
     public static double SPIKE_RAMP_END_Y = -49.1282;
     public static double SPIKE_TUNNEL_END_Y = -53.1282;
@@ -38,28 +39,42 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_3_X = 34.3457;
 
     TrajectoryActionBuilder trajToShoot(TrajectoryActionBuilder builder, boolean preload) {
-        Pose2d endRobotPose = new Pose2d(SHOOT_X, SHOOT_Y, Math.toRadians(SHOOT_HEADING));
-        return builder.afterDisp(0, () -> {
-            Robot.aimOuttakeTurret(endRobotPose);
-            Robot.shootOuttake(endRobotPose, false);
-        }).splineToSplineHeading(
-                endRobotPose,
-                Math.toRadians(preload ? 180-SHOOT_HEADING : SHOOT_HEADING)
-        );
+        if (preload) {
+            Pose2d endRobotPose = new Pose2d(PRELOAD_SHOOT_X, PRELOAD_SHOOT_Y, Math.toRadians(PRELOAD_SHOOT_HEADING));
+            return builder.afterDisp(0, () -> {
+                Robot.aimOuttakeTurret(endRobotPose);
+                Robot.shootOuttake(endRobotPose, false);
+            }).strafeToConstantHeading(endRobotPose.position);
+        } else {
+            Pose2d endRobotPose = new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, Math.toRadians(SPIKE_SHOOT_HEADING));
+            return builder.afterDisp(0, () -> {
+                Robot.aimOuttakeTurret(endRobotPose);
+                Robot.shootOuttake(endRobotPose, false);
+            }).splineToSplineHeading(
+                    endRobotPose,
+                    Math.toRadians(-190)
+            );
+        }
     }
 
-    TrajectoryActionBuilder intakeFromSpike(TrajectoryActionBuilder builder, int spike){
+    TrajectoryActionBuilder intakeFromSpike(TrajectoryActionBuilder builder, int spike) {
         double currSpikeX = spike == 1 ? SPIKE_1_X : (spike == 2 ? SPIKE_2_X : SPIKE_3_X);
         double endSpikeX = spike == 2 ? SPIKE_2_END_X : currSpikeX;
-        return builder.strafeTo(new Vector2d(endSpikeX, spike <= 1 ? SPIKE_RAMP_END_Y : SPIKE_TUNNEL_END_Y), new TranslationalVelConstraint(25.0), builder.getBaseAccelConstraint())
-                .splineToSplineHeading(new Pose2d(endSpikeX, SPIKE_START_Y, Math.toRadians((SPIKE_HEADING+SHOOT_HEADING)/2.0)), -SPIKE_HEADING)
-                .afterDisp(
-                        0,
-                        () -> {
-                            Robot.intake.setPower(0.0);
-                            Robot.transfer.setPos(0, 0);
-                        }
-                );
+        double endSpikeY = spike <= 1 ? SPIKE_RAMP_END_Y : SPIKE_TUNNEL_END_Y;
+
+        return builder.splineToSplineHeading(
+                        new Pose2d(endSpikeX, endSpikeY, Math.toRadians(SPIKE_HEADING)),
+                        Math.toRadians(-SPIKE_HEADING),
+                        new TranslationalVelConstraint(25.0)
+                )
+                .splineToSplineHeading(
+                        new Pose2d(endSpikeX, endSpikeY + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
+                        Math.toRadians(-SPIKE_HEADING)
+                )
+                .afterDisp(0, () -> {
+                    Robot.intake.setPower(0.0);
+                    Robot.transfer.setPos(0, 0);
+                });
     }
 
     @Override
@@ -98,33 +113,40 @@ public class AutoGoalZone extends LinearOpMode {
 
         TrajectoryActionBuilder preloadShoot = trajToShoot(Robot.drive.actionBuilder(startPose, poseMap), true);
         Action doPreloadShoot = new Robot.ShootSequenceAction();
-        TrajectoryActionBuilder toSpike1 = preloadShoot.fresh().afterDisp(0, () -> {
-            Robot.intake.setPower(1.0);
-            Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
-            Robot.outtake.setPos(0, -1440.0);
-        }).splineToSplineHeading(
-                new Pose2d(SHOOT_X, SHOOT_Y + 10.0, Math.toRadians((SPIKE_HEADING+SHOOT_HEADING)/2.0)),
-                Math.toRadians(0)
-        ).splineToSplineHeading(
-                new Pose2d(SPIKE_1_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
-                Math.toRadians(SPIKE_HEADING)
-        );
-        TrajectoryActionBuilder toSpike1Intake = intakeFromSpike(toSpike1, 1);
-        TrajectoryActionBuilder toSpike1IntakeAndShoot = trajToShoot(toSpike1Intake, false);
+
+        TrajectoryActionBuilder toSpike1 = preloadShoot.fresh()
+                .afterDisp(0, () -> {
+                    Robot.intake.setPower(1.0);
+                    Robot.transfer.setPos(0, 0.0);
+                    Robot.outtake.setPos(0, -1440.0);
+                })
+                .setTangent(Math.toRadians(20))
+                .splineToSplineHeading(
+                        new Pose2d(SPIKE_1_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
+                        Math.toRadians(SPIKE_HEADING)
+                );
+
+        TrajectoryActionBuilder toSpike1IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike1, 1), false);
         Action doSpike1Shoot = new Robot.ShootSequenceAction();
-        TrajectoryActionBuilder toSpike2 = toSpike1IntakeAndShoot.fresh().afterDisp(0, () -> {
-            Robot.intake.setPower(1.0);
-            Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
-            Robot.outtake.setPos(0, -1440.0);
-        }).splineToSplineHeading(
-                new Pose2d(SPIKE_2_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
-                Math.toRadians(SPIKE_HEADING)
-        );
-        TrajectoryActionBuilder toSpike2Intake = intakeFromSpike(toSpike2, 2);
-        TrajectoryActionBuilder toSpike2IntakeAndShoot = trajToShoot(toSpike2Intake, false);
+
+        TrajectoryActionBuilder toSpike2 = toSpike1IntakeAndShoot.fresh()
+                .afterDisp(0, () -> {
+                    Robot.intake.setPower(1.0);
+                    Robot.transfer.setPos(0, 0.0);
+                    Robot.outtake.setPos(0, -1440.0);
+                })
+                .setTangent(Math.toRadians(0))
+                .splineToSplineHeading(
+                        new Pose2d(SPIKE_2_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
+                        Math.toRadians(SPIKE_HEADING)
+                );
+
+        TrajectoryActionBuilder toSpike2IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike2, 2), false);
         Action doSpike2Shoot = new Robot.ShootSequenceAction();
-        TrajectoryActionBuilder leaveLaunchZone = toSpike2IntakeAndShoot.fresh().strafeTo(
-                new Vector2d(SHOOT_X+25, SHOOT_Y)
+
+        TrajectoryActionBuilder leaveLaunchZone = toSpike2IntakeAndShoot.fresh().strafeToLinearHeading(
+                new Vector2d(SPIKE_SHOOT_X + 25, SPIKE_SHOOT_Y),
+                0
         );
 
         Actions.runBlocking(
