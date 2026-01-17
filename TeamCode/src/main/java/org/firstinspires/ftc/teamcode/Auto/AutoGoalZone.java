@@ -19,23 +19,22 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 @Autonomous(name="Auto Goal Zone", group="Main")
 @Config
 public class AutoGoalZone extends LinearOpMode {
-    public static double START_X = -58.0586;
-    public static double START_Y = -40.7964;
-    public static double START_HEADING = -128.71;
+    public static double START_X = -57.0586;
+    public static double START_Y = -43.8964;
+    public static double START_HEADING = -126.5;
     public static double PRELOAD_SHOOT_X = -45.3370432609;
     public static double PRELOAD_SHOOT_Y = -24.9996985274;
     public static double PRELOAD_SHOOT_HEADING = -128.71;
     public static double SPIKE_SHOOT_X = -20.3370432609;
     public static double SPIKE_SHOOT_Y = -24.9996985274;
     public static double SPIKE_SHOOT_HEADING = -90;
-
     public static double SPIKE_START_Y = -22.1017;
-    public static double SPIKE_RAMP_END_Y = -49.1282;
-    public static double SPIKE_TUNNEL_END_Y = -53.1282;
+    public static double SPIKE_RAMP_END_Y = -52.1282;
+    public static double SPIKE_TUNNEL_END_Y = -57.1282;
     public static double SPIKE_HEADING = -90.0;
-    public static double SPIKE_1_X = -14.3457;
+    public static double SPIKE_1_X = -12.3457;
     public static double SPIKE_2_X = 10.3457;
-    public static double SPIKE_2_END_X = 11.3457;
+    public static double SPIKE_2_END_X = 12.3457;
     public static double SPIKE_3_X = 34.3457;
 
     TrajectoryActionBuilder trajToShoot(TrajectoryActionBuilder builder, boolean preload) {
@@ -145,7 +144,7 @@ public class AutoGoalZone extends LinearOpMode {
         Action doSpike2Shoot = new Robot.ShootSequenceAction();
 
         TrajectoryActionBuilder leaveLaunchZone = toSpike2IntakeAndShoot.fresh().strafeToLinearHeading(
-                new Vector2d(SPIKE_SHOOT_X + 25, SPIKE_SHOOT_Y),
+                new Vector2d(SPIKE_SHOOT_X + 20, SPIKE_SHOOT_Y),
                 0
         );
 
