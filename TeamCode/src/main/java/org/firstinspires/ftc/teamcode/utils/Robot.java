@@ -110,6 +110,7 @@ public class Robot{
       drive.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
       drive.leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
+      drive.localizer.update();
       drive.localizer.setPose(pose);
     }
   }
