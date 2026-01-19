@@ -41,13 +41,13 @@ public class AutoGoalZone extends LinearOpMode {
         if (preload) {
             Pose2d endRobotPose = new Pose2d(PRELOAD_SHOOT_X, PRELOAD_SHOOT_Y, Math.toRadians(PRELOAD_SHOOT_HEADING));
             return builder.afterDisp(0, () -> {
-                Robot.aimOuttakeTurret(endRobotPose);
+                Robot.aimOuttakeTurret(endRobotPose, false);
                 Robot.shootOuttake(endRobotPose, false);
             }).strafeToConstantHeading(endRobotPose.position);
         } else {
             Pose2d endRobotPose = new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, Math.toRadians(SPIKE_SHOOT_HEADING));
             return builder.afterDisp(0, () -> {
-                Robot.aimOuttakeTurret(endRobotPose);
+                Robot.aimOuttakeTurret(endRobotPose, false);
                 Robot.shootOuttake(endRobotPose, false);
             }).splineToSplineHeading(
                     endRobotPose,

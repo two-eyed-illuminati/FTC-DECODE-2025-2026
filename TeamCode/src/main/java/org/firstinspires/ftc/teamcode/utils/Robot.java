@@ -33,6 +33,7 @@ public class Robot{
   public static DcMotorEx intake;
   public static ContinuousMotorMechanism transfer;
   public static MotorMechanism outtakeTurret;
+  public static PIDFController outtakeTurretController;
   public static ContinuousMotorMechanism outtake;
   public static PIDFController outtakeController;
   public static Limelight3A limelight;
@@ -50,24 +51,30 @@ public class Robot{
 
     if(!initialized) {
       drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+
       intake = hardwareMap.get(DcMotorEx.class, "intake");
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
       DcMotorEx transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
       transfer = new ContinuousMotorMechanism(transferMotor,
               360.0/145.1, 6900
       );
+
       DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "outtakeTurret");
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       outtakeTurretMotor.setTargetPosition(0);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -90, 90, -537.7/4*4, 537.7/4*4, 1872);
+      outtakeTurretController = new PIDFController(1.0/10.0, 0);
+
       DcMotorEx outtakeMotor = hardwareMap.get(DcMotorEx.class, "outtake");
       outtakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
       outtake = new ContinuousMotorMechanism(outtakeMotor,
               360.0/28.0, 36000.0
       );
       outtakeController = new PIDFController(1.0/8000.0, 1.0/30345.0);
+
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
       limelight.start();
@@ -125,7 +132,7 @@ public class Robot{
     return y;
   }
 
-  public static void aimOuttakeTurret(Pose2d robotPose){
+  public static void aimOuttakeTurret(Pose2d robotPose, boolean pid){
     telemetry.addData("X", robotPose.position.x);
     telemetry.addData("Y", robotPose.position.y);
     telemetry.addData("heading (deg)", Math.toDegrees(robotPose.heading.toDouble()));
@@ -153,13 +160,24 @@ public class Robot{
       angle = outtakeTurret.getPos();
     }
     telemetry.addData("Target Angle After Unnecessary Motion Reduction", angle);
-    outtakeTurret.setPos(angle);
+    if(pid){
+      double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
+      telemetry.addData("Target Outtake Turret Power", targetPower);
+      outtakeTurret.motor.setPower(targetPower);
+    }
+    else {
+      outtakeTurret.setPos(angle);
+    }
     telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
+  }
+
+  public static void aimOuttakeTurret(Pose2d robotPose){
+    aimOuttakeTurret(robotPose, true);
   }
 
   public static void aimOuttakeTurret(){
     Pose2d pose = drive.localizer.getPose();
-    aimOuttakeTurret(pose);
+    aimOuttakeTurret(pose, true);
   }
 
   public static double[] shootOuttake(Pose2d robotPose, boolean pid){
