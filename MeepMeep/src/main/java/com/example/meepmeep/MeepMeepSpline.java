@@ -62,6 +62,19 @@ public class MeepMeepSpline {
                 );
     }
 
+    static TrajectoryActionBuilder hitGate(TrajectoryActionBuilder builder){
+        return builder.strafeToLinearHeading(new Vector2d(0, SPIKE_START_Y), Math.toRadians(SPIKE_HEADING))
+                .splineToSplineHeading(
+                        new Pose2d(0, SPIKE_RAMP_END_Y, Math.toRadians(SPIKE_HEADING)),
+                        Math.toRadians(-SPIKE_HEADING),
+                        new TranslationalVelConstraint(25.0)
+                ).waitSeconds(0.5).splineToSplineHeading(
+                        new Pose2d(0, SPIKE_RAMP_END_Y + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
+                        Math.toRadians(-SPIKE_HEADING),
+                        new TranslationalVelConstraint(25.0)
+                );
+    }
+
     public static void main(String[] args) {
         com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(800);
 
@@ -85,7 +98,7 @@ public class MeepMeepSpline {
                         Math.toRadians(SPIKE_HEADING)
                 );
 
-        TrajectoryActionBuilder toSpike1IntakeAndShootTab = trajToShoot(intakeFromSpike(toSpike1Tab, 1), false);
+        TrajectoryActionBuilder toSpike1IntakeAndShootTab = trajToShoot(hitGate(intakeFromSpike(toSpike1Tab, 1)), false);
 
         // 3. To Spike 2
         TrajectoryActionBuilder toSpike2Tab = toSpike1IntakeAndShootTab.fresh()
