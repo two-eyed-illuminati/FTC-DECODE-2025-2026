@@ -79,7 +79,7 @@ public class MainTeleOp extends OpMode {
             currentMaxOuttakeVel = outtakeVels[1];
 
             if(currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel) {
-                Robot.transfer.setPos(0, 0.65*Robot.transfer.maxVel);
+                Robot.transfer.setPos(0, 1*Robot.transfer.maxVel);
             }
             else{
                 Robot.transfer.setPos(0, 0.0);
