@@ -132,7 +132,7 @@ public class Robot{
     return y;
   }
 
-  public static void aimOuttakeTurret(Pose2d robotPose, boolean pid){
+  public static double calculateOuttakeTurretAim(Pose2d robotPose){
     telemetry.addData("X", robotPose.position.x);
     telemetry.addData("Y", robotPose.position.y);
     telemetry.addData("heading (deg)", Math.toDegrees(robotPose.heading.toDouble()));
@@ -148,7 +148,25 @@ public class Robot{
     telemetry.addData("Turret Y", robotPose.position.y+turretYOffset);
     telemetry.addData("Target Abs Turret Pos", targetTurretPos);
     telemetry.addData("Target Rel Turret Pos", targetTurretPos-Math.toDegrees(robotPose.heading.toDouble()));
-    double angle = (targetTurretPos-Math.toDegrees(robotPose.heading.toDouble())) % 360.0;
+    return targetTurretPos;
+  }
+
+  public static double calculateArtifactShootVel(Pose2d robotPose, double height){
+    double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
+    double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
+    double currDistance = Math.sqrt(
+            Math.pow((alliance == Alliance.BLUE ? -72.0 : 72.0)-robotPose.position.y-turretYOffset, 2)+
+                    Math.pow(-72.0-robotPose.position.x-turretXOffset, 2)
+    );
+    telemetry.addData("Curr Distance (in)", currDistance);
+    double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
+            (vel) -> height/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+    telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
+    return targetArtifactVel;
+  }
+
+  public static void aimOuttakeTurret(double theta, Pose2d robotPose, boolean pid){
+    double angle = (theta-Math.toDegrees(robotPose.heading.toDouble())) % 360.0;
     if(angle > 180.0){
       angle -= 360.0;
     }
@@ -172,26 +190,30 @@ public class Robot{
     }
     telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
   }
-
+  public static void aimOuttakeTurret(Pose2d robotPose, boolean pid){
+    double targetTurretAngle = calculateOuttakeTurretAim(robotPose);
+    aimOuttakeTurret(targetTurretAngle, robotPose, pid);
+  }
   public static void aimOuttakeTurret(Pose2d robotPose){
     aimOuttakeTurret(robotPose, true);
   }
-
   public static void aimOuttakeTurret(){
     Pose2d pose = drive.localizer.getPose();
     aimOuttakeTurret(pose, true);
   }
 
+  public static void shootOuttake(double mag, boolean pid){
+    if(pid) {
+      double targetPower = outtakeController.getPower(outtake.getVel(), mag);
+      telemetry.addData("Target Outtake Power", targetPower);
+      outtake.motor.setPower(targetPower);
+    }
+    else{
+      outtake.setPos(0, mag);
+    }
+  }
   public static double[] shootOuttake(Pose2d robotPose, boolean pid){
-    double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
-    double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
-    double currDistance = Math.sqrt(
-            Math.pow((alliance == Alliance.BLUE ? -72.0 : 72.0)-robotPose.position.y-turretYOffset, 2)+
-            Math.pow(-72.0-robotPose.position.x-turretXOffset, 2)
-    );
-    telemetry.addData("Curr Distance (in)", currDistance);
-    double maxArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> 49.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+    double maxArtifactVel = calculateArtifactShootVel(robotPose, 49.0);
     telemetry.addData("Max Artifact Vel (ft/s)", maxArtifactVel);
     double maxOuttakeVel = 1.4*(maxArtifactVel/0.8);
     telemetry.addData("Max Outtake Vel (ft/s)", maxOuttakeVel);
@@ -200,8 +222,7 @@ public class Robot{
     double maxOuttakeAngVelInitial = maxOuttakeAngVel/0.740740741;
     telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", maxOuttakeAngVelInitial);
 
-    double minArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> 40.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+    double minArtifactVel = calculateArtifactShootVel(robotPose, 40.0);
     telemetry.addData("Min Artifact Vel (ft/s)", minArtifactVel);
     double minOuttakeVel = 1.4*(minArtifactVel/0.8);
     telemetry.addData("Min Outtake Vel (ft/s)", minOuttakeVel);
@@ -210,8 +231,7 @@ public class Robot{
     double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
-    double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> 47.0/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+    double targetArtifactVel = calculateArtifactShootVel(robotPose, 47.0);
     telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
     double targetOuttakeVel = 1.4*(targetArtifactVel/0.8);
     telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
@@ -219,24 +239,17 @@ public class Robot{
     telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
     double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
-    if(pid) {
-      double targetPower = outtakeController.getPower(outtake.getVel(), targetOuttakeAngVelInitial);
-      telemetry.addData("Target Outtake Power", targetPower);
-      outtake.motor.setPower(targetPower);
-    }
-    else{
-      outtake.setPos(0, targetOuttakeAngVelInitial);
-    }
+
+    shootOuttake(targetOuttakeAngVelInitial, pid);
+
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
     telemetry.addData("Actual Outtake Power", outtake.motor.getPower());
 
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
   }
-
   public static double[] shootOuttake(Pose2d robotPose){
     return shootOuttake(robotPose, true);
   }
-
   public static double[] shootOuttake(){
     Pose2d pose = drive.localizer.getPose();
     return shootOuttake(pose, true);
