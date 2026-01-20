@@ -163,10 +163,12 @@ public class Robot{
     if(pid){
       double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
       telemetry.addData("Target Outtake Turret Power", targetPower);
+      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtakeTurret.motor.setPower(targetPower);
     }
     else {
       outtakeTurret.setPos(angle);
+      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
   }
