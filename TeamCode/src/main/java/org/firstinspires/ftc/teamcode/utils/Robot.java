@@ -66,7 +66,7 @@ public class Robot{
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -90, 90, -537.7/4*4, 537.7/4*4, 1872);
-      outtakeTurretController = new PIDFController(1.0/10.0, 0);
+      outtakeTurretController = new PIDFController(1.0/5.0, 0);
 
       DcMotorEx outtakeMotor = hardwareMap.get(DcMotorEx.class, "outtake");
       outtakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
