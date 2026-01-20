@@ -8,6 +8,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -165,6 +167,16 @@ public class Robot{
     return targetArtifactVel;
   }
 
+  public static double[] calculateRobotVelDependentShoot(Pose2d robotPose, PoseVelocity2d robotVelocity, double height){
+    double theta = calculateOuttakeTurretAim(robotPose);
+    double mag = calculateArtifactShootVel(robotPose, height);
+    double x = Math.cos(theta)*mag-robotVelocity.linearVel.x;
+    double y = Math.sin(theta)*mag-robotVelocity.linearVel.y;
+    double newTheta = Math.toDegrees(Math.atan2(y, x));
+    double newMag = Math.sqrt(x*x+y*y);
+    return new double[]{newTheta, newMag};
+  }
+
   public static void aimOuttakeTurret(double theta, Pose2d robotPose, boolean pid){
     double angle = (theta-Math.toDegrees(robotPose.heading.toDouble())) % 360.0;
     if(angle > 180.0){
@@ -200,6 +212,18 @@ public class Robot{
   public static void aimOuttakeTurret(){
     Pose2d pose = drive.localizer.getPose();
     aimOuttakeTurret(pose, true);
+  }
+
+  public static void aimOuttakeTurretRobotVelDependent(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
+    double theta = calculateRobotVelDependentShoot(robotPose, robotVelocity, 47.0)[0];
+    aimOuttakeTurret(theta, robotPose, pid);
+  }
+  public static void aimOuttakeTurretRobotVelDependent(Pose2d robotPose, PoseVelocity2d robotVelocity){
+    aimOuttakeTurretRobotVelDependent(robotPose, robotVelocity, true);
+  }
+  public static void aimOuttakeTurretRobotVelDependent(PoseVelocity2d robotVelocity){
+    Pose2d robotPose = drive.localizer.getPose();
+    aimOuttakeTurretRobotVelDependent(robotPose, robotVelocity, true);
   }
 
   public static void shootOuttake(double mag, boolean pid){
@@ -253,6 +277,23 @@ public class Robot{
   public static double[] shootOuttake(){
     Pose2d pose = drive.localizer.getPose();
     return shootOuttake(pose, true);
+  }
+
+  public static double[] shootOuttakeRobotVelDependent(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
+    double maxMag = calculateRobotVelDependentShoot(robotPose, robotVelocity, 49.0)[1];
+    double minMag = calculateRobotVelDependentShoot(robotPose, robotVelocity, 40.0)[1];
+
+    double targetMag = calculateRobotVelDependentShoot(robotPose, robotVelocity, 47.0)[1];
+    shootOuttake(targetMag, pid);
+
+    return new double[]{minMag, maxMag};
+  }
+  public static double[] shootOuttakeRobotVelDependent(Pose2d robotPose, PoseVelocity2d robotVelocity){
+    return shootOuttakeRobotVelDependent(robotPose, robotVelocity, true);
+  }
+  public static double[] shootOuttakeRobotVelDependent(PoseVelocity2d robotVelocity){
+    Pose2d robotPose = drive.localizer.getPose();
+    return shootOuttakeRobotVelDependent(robotPose, robotVelocity, true);
   }
 
   public static class ShootSequenceAction implements Action {

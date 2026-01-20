@@ -33,7 +33,7 @@ public class MainTeleOp extends OpMode {
             hub.clearBulkCache();
         }
 
-        Robot.drive.updatePoseEstimate();
+        PoseVelocity2d currDriveVel = Robot.drive.updatePoseEstimate();
 
         Vector2d driveVector = new Vector2d(0, 0);
         if(FIELD_CENTRIC){
@@ -68,13 +68,13 @@ public class MainTeleOp extends OpMode {
         if(gamepad1.a){
             Robot.intake.setPower(1.0);
             Robot.transfer.setPos(0, 0.1*Robot.transfer.maxVel);
-            Robot.aimOuttakeTurret();
+            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
             Robot.outtake.setPos(0, -5760.0);
         }
         else if(gamepad1.y){
             Robot.intake.setPower(1.0);
 
-            double[] outtakeVels = Robot.shootOuttake();
+            double[] outtakeVels = Robot.shootOuttakeRobotVelDependent(currDriveVel);
             currentMinOuttakeVel = outtakeVels[0];
             currentMaxOuttakeVel = outtakeVels[1];
 
@@ -84,25 +84,25 @@ public class MainTeleOp extends OpMode {
             else{
                 Robot.transfer.setPos(0, 0.0);
             }
-            Robot.aimOuttakeTurret();
+            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
         }
         else if(gamepad1.x){
             Robot.intake.setPower(-1.0);
             Robot.transfer.setPos(0, -Robot.transfer.maxVel);
-            Robot.aimOuttakeTurret();
+            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
         }
         else if(gamepad1.b){
             Robot.intake.setPower(-1.0);
             Robot.transfer.setPos(0, -Robot.transfer.maxVel);
-            Robot.aimOuttakeTurret();
+            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
             Robot.outtake.setPos(0, -Robot.outtake.maxVel);
         }
         else{
             Robot.intake.setPower(0.0);
             Robot.transfer.setPos(0, 0.0);
-            Robot.aimOuttakeTurret();
+            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
             if(Robot.drive.localizer.getPose().position.x + Math.abs(Robot.drive.localizer.getPose().position.y) < 10){
-                double[] outtakeVels = Robot.shootOuttake();
+                double[] outtakeVels = Robot.shootOuttakeRobotVelDependent(currDriveVel);
                 currentMinOuttakeVel = outtakeVels[0];
                 currentMaxOuttakeVel = outtakeVels[1];
             }
