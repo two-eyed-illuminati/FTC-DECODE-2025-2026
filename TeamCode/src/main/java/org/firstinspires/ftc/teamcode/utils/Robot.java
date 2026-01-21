@@ -168,10 +168,10 @@ public class Robot{
   }
 
   public static double[] calculateRobotVelDependentShoot(Pose2d robotPose, PoseVelocity2d robotVelocity, double height){
-    double theta = calculateOuttakeTurretAim(robotPose);
+    double theta = Math.toRadians(calculateOuttakeTurretAim(robotPose));
     double mag = calculateArtifactShootVel(robotPose, height);
-    double x = Math.cos(theta)*mag-robotVelocity.linearVel.x;
-    double y = Math.sin(theta)*mag-robotVelocity.linearVel.y;
+    double x = Math.cos(theta)*mag-robotVelocity.linearVel.x/12.0;
+    double y = Math.sin(theta)*mag-robotVelocity.linearVel.y/12.0;
     double newTheta = Math.toDegrees(Math.atan2(y, x));
     double newMag = Math.sqrt(x*x+y*y);
     return new double[]{newTheta, newMag};
