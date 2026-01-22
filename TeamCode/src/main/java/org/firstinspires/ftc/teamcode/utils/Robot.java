@@ -284,6 +284,13 @@ public class Robot{
     double minMag = calculateRobotVelDependentShoot(robotPose, robotVelocity, 40.0)[1];
 
     double targetMag = calculateRobotVelDependentShoot(robotPose, robotVelocity, 47.0)[1];
+    telemetry.addData("Target Artifact Vel (ft/s)", targetMag);
+    double targetOuttakeVel = 1.4*(targetMag/0.8);
+    telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
+    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
+    telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
+    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
+    telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
     shootOuttake(targetMag, pid);
 
     return new double[]{minMag, maxMag};
