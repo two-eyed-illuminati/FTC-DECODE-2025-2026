@@ -223,7 +223,7 @@ public class Robot{
   }
   public static void aimOuttakeTurretRobotVelDependent(PoseVelocity2d robotVelocity){
     Pose2d robotPose = drive.localizer.getPose();
-    aimOuttakeTurretRobotVelDependent(robotPose, robotVelocity, true);
+    aimOuttakeTurretRobotVelDependent(new Pose2d(robotPose.position.x + robotVelocity.linearVel.x, robotPose.position.y + robotVelocity.linearVel.y, robotPose.heading.toDouble()), robotVelocity, true);
   }
 
   public static void shootOuttake(double mag, boolean pid){
@@ -315,7 +315,7 @@ public class Robot{
   }
   public static double[] shootOuttakeRobotVelDependent(PoseVelocity2d robotVelocity){
     Pose2d robotPose = drive.localizer.getPose();
-    return shootOuttakeRobotVelDependent(robotPose, robotVelocity, true);
+    return shootOuttakeRobotVelDependent(new Pose2d(robotPose.position.x + robotVelocity.linearVel.x, robotPose.position.y + robotVelocity.linearVel.y, robotPose.heading.toDouble()), robotVelocity, true);
   }
 
   public static class ShootSequenceAction implements Action {
