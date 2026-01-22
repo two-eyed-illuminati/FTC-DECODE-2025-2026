@@ -34,6 +34,8 @@ public class MainTeleOp extends OpMode {
         }
 
         PoseVelocity2d currDriveVel = Robot.drive.updatePoseEstimate();
+        Robot.telemetry.addData("Drive Vel X (in/s)", currDriveVel.linearVel.x);
+        Robot.telemetry.addData("Drive Vel Y (in/s)", currDriveVel.linearVel.y);
 
         Vector2d driveVector = new Vector2d(0, 0);
         if(FIELD_CENTRIC){

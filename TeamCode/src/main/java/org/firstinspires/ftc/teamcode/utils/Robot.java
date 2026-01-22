@@ -189,7 +189,7 @@ public class Robot{
     if(Math.abs(Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos)-angle) > 20){
       angle = outtakeTurret.getPos();
     }
-    telemetry.addData("Target Angle After Unnecessary Motion Reduction", angle);
+    telemetry.addData("Target Angle After Unnecessary Motion Reduction", Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos));
     if(pid){
       double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
       telemetry.addData("Target Outtake Turret Power", targetPower);
