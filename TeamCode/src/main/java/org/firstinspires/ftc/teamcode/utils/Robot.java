@@ -169,11 +169,11 @@ public class Robot{
 
   public static double[] calculateRobotVelDependentShoot(Pose2d robotPose, PoseVelocity2d robotVelocity, double height){
     double theta = Math.toRadians(calculateOuttakeTurretAim(robotPose));
-    double mag = calculateArtifactShootVel(robotPose, height);
+    double mag = calculateArtifactShootVel(robotPose, height)*Math.cos(Math.toRadians(45.0));
     double x = Math.cos(theta)*mag-robotVelocity.linearVel.x/12.0;
     double y = Math.sin(theta)*mag-robotVelocity.linearVel.y/12.0;
     double newTheta = Math.toDegrees(Math.atan2(y, x));
-    double newMag = Math.sqrt(x*x+y*y);
+    double newMag = Math.sqrt(x*x+y*y)/Math.cos(Math.toRadians(45.0));
     return new double[]{newTheta, newMag};
   }
 
@@ -223,7 +223,7 @@ public class Robot{
   }
   public static void aimOuttakeTurretRobotVelDependent(PoseVelocity2d robotVelocity){
     Pose2d robotPose = drive.localizer.getPose();
-    aimOuttakeTurretRobotVelDependent(new Pose2d(robotPose.position.x + robotVelocity.linearVel.x, robotPose.position.y + robotVelocity.linearVel.y, robotPose.heading.toDouble()), robotVelocity, true);
+    aimOuttakeTurretRobotVelDependent(new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble()), robotVelocity, true);
   }
 
   public static void shootOuttake(double mag, boolean pid){
@@ -315,7 +315,7 @@ public class Robot{
   }
   public static double[] shootOuttakeRobotVelDependent(PoseVelocity2d robotVelocity){
     Pose2d robotPose = drive.localizer.getPose();
-    return shootOuttakeRobotVelDependent(new Pose2d(robotPose.position.x + robotVelocity.linearVel.x, robotPose.position.y + robotVelocity.linearVel.y, robotPose.heading.toDouble()), robotVelocity, true);
+    return shootOuttakeRobotVelDependent(new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble()), robotVelocity, true);
   }
 
   public static class ShootSequenceAction implements Action {
