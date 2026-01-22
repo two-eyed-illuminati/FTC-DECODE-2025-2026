@@ -34,6 +34,7 @@ public class MainTeleOp extends OpMode {
         }
 
         PoseVelocity2d currDriveVel = Robot.drive.updatePoseEstimate();
+        currDriveVel = Rotation2d.fromDouble(-Robot.drive.localizer.getPose().heading.log()).times(currDriveVel);
         Robot.telemetry.addData("Drive Vel X (in/s)", currDriveVel.linearVel.x);
         Robot.telemetry.addData("Drive Vel Y (in/s)", currDriveVel.linearVel.y);
 
