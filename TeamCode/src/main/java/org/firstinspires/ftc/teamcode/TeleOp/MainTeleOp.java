@@ -38,6 +38,11 @@ public class MainTeleOp extends OpMode {
         Robot.telemetry.addData("Drive Vel X (in/s)", currDriveVel.linearVel.x);
         Robot.telemetry.addData("Drive Vel Y (in/s)", currDriveVel.linearVel.y);
 
+        Robot.telemetry.addData("Drive FL Power", Robot.drive.leftFront.getPower());
+        Robot.telemetry.addData("Drive FR Power", Robot.drive.rightFront.getPower());
+        Robot.telemetry.addData("Drive BL Power", Robot.drive.leftBack.getPower());
+        Robot.telemetry.addData("Drive BR Power", Robot.drive.rightBack.getPower());
+
         Vector2d driveVector = new Vector2d(0, 0);
         if(FIELD_CENTRIC){
             double theta = Math.atan2(-gamepad1.left_stick_x, -gamepad1.left_stick_y);
