@@ -9,6 +9,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -123,21 +124,7 @@ public class Robot{
     }
   }
 
-  public static double artifactPos(double v0, double theta, double x){
-    double v0x = v0*Math.cos(Math.toRadians(theta));
-    double v0y = v0*Math.sin(Math.toRadians(theta));
-    double a = 0.5*(-3.4448818898);
-    double b = v0x;
-    double t = (-b+Math.sqrt(b*b-4*a*(-x)))/(2*a);
-    double y = 1.25+v0y*t+0.5*(-30.183727034)*t*t;
-
-    return y;
-  }
-
   public static double calculateOuttakeTurretAim(Pose2d robotPose){
-    telemetry.addData("X", robotPose.position.x);
-    telemetry.addData("Y", robotPose.position.y);
-    telemetry.addData("heading (deg)", Math.toDegrees(robotPose.heading.toDouble()));
     double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
     double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double targetTurretPos = Math.toDegrees(
@@ -146,14 +133,30 @@ public class Robot{
                     -72.0-robotPose.position.x-turretXOffset
             )
     );
-    telemetry.addData("Turret X", robotPose.position.x+turretXOffset);
-    telemetry.addData("Turret Y", robotPose.position.y+turretYOffset);
-    telemetry.addData("Target Abs Turret Pos", targetTurretPos);
-    telemetry.addData("Target Rel Turret Pos", targetTurretPos-Math.toDegrees(robotPose.heading.toDouble()));
     return targetTurretPos;
   }
+  public static double calculateOuttakeTurretAim(Pose2d robotPose, PoseVelocity2d robotVel, double shootVel){
+    double theta = Math.toRadians(calculateOuttakeTurretAim(robotPose));
+    Vector2d robotLinearVelGoalPerspective = Rotation2d.fromDouble(-theta).times(robotVel.linearVel);
+    Rotation2d velAdjustedAngle = Rotation2d.fromDouble(Math.asin(-(robotLinearVelGoalPerspective.y/12.0)/shootVel));
+    double robotPovAngle = Rotation2d.fromDouble(theta).times(velAdjustedAngle).log();
+    return Math.toDegrees(robotPovAngle);
+  }
+  public static double artifactPos(Pose2d robotPose, PoseVelocity2d robotVel, double v0, double theta, double x){
+    double angleToGoal = Math.toRadians(calculateOuttakeTurretAim(robotPose));
+    Vector2d robotLinearVelGoalPerspective = Rotation2d.fromDouble(-angleToGoal).times(robotVel.linearVel);
+    Rotation2d velAdjustedAngle = Rotation2d.fromDouble(Math.asin(-(robotLinearVelGoalPerspective.y/12.0)/v0));
 
-  public static double calculateArtifactShootVel(Pose2d robotPose, double height){
+    double v0x = v0*Math.cos(Math.toRadians(theta))*Math.cos(velAdjustedAngle.log()) + robotLinearVelGoalPerspective.x/12.0;
+    double v0y = v0*Math.sin(Math.toRadians(theta));
+    double a = 0.5*(-3.4448818898);
+    double b = v0x;
+    double t = (-b+Math.sqrt(b*b-4*a*(-x)))/(2*a);
+    double y = 1.25+v0y*t+0.5*(-30.183727034)*t*t;
+
+    return y;
+  }
+  public static double calculateArtifactShootVel(Pose2d robotPose, PoseVelocity2d robotVelocity, double height){
     double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
     double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double currDistance = Math.sqrt(
@@ -162,19 +165,14 @@ public class Robot{
     );
     telemetry.addData("Curr Distance (in)", currDistance);
     double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> height/12.0 < artifactPos(vel, 45.0, currDistance/12.0));
+            (vel) -> height/12.0 < artifactPos(robotPose, robotVelocity, vel,45.0, currDistance/12.0));
     telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
     return targetArtifactVel;
   }
-
-  public static double[] calculateRobotVelDependentShoot(Pose2d robotPose, PoseVelocity2d robotVelocity, double height){
-    double theta = Math.toRadians(calculateOuttakeTurretAim(robotPose));
-    double mag = calculateArtifactShootVel(robotPose, height)*Math.cos(Math.toRadians(45.0));
-    double x = Math.cos(theta)*mag-robotVelocity.linearVel.x/12.0;
-    double y = Math.sin(theta)*mag-robotVelocity.linearVel.y/12.0;
-    double newTheta = Math.toDegrees(Math.atan2(y, x));
-    double newMag = Math.sqrt(x*x+y*y)/Math.cos(Math.toRadians(45.0));
-    return new double[]{newTheta, newMag};
+  public static double[] calculateShoot(Pose2d robotPose, PoseVelocity2d robotVelocity, double height){
+    double mag = calculateArtifactShootVel(robotPose, robotVelocity, height);
+    double theta = calculateOuttakeTurretAim(robotPose, robotVelocity, mag);
+    return new double[]{theta, mag};
   }
 
   public static void aimOuttakeTurret(double theta, Pose2d robotPose, boolean pid){
@@ -202,28 +200,23 @@ public class Robot{
     }
     telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
   }
-  public static void aimOuttakeTurret(Pose2d robotPose, boolean pid){
-    double targetTurretAngle = calculateOuttakeTurretAim(robotPose);
-    aimOuttakeTurret(targetTurretAngle, robotPose, pid);
+  public static void aimOuttakeTurret(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
+    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble());
+    double theta = calculateShoot(futureRobotPose, robotVelocity, 47.0)[0];
+    aimOuttakeTurret(theta, futureRobotPose, pid);
   }
-  public static void aimOuttakeTurret(Pose2d robotPose){
-    aimOuttakeTurret(robotPose, true);
+  public static void aimOuttakeTurret(Pose2d robotPose, boolean pid){
+    PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
+    aimOuttakeTurret(robotPose, robotVelocity, pid);
+  }
+  public static void aimOuttakeTurret(PoseVelocity2d robotVelocity){
+    Pose2d robotPose = drive.localizer.getPose();
+    aimOuttakeTurret(robotPose, robotVelocity, true);
   }
   public static void aimOuttakeTurret(){
-    Pose2d pose = drive.localizer.getPose();
-    aimOuttakeTurret(pose, true);
-  }
-
-  public static void aimOuttakeTurretRobotVelDependent(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
-    double theta = calculateRobotVelDependentShoot(robotPose, robotVelocity, 47.0)[0];
-    aimOuttakeTurret(theta, robotPose, pid);
-  }
-  public static void aimOuttakeTurretRobotVelDependent(Pose2d robotPose, PoseVelocity2d robotVelocity){
-    aimOuttakeTurretRobotVelDependent(robotPose, robotVelocity, true);
-  }
-  public static void aimOuttakeTurretRobotVelDependent(PoseVelocity2d robotVelocity){
     Pose2d robotPose = drive.localizer.getPose();
-    aimOuttakeTurretRobotVelDependent(new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble()), robotVelocity, true);
+    PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
+    aimOuttakeTurret(robotPose, robotVelocity,true);
   }
 
   public static void shootOuttake(double mag, boolean pid){
@@ -236,51 +229,9 @@ public class Robot{
       outtake.setPos(0, mag);
     }
   }
-  public static double[] shootOuttake(Pose2d robotPose, boolean pid){
-    double maxArtifactVel = calculateArtifactShootVel(robotPose, 49.0);
-    telemetry.addData("Max Artifact Vel (ft/s)", maxArtifactVel);
-    double maxOuttakeVel = 1.4*(maxArtifactVel/0.8);
-    telemetry.addData("Max Outtake Vel (ft/s)", maxOuttakeVel);
-    double maxOuttakeAngVel = maxOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
-    telemetry.addData("Max Outtake Ang Vel (deg/s)", maxOuttakeAngVel);
-    double maxOuttakeAngVelInitial = maxOuttakeAngVel/0.740740741;
-    telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", maxOuttakeAngVelInitial);
 
-    double minArtifactVel = calculateArtifactShootVel(robotPose, 40.0);
-    telemetry.addData("Min Artifact Vel (ft/s)", minArtifactVel);
-    double minOuttakeVel = 1.4*(minArtifactVel/0.8);
-    telemetry.addData("Min Outtake Vel (ft/s)", minOuttakeVel);
-    double minOuttakeAngVel = minOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
-    telemetry.addData("Min Outtake Ang Vel (deg/s)", minOuttakeAngVel);
-    double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
-    telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
-
-    double targetArtifactVel = calculateArtifactShootVel(robotPose, 47.0);
-    telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
-    double targetOuttakeVel = 1.4*(targetArtifactVel/0.8);
-    telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
-    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
-    telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
-    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
-    telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
-
-    shootOuttake(targetOuttakeAngVelInitial, pid);
-
-    telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
-    telemetry.addData("Actual Outtake Power", outtake.motor.getPower());
-
-    return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
-  }
-  public static double[] shootOuttake(Pose2d robotPose){
-    return shootOuttake(robotPose, true);
-  }
-  public static double[] shootOuttake(){
-    Pose2d pose = drive.localizer.getPose();
-    return shootOuttake(pose, true);
-  }
-
-  public static double[] shootOuttakeRobotVelDependent(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
-    double maxMag = calculateRobotVelDependentShoot(robotPose, robotVelocity, 49.0)[1];
+  public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
+    double maxMag = calculateShoot(robotPose, robotVelocity, 49.0)[1];
     telemetry.addData("Max Artifact Vel (ft/s)", maxMag);
     double maxOuttakeVel = 1.4*(maxMag/0.8);
     telemetry.addData("Max Outtake Vel (ft/s)", maxOuttakeVel);
@@ -289,7 +240,7 @@ public class Robot{
     double maxOuttakeAngVelInitial = maxOuttakeAngVel/0.740740741;
     telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", maxOuttakeAngVelInitial);
 
-    double minMag = calculateRobotVelDependentShoot(robotPose, robotVelocity, 40.0)[1];
+    double minMag = calculateShoot(robotPose, robotVelocity, 40.0)[1];
     telemetry.addData("Min Artifact Vel (ft/s)", minMag);
     double minOuttakeVel = 1.4*(minMag/0.8);
     telemetry.addData("Min Outtake Vel (ft/s)", minOuttakeVel);
@@ -298,7 +249,8 @@ public class Robot{
     double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
-    double targetMag = calculateRobotVelDependentShoot(robotPose, robotVelocity, 47.0)[1];
+    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble());
+    double targetMag = calculateShoot(futureRobotPose, robotVelocity, 47.0)[1];
     telemetry.addData("Target Artifact Vel (ft/s)", targetMag);
     double targetOuttakeVel = 1.4*(targetMag/0.8);
     telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
@@ -310,12 +262,19 @@ public class Robot{
 
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
   }
-  public static double[] shootOuttakeRobotVelDependent(Pose2d robotPose, PoseVelocity2d robotVelocity){
-    return shootOuttakeRobotVelDependent(robotPose, robotVelocity, true);
+  public static double[] shootOuttake(Pose2d robotPose, boolean pid){
+    PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
+    return shootOuttake(robotPose, robotVelocity, pid);
   }
-  public static double[] shootOuttakeRobotVelDependent(PoseVelocity2d robotVelocity){
+  public static double[] shootOuttake(PoseVelocity2d robotVelocity){
     Pose2d robotPose = drive.localizer.getPose();
-    return shootOuttakeRobotVelDependent(new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble()), robotVelocity, true);
+    return shootOuttake(robotPose, robotVelocity, true);
+  }
+
+  public static double[] shootOuttake(){
+    Pose2d robotPose = drive.localizer.getPose();
+    PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
+    return shootOuttake(robotPose, robotVelocity, true);
   }
 
   public static class ShootSequenceAction implements Action {

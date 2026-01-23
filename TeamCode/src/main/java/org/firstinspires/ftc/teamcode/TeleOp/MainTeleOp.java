@@ -76,13 +76,13 @@ public class MainTeleOp extends OpMode {
         if(gamepad1.a){
             Robot.intake.setPower(1.0);
             Robot.transfer.setPos(0, 0.1*Robot.transfer.maxVel);
-            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
+            Robot.aimOuttakeTurret(currDriveVel);
             Robot.outtake.setPos(0, -5760.0);
         }
         else if(gamepad1.y){
             Robot.intake.setPower(1.0);
 
-            double[] outtakeVels = Robot.shootOuttakeRobotVelDependent(currDriveVel);
+            double[] outtakeVels = Robot.shootOuttake(currDriveVel);
             currentMinOuttakeVel = outtakeVels[0];
             currentMaxOuttakeVel = outtakeVels[1];
 
@@ -92,25 +92,25 @@ public class MainTeleOp extends OpMode {
             else{
                 Robot.transfer.setPos(0, 0.0);
             }
-            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
+            Robot.aimOuttakeTurret(currDriveVel);
         }
         else if(gamepad1.x){
             Robot.intake.setPower(-1.0);
             Robot.transfer.setPos(0, -Robot.transfer.maxVel);
-            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
+            Robot.aimOuttakeTurret(currDriveVel);
         }
         else if(gamepad1.b){
             Robot.intake.setPower(-1.0);
             Robot.transfer.setPos(0, -Robot.transfer.maxVel);
-            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
+            Robot.aimOuttakeTurret(currDriveVel);
             Robot.outtake.setPos(0, -Robot.outtake.maxVel);
         }
         else{
             Robot.intake.setPower(0.0);
             Robot.transfer.setPos(0, 0.0);
-            Robot.aimOuttakeTurretRobotVelDependent(currDriveVel);
+            Robot.aimOuttakeTurret(currDriveVel);
             if(Robot.drive.localizer.getPose().position.x + Math.abs(Robot.drive.localizer.getPose().position.y) < 10){
-                double[] outtakeVels = Robot.shootOuttakeRobotVelDependent(currDriveVel);
+                double[] outtakeVels = Robot.shootOuttake(currDriveVel);
                 currentMinOuttakeVel = outtakeVels[0];
                 currentMaxOuttakeVel = outtakeVels[1];
             }
