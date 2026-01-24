@@ -56,6 +56,7 @@ public class Robot{
       drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
       intake = hardwareMap.get(DcMotorEx.class, "intake");
+      intake.setDirection(DcMotorSimple.Direction.REVERSE);
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
       DcMotorEx transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
@@ -105,6 +106,7 @@ public class Robot{
             FtcDashboard.getInstance().getTelemetry() // Dashboard telemetry
     );
     if(initialized) {
+      intake.setDirection(DcMotorSimple.Direction.REVERSE);
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
       outtakeTurret.motor.setTargetPosition(outtake.motor.getCurrentPosition());
