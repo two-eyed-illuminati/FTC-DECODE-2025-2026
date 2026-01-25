@@ -34,7 +34,7 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -12.3457;
     public static double GATE_X = -4.0;
-    public static double GATE_Y = -54.0;
+    public static double GATE_Y = -55.0;
     public static double SPIKE_1_SHOOT_X = -20.3370432609;
     public static double SPIKE_1_SHOOT_Y = -24.9996985274;
     public static double SPIKE_2_SHOOT_X = -20.3370432609;
@@ -83,20 +83,14 @@ public class AutoGoalZone extends LinearOpMode {
                     new Pose2d(GATE_X, GATE_Y + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
                     Math.toRadians(-SPIKE_HEADING),
                     new TranslationalVelConstraint(20.0)
-            ).afterDisp(0, () -> {
-                Robot.intake.setPower(0.0);
-                Robot.transfer.setPos(0, 0);
-            });
+            );
         }
         else {
             return intake.splineToSplineHeading(
                     new Pose2d(endSpikeX, endSpikeY + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
                     Math.toRadians(-SPIKE_HEADING),
                     new TranslationalVelConstraint(20.0)
-            ).afterDisp(0, () -> {
-                Robot.intake.setPower(0.0);
-                Robot.transfer.setPos(0, 0);
-            });
+            );
         }
     }
 
