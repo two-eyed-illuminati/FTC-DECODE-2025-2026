@@ -205,9 +205,8 @@ public class AutoGoalZone extends LinearOpMode {
         TrajectoryActionBuilder toSpike3IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike3, 3), 3);
         Action doSpike3Shoot = new Robot.ShootSequenceAction();
 
-        TrajectoryActionBuilder leaveLaunchZone = toSpike3IntakeAndShoot.fresh().strafeToLinearHeading(
-                new Vector2d(SPIKE_3_SHOOT_X+20, SPIKE_3_SHOOT_Y),
-                0
+        TrajectoryActionBuilder leaveLaunchZone = toSpike3IntakeAndShoot.fresh().strafeToConstantHeading(
+                new Vector2d(SPIKE_3_SHOOT_X, SPIKE_3_SHOOT_Y-24)
         );
 
         Actions.runBlocking(

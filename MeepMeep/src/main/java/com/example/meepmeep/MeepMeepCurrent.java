@@ -66,9 +66,8 @@ public class MeepMeepCurrent {
                 new TranslationalVelConstraint(15.0)
         );
         if(spike == 1){
-            return intake.endTrajectory().splineToConstantHeading(
+            return intake.endTrajectory().strafeToConstantHeading(
                     new Vector2d(GATE_X, GATE_Y),
-                    Math.toRadians(SPIKE_HEADING),
                     new TranslationalVelConstraint(15.0)
             ).waitSeconds(0.5).splineToSplineHeading(
                     new Pose2d(GATE_X, GATE_Y + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
