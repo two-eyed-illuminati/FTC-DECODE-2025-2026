@@ -33,7 +33,7 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_TUNNEL_END_Y = -51.1282;
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -12.3457;
-    public static double GATE_X = -6.0;
+    public static double GATE_X = -5.0;
     public static double GATE_Y = -55.0;
     public static double SPIKE_1_SHOOT_X = -20.3370432609;
     public static double SPIKE_1_SHOOT_Y = -24.9996985274;
@@ -78,7 +78,7 @@ public class AutoGoalZone extends LinearOpMode {
         );
         if(spike == 1){
             return intake.endTrajectory().splineToConstantHeading(
-                    new Vector2d(GATE_X, GATE_Y + 5),
+                    new Vector2d(GATE_X, GATE_Y + 7.0),
                     Math.toRadians(SPIKE_HEADING)
             ).strafeTo(
                     new Vector2d(GATE_X, GATE_Y)
