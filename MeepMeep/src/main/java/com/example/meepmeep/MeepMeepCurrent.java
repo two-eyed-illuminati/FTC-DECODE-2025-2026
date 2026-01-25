@@ -156,7 +156,6 @@ public class MeepMeepCurrent {
                 0
         );
 
-        // Run it all in sequence
         myBot.runAction(new SequentialAction(
                 preloadShoot.build(),
                 new SleepAction(1.75),
