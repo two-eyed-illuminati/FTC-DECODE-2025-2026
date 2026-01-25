@@ -129,7 +129,7 @@ public class AutoGoalZone extends LinearOpMode {
         Robot.drive.localizer.setPose(Robot.alliance == Robot.Alliance.BLUE ? startPose :
                 new Pose2d(startPose.position.x, -startPose.position.y, -startPose.heading.toDouble()));
 
-        TrajectoryActionBuilder preloadShoot = trajToShoot(Robot.drive.actionBuilder(startPose), 0);
+        TrajectoryActionBuilder preloadShoot = trajToShoot(Robot.drive.actionBuilder(startPose, poseMap), 0);
         Action doPreloadShoot = new Robot.ShootSequenceAction();
 
         VelConstraint toSpike1VelConstraint = (robotPose, _path, _disp) -> {
