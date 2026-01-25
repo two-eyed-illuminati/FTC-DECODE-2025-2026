@@ -297,7 +297,9 @@ public class Robot{
       aimOuttakeTurret(robotPose, true);
       double[] outtakeVels = shootOuttake(robotPose, true);
 
-      if(outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1] && Math.abs(outtakeTurret.getPos() - calculateOuttakeTurretAim(robotPose)) < 0.5){
+      PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
+
+      if(outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1] && Math.abs(outtakeTurret.getPos() - calculateShoot(robotPose, robotVelocity, 44.0)[0]) < 2){
         return false;
       }
 
