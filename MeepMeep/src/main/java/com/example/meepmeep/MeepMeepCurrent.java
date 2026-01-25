@@ -31,7 +31,7 @@ public class MeepMeepCurrent {
     public static double GATE_X = -7.0;
     public static double GATE_Y = -54.0;
     public static double SPIKE_1_SHOOT_X = -20.3370432609;
-    public static double SPIKE_1_SHOOT_Y = -24.9996985274;
+    public static double SPIKE_1_SHOOT_Y = -29.9996985274;
     public static double SPIKE_2_SHOOT_X = -12.3370432609;
     public static double SPIKE_2_SHOOT_Y = -16.9996985274;
     public static double SPIKE_3_SHOOT_X = -4.6629567391;
