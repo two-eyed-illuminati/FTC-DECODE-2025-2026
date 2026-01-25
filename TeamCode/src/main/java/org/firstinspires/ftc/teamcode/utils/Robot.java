@@ -235,7 +235,7 @@ public class Robot{
   public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
     Pose2d futureRobotPose = new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble());
 
-    double maxMag = calculateShoot(futureRobotPose, robotVelocity, 49.0)[1];
+    double maxMag = calculateShoot(robotPose, robotVelocity, 49.0)[1];
     telemetry.addData("Max Artifact Vel (ft/s)", maxMag);
     double maxOuttakeVel = 1.4*(maxMag/0.8);
     telemetry.addData("Max Outtake Vel (ft/s)", maxOuttakeVel);
@@ -244,7 +244,7 @@ public class Robot{
     double maxOuttakeAngVelInitial = maxOuttakeAngVel/0.740740741;
     telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", maxOuttakeAngVelInitial);
 
-    double minMag = calculateShoot(futureRobotPose, robotVelocity, 40.0)[1];
+    double minMag = calculateShoot(robotPose, robotVelocity, 40.0)[1];
     telemetry.addData("Min Artifact Vel (ft/s)", minMag);
     double minOuttakeVel = 1.4*(minMag/0.8);
     telemetry.addData("Min Outtake Vel (ft/s)", minOuttakeVel);
