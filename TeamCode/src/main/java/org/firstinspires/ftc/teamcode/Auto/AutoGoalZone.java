@@ -33,14 +33,14 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_TUNNEL_END_Y = -51.1282;
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -12.3457;
-    public static double GATE_X = -5.0;
+    public static double GATE_X = -2.0;
     public static double GATE_Y = -54.0;
     public static double SPIKE_1_SHOOT_X = -20.3370432609;
     public static double SPIKE_1_SHOOT_Y = -24.9996985274;
     public static double SPIKE_2_SHOOT_X = -12.3370432609;
     public static double SPIKE_2_SHOOT_Y = -16.9996985274;
     public static double SPIKE_3_SHOOT_X = -4.6629567391;
-    public static double SPIKE_3_SHOOT_Y = -8.9996985274;
+    public static double SPIKE_3_SHOOT_Y = -11.9996985274;
     public static double SPIKE_2_X = 12.3457;
     public static double SPIKE_2_END_X = 13.8457;
     public static double SPIKE_3_X = 34.3457;
@@ -78,9 +78,8 @@ public class AutoGoalZone extends LinearOpMode {
         );
         if(spike == 1){
             return intake.endTrajectory().strafeToConstantHeading(
-                    new Vector2d(GATE_X, GATE_Y),
-                    new TranslationalVelConstraint(15.0)
-            ).waitSeconds(0.5).splineToSplineHeading(
+                    new Vector2d(GATE_X, GATE_Y)
+            ).waitSeconds(0.3).splineToSplineHeading(
                     new Pose2d(GATE_X, GATE_Y + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
                     Math.toRadians(-SPIKE_HEADING),
                     new TranslationalVelConstraint(15.0)
