@@ -77,7 +77,6 @@ public class MainTeleOp extends OpMode {
             double targetHeading = Math.round(Robot.drive.localizer.getPose().heading.log()/Math.toRadians(90))*Math.toRadians(90);
             double headingError = targetHeading - Robot.drive.localizer.getPose().heading.log();
             double snapWeight = Math.max(0, 15*(Math.abs(Math.cos(headingError))-Math.cos(Math.toRadians(20))));
-            snapWeight = 1.0;
             rotation = (rotation * (1 - snapWeight) + Math.min(1, (headingError / Math.toRadians(30))) * snapWeight);
         }
         Robot.drive.setDrivePowers(new PoseVelocity2d(
