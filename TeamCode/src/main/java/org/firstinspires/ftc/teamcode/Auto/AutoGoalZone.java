@@ -162,7 +162,7 @@ public class AutoGoalZone extends LinearOpMode {
         Action doSpike2Shoot = new Robot.ShootSequenceAction();
 
         VelConstraint toSpike3VelConstraint = (robotPose, _path, _disp) -> {
-            if (robotPose.position.x.value() > SPIKE_3_X - 5.0) {
+            if (robotPose.position.x.value() > SPIKE_3_X - 10.0) {
                 return 25.0;
             } else {
                 return 50.0;
