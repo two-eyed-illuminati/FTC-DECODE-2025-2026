@@ -316,7 +316,7 @@ public class Robot{
         }
         attemptingToShoot = true;
         intake.setPower(1.0);
-        transfer.setPos(0, 0.65*transfer.maxVel);
+        transfer.setPos(0, 1.0*transfer.maxVel);
       }
       else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175){
         attemptingToShoot = false;
