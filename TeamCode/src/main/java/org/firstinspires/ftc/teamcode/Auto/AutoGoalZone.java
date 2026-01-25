@@ -123,7 +123,8 @@ public class AutoGoalZone extends LinearOpMode {
                 .setTangent(Math.toRadians(20))
                 .splineToSplineHeading(
                         new Pose2d(SPIKE_1_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
-                        Math.toRadians(SPIKE_HEADING)
+                        Math.toRadians(SPIKE_HEADING),
+                        new TranslationalVelConstraint(25.0)
                 );
 
         TrajectoryActionBuilder toSpike1IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike1, 1), false);
@@ -138,7 +139,8 @@ public class AutoGoalZone extends LinearOpMode {
                 .setTangent(Math.toRadians(0))
                 .splineToSplineHeading(
                         new Pose2d(SPIKE_2_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
-                        Math.toRadians(SPIKE_HEADING)
+                        Math.toRadians(SPIKE_HEADING),
+                        new TranslationalVelConstraint(25.0)
                 );
 
         TrajectoryActionBuilder toSpike2IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike2, 2), false);
