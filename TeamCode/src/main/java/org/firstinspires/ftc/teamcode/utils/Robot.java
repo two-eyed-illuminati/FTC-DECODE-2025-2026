@@ -191,6 +191,7 @@ public class Robot{
     }
     telemetry.addData("Target Angle After Unnecessary Motion Reduction", Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos));
     if(pid){
+      angle = Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos);
       double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
       telemetry.addData("Target Outtake Turret Power", targetPower);
       outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
