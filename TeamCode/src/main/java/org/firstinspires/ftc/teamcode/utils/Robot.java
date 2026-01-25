@@ -131,8 +131,8 @@ public class Robot{
     double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double targetTurretPos = Math.toDegrees(
             Math.atan2(
-                    (alliance == Alliance.BLUE ? -69.0 : 69.0)-robotPose.position.y-turretYOffset,
-                    -69.0-robotPose.position.x-turretXOffset
+                    (alliance == Alliance.BLUE ? -71.0 : 71.0)-robotPose.position.y-turretYOffset,
+                    -71.0-robotPose.position.x-turretXOffset
             )
     );
     return targetTurretPos;
@@ -162,8 +162,8 @@ public class Robot{
     double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
     double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double currDistance = Math.sqrt(
-            Math.pow((alliance == Alliance.BLUE ? -69.0 : 69.0)-robotPose.position.y-turretYOffset, 2)+
-                    Math.pow(-69.0-robotPose.position.x-turretXOffset, 2)
+            Math.pow((alliance == Alliance.BLUE ? -71.0 : 71.0)-robotPose.position.y-turretYOffset, 2)+
+                    Math.pow(-71.0-robotPose.position.x-turretXOffset, 2)
     );
     telemetry.addData("Curr Distance (in)", currDistance);
     double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
