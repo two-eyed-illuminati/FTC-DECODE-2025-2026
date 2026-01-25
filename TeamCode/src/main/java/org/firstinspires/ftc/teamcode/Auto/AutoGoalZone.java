@@ -64,12 +64,12 @@ public class AutoGoalZone extends LinearOpMode {
         return builder.splineToSplineHeading(
                         new Pose2d(endSpikeX, endSpikeY, Math.toRadians(SPIKE_HEADING)),
                         Math.toRadians(-SPIKE_HEADING),
-                        new TranslationalVelConstraint(25.0)
+                        new TranslationalVelConstraint(15.0)
                 )
                 .splineToSplineHeading(
                         new Pose2d(endSpikeX, endSpikeY + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
                         Math.toRadians(-SPIKE_HEADING),
-                        new TranslationalVelConstraint(25.0)
+                        new TranslationalVelConstraint(15.0)
                 )
                 .afterDisp(0, () -> {
                     Robot.intake.setPower(0.0);

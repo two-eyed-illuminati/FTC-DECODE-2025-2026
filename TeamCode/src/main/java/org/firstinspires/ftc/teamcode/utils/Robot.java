@@ -232,7 +232,7 @@ public class Robot{
     }
   }
 
-  public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
+  public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid, double targetHeight){
     Pose2d futureRobotPose = new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble());
 
     double maxMag = calculateShoot(robotPose, robotVelocity, 49.0)[1];
@@ -253,7 +253,7 @@ public class Robot{
     double minOuttakeAngVelInitial = minOuttakeAngVel/0.740740741;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
-    double targetMag = calculateShoot(futureRobotPose, robotVelocity, 47.0)[1];
+    double targetMag = calculateShoot(futureRobotPose, robotVelocity, targetHeight)[1];
     telemetry.addData("Target Artifact Vel (ft/s)", targetMag);
     double targetOuttakeVel = 1.4*(targetMag/0.8);
     telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
@@ -265,6 +265,9 @@ public class Robot{
 
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
   }
+  public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
+    return shootOuttake(robotPose, robotVelocity, pid, 47.0);
+  }
   public static double[] shootOuttake(Pose2d robotPose, boolean pid){
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
     return shootOuttake(robotPose, robotVelocity, pid);
@@ -273,7 +276,11 @@ public class Robot{
     Pose2d robotPose = drive.localizer.getPose();
     return shootOuttake(robotPose, robotVelocity, true);
   }
-
+  public static double[] shootOuttake(double targetHeight){
+    Pose2d robotPose = drive.localizer.getPose();
+    PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
+    return shootOuttake(robotPose, robotVelocity, true, targetHeight);
+  }
   public static double[] shootOuttake(){
     Pose2d robotPose = drive.localizer.getPose();
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
@@ -285,7 +292,7 @@ public class Robot{
     ElapsedTime elapsedSinceTimeStartAttemptToShoot = new ElapsedTime();
     boolean attemptingToShoot = false;
     boolean started = false;
-    double time = 3.5;
+    double time = 2.5;
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
@@ -302,7 +309,7 @@ public class Robot{
         return false;
       }
       aimOuttakeTurret();
-      double[] outtakeVels = shootOuttake();
+      double[] outtakeVels = shootOuttake(44.0);
 
       if(elapsedTime.seconds() < 0.2){
         attemptingToShoot = false;
