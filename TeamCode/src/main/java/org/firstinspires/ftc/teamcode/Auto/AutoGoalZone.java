@@ -78,8 +78,10 @@ public class AutoGoalZone extends LinearOpMode {
         );
         if(spike == 1){
             return intake.endTrajectory().splineToConstantHeading(
-                    new Vector2d(GATE_X, GATE_Y),
+                    new Vector2d(GATE_X, GATE_Y + 5),
                     Math.toRadians(SPIKE_HEADING)
+            ).strafeTo(
+                    new Vector2d(GATE_X, GATE_Y)
             ).waitSeconds(0.2).splineToSplineHeading(
                     new Pose2d(GATE_X, GATE_Y + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
                     Math.toRadians(-SPIKE_HEADING),
