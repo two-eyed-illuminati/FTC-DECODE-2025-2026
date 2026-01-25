@@ -68,9 +68,19 @@ public class MainTeleOp extends OpMode {
                     -gamepad1.left_stick_x
             );
         }
+        double driveMultiplier = gamepad1.left_trigger > 0.8 ? 0.6 : 1.0;
+        driveVector = driveVector.times(driveMultiplier);
+
+        double rotation = (-gamepad1.right_stick_x) * driveMultiplier;
+        if(Math.abs(Robot.drive.localizer.getPose().position.x) > 60 || Math.abs(Robot.drive.localizer.getPose().position.y) > 60){
+            double targetHeading = Math.round(Robot.drive.localizer.getPose().heading.log()/Math.toRadians(90))*Math.toRadians(90);
+            double headingError = targetHeading - Robot.drive.localizer.getPose().heading.log();
+            double snapWeight = Math.max(0, 10*(Math.abs(Math.cos(headingError))-Math.cos(Math.toRadians(20))));
+            rotation = rotation * (1 - snapWeight) + Math.min(1, (headingError / Math.toRadians(30))) * snapWeight;
+        }
         Robot.drive.setDrivePowers(new PoseVelocity2d(
                 driveVector,
-                -gamepad1.right_stick_x
+                rotation
         ));
 
         if(gamepad1.a){
