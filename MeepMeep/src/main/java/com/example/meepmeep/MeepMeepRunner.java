@@ -11,6 +11,6 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepRunner {
     public static void main(String[] args) {
-        MeepMeepSpline.main(args);
+        MeepMeepCurrent.main(args);
     }
 }
