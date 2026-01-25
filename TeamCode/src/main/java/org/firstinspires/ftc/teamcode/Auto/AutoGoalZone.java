@@ -77,20 +77,25 @@ public class AutoGoalZone extends LinearOpMode {
                 new TranslationalVelConstraint(20.0)
         );
         if(spike == 1){
-            return intake.endTrajectory().strafeToConstantHeading(
-                    new Vector2d(GATE_X, GATE_Y)
+            return intake.endTrajectory().splineToConstantHeading(
+                    new Vector2d(GATE_X, GATE_Y),
+                    Math.toRadians(SPIKE_HEADING)
             ).waitSeconds(0.2).splineToSplineHeading(
                     new Pose2d(GATE_X, GATE_Y + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
                     Math.toRadians(-SPIKE_HEADING),
                     new TranslationalVelConstraint(20.0)
-            );
+            ).afterDisp(0, () ->{
+                Robot.intake.setPower(0.0);
+            });
         }
         else {
             return intake.splineToSplineHeading(
                     new Pose2d(endSpikeX, endSpikeY + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
                     Math.toRadians(-SPIKE_HEADING),
                     new TranslationalVelConstraint(20.0)
-            );
+            ).afterDisp(0, () ->{
+                Robot.intake.setPower(0.0);
+            });
         }
     }
 
