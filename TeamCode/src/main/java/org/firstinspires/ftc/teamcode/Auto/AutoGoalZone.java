@@ -161,7 +161,30 @@ public class AutoGoalZone extends LinearOpMode {
         TrajectoryActionBuilder toSpike2IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike2, 2), false);
         Action doSpike2Shoot = new Robot.ShootSequenceAction();
 
-        TrajectoryActionBuilder leaveLaunchZone = toSpike2IntakeAndShoot.fresh().strafeToLinearHeading(
+        VelConstraint toSpike3VelConstraint = (robotPose, _path, _disp) -> {
+            if (robotPose.position.x.value() > SPIKE_3_X - 5.0) {
+                return 25.0;
+            } else {
+                return 50.0;
+            }
+        };
+        TrajectoryActionBuilder toSpike3 = toSpike2IntakeAndShoot.fresh()
+                .afterDisp(0, () -> {
+                    Robot.intake.setPower(1.0);
+                    Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
+                    Robot.outtake.setPos(0, -1440.0);
+                })
+                .setTangent(Math.toRadians(0))
+                .splineToSplineHeading(
+                        new Pose2d(SPIKE_3_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
+                        Math.toRadians(SPIKE_HEADING),
+                        toSpike3VelConstraint
+                );
+
+        TrajectoryActionBuilder toSpike3IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike3, 3), false);
+        Action doSpike3Shoot = new Robot.ShootSequenceAction();
+
+        TrajectoryActionBuilder leaveLaunchZone = toSpike3IntakeAndShoot.fresh().strafeToLinearHeading(
                 new Vector2d(SPIKE_SHOOT_X + 20, SPIKE_SHOOT_Y),
                 0
         );
@@ -174,6 +197,8 @@ public class AutoGoalZone extends LinearOpMode {
                         doSpike1Shoot,
                         toSpike2IntakeAndShoot.build(),
                         doSpike2Shoot,
+                        toSpike3IntakeAndShoot.build(),
+                        doSpike3Shoot,
                         leaveLaunchZone.build()
                 )
         );
