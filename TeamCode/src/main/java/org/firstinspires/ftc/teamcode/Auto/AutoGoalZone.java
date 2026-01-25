@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -114,6 +115,13 @@ public class AutoGoalZone extends LinearOpMode {
         TrajectoryActionBuilder preloadShoot = trajToShoot(Robot.drive.actionBuilder(startPose, poseMap), true);
         Action doPreloadShoot = new Robot.ShootSequenceAction();
 
+        VelConstraint toSpike1VelConstraint = (robotPose, _path, _disp) -> {
+            if (robotPose.position.x.value() > SPIKE_1_X - 5.0) {
+                return 25.0;
+            } else {
+                return 50.0;
+            }
+        };
         TrajectoryActionBuilder toSpike1 = preloadShoot.fresh()
                 .afterDisp(0, () -> {
                     Robot.intake.setPower(1.0);
@@ -124,12 +132,19 @@ public class AutoGoalZone extends LinearOpMode {
                 .splineToSplineHeading(
                         new Pose2d(SPIKE_1_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
                         Math.toRadians(SPIKE_HEADING),
-                        new TranslationalVelConstraint(25.0)
+                        toSpike1VelConstraint
                 );
 
         TrajectoryActionBuilder toSpike1IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike1, 1), false);
         Action doSpike1Shoot = new Robot.ShootSequenceAction();
 
+        VelConstraint toSpike2VelConstraint = (robotPose, _path, _disp) -> {
+            if (robotPose.position.x.value() > SPIKE_2_X - 5.0) {
+                return 25.0;
+            } else {
+                return 50.0;
+            }
+        };
         TrajectoryActionBuilder toSpike2 = toSpike1IntakeAndShoot.fresh()
                 .afterDisp(0, () -> {
                     Robot.intake.setPower(1.0);
@@ -140,7 +155,7 @@ public class AutoGoalZone extends LinearOpMode {
                 .splineToSplineHeading(
                         new Pose2d(SPIKE_2_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
                         Math.toRadians(SPIKE_HEADING),
-                        new TranslationalVelConstraint(25.0)
+                        toSpike2VelConstraint
                 );
 
         TrajectoryActionBuilder toSpike2IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike2, 2), false);
