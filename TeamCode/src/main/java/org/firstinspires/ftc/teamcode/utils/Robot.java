@@ -313,7 +313,7 @@ public class Robot{
     ElapsedTime elapsedSinceTimeStartAttemptToShoot = new ElapsedTime();
     boolean attemptingToShoot = false;
     boolean started = false;
-    double time = 1.85;
+    double time = 2.0;
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
