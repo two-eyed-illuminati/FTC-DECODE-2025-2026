@@ -27,7 +27,7 @@ public class AutoGoalZone extends LinearOpMode {
     public static double START_HEADING = -126.5;
     public static double PRELOAD_SHOOT_X = -45.3370432609;
     public static double PRELOAD_SHOOT_Y = -24.9996985274;
-    public static double PRELOAD_SHOOT_HEADING = -128.71;
+    public static double PRELOAD_SHOOT_HEADING = -126.5;
     public static double SPIKE_SHOOT_HEADING = -90;
     public static double SPIKE_START_Y = -24.1017;
     public static double SPIKE_RAMP_END_Y = -45.1282;
@@ -81,7 +81,7 @@ public class AutoGoalZone extends LinearOpMode {
             return intake.endTrajectory().splineToConstantHeading(
                     new Vector2d(GATE_X, GATE_Y + 7.0),
                     Math.toRadians(SPIKE_HEADING),
-                    new TranslationalVelConstraint(20.0)
+                    new TranslationalVelConstraint(25.0)
             ).strafeTo(
                     new Vector2d(GATE_X, GATE_Y)
             ).waitSeconds(0.2).splineToSplineHeading(
@@ -208,20 +208,15 @@ public class AutoGoalZone extends LinearOpMode {
         Action doSpike3Shoot = new Robot.ShootSequenceAction();
 
         Actions.runBlocking(
-                new RaceAction(
-                    new SequentialAction(
-                            preloadShoot.build(),
-                            doPreloadShoot,
-                            toSpike1IntakeAndShoot.build(),
-                            doSpike1Shoot,
-                            toSpike2IntakeAndShoot.build(),
-                            doSpike2Shoot,
-                            toSpike3IntakeAndShoot.build(),
-                            doSpike3Shoot
-                    ),
-                    new SleepAction(
-                            29.0
-                    )
+                new SequentialAction(
+                    preloadShoot.build(),
+                    doPreloadShoot,
+                    toSpike1IntakeAndShoot.build(),
+                    doSpike1Shoot,
+                    toSpike2IntakeAndShoot.build(),
+                    doSpike2Shoot,
+                    toSpike3IntakeAndShoot.build(),
+                    doSpike3Shoot
                 )
         );
 
