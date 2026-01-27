@@ -139,7 +139,7 @@ public class AutoGoalZone extends LinearOpMode {
 
         VelConstraint toSpike1VelConstraint = (robotPose, _path, _disp) -> {
             if (robotPose.position.x.value() > SPIKE_1_X - 5.0) {
-                return 25.0;
+                return 30.0;
             } else {
                 return 50.0;
             }
@@ -162,7 +162,7 @@ public class AutoGoalZone extends LinearOpMode {
 
         VelConstraint toSpike2VelConstraint = (robotPose, _path, _disp) -> {
             if (robotPose.position.x.value() > SPIKE_2_X - 5.0) {
-                return 25.0;
+                return 30.0;
             } else {
                 return 50.0;
             }
@@ -185,7 +185,7 @@ public class AutoGoalZone extends LinearOpMode {
 
         VelConstraint toSpike3VelConstraint = (robotPose, _path, _disp) -> {
             if (robotPose.position.x.value() > SPIKE_3_X - 8.0) {
-                return 25.0;
+                return 30.0;
             } else {
                 return 50.0;
             }
@@ -206,10 +206,6 @@ public class AutoGoalZone extends LinearOpMode {
         TrajectoryActionBuilder toSpike3IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike3, 3), 3);
         Action doSpike3Shoot = new Robot.ShootSequenceAction();
 
-        TrajectoryActionBuilder leaveLaunchZone = toSpike3IntakeAndShoot.fresh().strafeToConstantHeading(
-                new Vector2d(SPIKE_3_SHOOT_X, SPIKE_3_SHOOT_Y-24)
-        );
-
         Actions.runBlocking(
                 new SequentialAction(
                         preloadShoot.build(),
@@ -219,9 +215,13 @@ public class AutoGoalZone extends LinearOpMode {
                         toSpike2IntakeAndShoot.build(),
                         doSpike2Shoot,
                         toSpike3IntakeAndShoot.build(),
-                        doSpike3Shoot,
-                        leaveLaunchZone.build()
+                        doSpike3Shoot
                 )
         );
+
+        Robot.drive.leftFront.setPower(1);
+        Robot.drive.rightFront.setPower(1);
+        Robot.drive.leftFront.setPower(1);
+        Robot.drive.rightBack.setPower(1);
     }
 }
