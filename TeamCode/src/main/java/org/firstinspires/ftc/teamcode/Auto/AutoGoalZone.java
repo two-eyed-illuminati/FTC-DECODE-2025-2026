@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.IdentityPoseMap;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseMap;
+import com.acmerobotics.roadrunner.RaceAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -207,15 +208,20 @@ public class AutoGoalZone extends LinearOpMode {
         Action doSpike3Shoot = new Robot.ShootSequenceAction();
 
         Actions.runBlocking(
-                new SequentialAction(
-                        preloadShoot.build(),
-                        doPreloadShoot,
-                        toSpike1IntakeAndShoot.build(),
-                        doSpike1Shoot,
-                        toSpike2IntakeAndShoot.build(),
-                        doSpike2Shoot,
-                        toSpike3IntakeAndShoot.build(),
-                        doSpike3Shoot
+                new RaceAction(
+                    new SequentialAction(
+                            preloadShoot.build(),
+                            doPreloadShoot,
+                            toSpike1IntakeAndShoot.build(),
+                            doSpike1Shoot,
+                            toSpike2IntakeAndShoot.build(),
+                            doSpike2Shoot,
+                            toSpike3IntakeAndShoot.build(),
+                            doSpike3Shoot
+                    ),
+                    new SleepAction(
+                            29.0
+                    )
                 )
         );
 
