@@ -336,7 +336,7 @@ public class Robot{
         attemptingToShoot = false;
       }
       else if(((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
-              elapsedTime.seconds() > time - 0.3) &&
+              elapsedTime.seconds() > time - 0.2) &&
               elapsedSinceTimeStartAttemptToShoot.seconds() < 0.6
       ){
         if(!attemptingToShoot){
@@ -346,7 +346,7 @@ public class Robot{
         intake.setPower(1.0);
         transfer.setPos(0, 1.0*transfer.maxVel);
       }
-      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175){
+      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 0.7 < 0.175){
         attemptingToShoot = false;
         intake.setPower(-1.0);
         transfer.setPos(0, -transfer.maxVel);
