@@ -25,7 +25,7 @@ public class AutoGoalZone extends LinearOpMode {
     public static double START_X = -57.0586;
     public static double START_Y = -43.8964;
     public static double START_HEADING = -126.5;
-    public static double PRELOAD_SHOOT_X = -20.3370432609;
+    public static double PRELOAD_SHOOT_X = -24.3370432609;
     public static double PRELOAD_SHOOT_Y = -26.9996985274;
     public static double PRELOAD_SHOOT_HEADING = -126.5;
     public static double SPIKE_SHOOT_HEADING = -90;
