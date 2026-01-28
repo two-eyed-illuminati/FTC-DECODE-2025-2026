@@ -313,7 +313,7 @@ public class Robot{
     ElapsedTime elapsedSinceTimeStartAttemptToShoot = new ElapsedTime();
     boolean attemptingToShoot = false;
     boolean started = false;
-    double time = 2.0;
+    double time = 2.4;
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
@@ -346,7 +346,7 @@ public class Robot{
         intake.setPower(1.0);
         transfer.setPos(0, 1.0*transfer.maxVel);
       }
-      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 0.7 < 0.175){
+      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175){
         attemptingToShoot = false;
         intake.setPower(-1.0);
         transfer.setPos(0, -transfer.maxVel);

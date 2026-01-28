@@ -19,11 +19,11 @@ public class MeepMeepCurrent {
     public static double START_X = -57.0586;
     public static double START_Y = -43.8964;
     public static double START_HEADING = -126.5;
-    public static double PRELOAD_SHOOT_X = -45.3370432609;
-    public static double PRELOAD_SHOOT_Y = -24.9996985274;
+    public static double PRELOAD_SHOOT_X = -20.3370432609;
+    public static double PRELOAD_SHOOT_Y = -26.9996985274;
     public static double PRELOAD_SHOOT_HEADING = -126.5;
     public static double SPIKE_SHOOT_HEADING = -90;
-    public static double SPIKE_START_Y = -24.1017;
+    public static double SPIKE_START_Y = -32.1017;
     public static double SPIKE_RAMP_END_Y = -45.1282;
     public static double SPIKE_TUNNEL_END_Y = -51.1282;
     public static double SPIKE_HEADING = -90.0;
@@ -169,13 +169,13 @@ public class MeepMeepCurrent {
 
         myBot.runAction(new SequentialAction(
                 preloadShoot.build(),
-                new SleepAction(1.75),
+                new SleepAction(2.4),
                 toSpike1IntakeAndShoot.build(),
-                new SleepAction(1.75),
+                new SleepAction(2.4),
                 toSpike2IntakeAndShoot.build(),
-                new SleepAction(1.75),
+                new SleepAction(2.4),
                 toSpike3IntakeAndShoot.build(),
-                new SleepAction(1.75)
+                new SleepAction(2.4)
         ));
 
         meepMeep.setBackground(com.noahbres.meepmeep.MeepMeep.Background.FIELD_DECODE_JUICE_DARK) // You can change this to match your season
