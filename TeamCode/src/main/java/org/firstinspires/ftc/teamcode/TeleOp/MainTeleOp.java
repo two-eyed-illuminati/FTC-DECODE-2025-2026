@@ -110,7 +110,7 @@ public class MainTeleOp extends OpMode {
             Robot.outtake.setPos(0, -Robot.outtake.maxVel);
         }
         else{
-            Robot.intake.setPower(0.0);
+            Robot.intake.setPower(1.0);
             Robot.transfer.setPos(0, 0.0);
             Robot.aimOuttakeTurret(currDriveVel);
             if(Robot.drive.localizer.getPose().position.x + Math.abs(Robot.drive.localizer.getPose().position.y) < 10){
