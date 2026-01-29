@@ -131,8 +131,8 @@ public class Robot{
     double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
     double targetTurretPos = Math.toDegrees(
             Math.atan2(
-                    (alliance == Alliance.BLUE ? -71.0 : 71.0)-robotPose.position.y-turretYOffset,
-                    -71.0-robotPose.position.x-turretXOffset
+                    (alliance == Alliance.BLUE ? -72.0 : 72.0)-robotPose.position.y-turretYOffset,
+                    -72.0-robotPose.position.x-turretXOffset
             )
     );
     return targetTurretPos;
@@ -313,7 +313,7 @@ public class Robot{
     ElapsedTime elapsedSinceTimeStartAttemptToShoot = new ElapsedTime();
     boolean attemptingToShoot = false;
     boolean started = false;
-    double time = 2.2;
+    double time = 2.15;
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
