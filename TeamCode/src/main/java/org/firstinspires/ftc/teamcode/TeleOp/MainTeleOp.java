@@ -78,10 +78,10 @@ public class MainTeleOp extends OpMode {
         ));
 
         if(gamepad1.a){
-            Robot.intake.setPower(1.0);
+            Robot.intake.setPower(0.0);
             Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
-            Robot.outtake.setPos(0, -5760.0);
+            Robot.outtake.setPos(0, -2880.0);
         }
         else if(gamepad1.y){
             Robot.intake.setPower(1.0);
