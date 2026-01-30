@@ -263,6 +263,7 @@ public class Robot{
     double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.740740741;
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
     shootOuttake(targetOuttakeAngVelInitial, pid);
+    telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
 
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
   }
