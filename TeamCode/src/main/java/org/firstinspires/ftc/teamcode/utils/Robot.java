@@ -213,7 +213,7 @@ public class Robot{
   }
   public static void aimOuttakeTurret(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
     Pose2d futureRobotPose = new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble());
-    double theta = calculateShoot(futureRobotPose, robotVelocity, 47.0)[0];
+    double theta = calculateShoot(futureRobotPose, robotVelocity, 46.5)[0];
     aimOuttakeTurret(theta, futureRobotPose, pid);
   }
   public static void aimOuttakeTurret(Pose2d robotPose, boolean pid){
@@ -278,7 +278,7 @@ public class Robot{
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
   }
   public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
-    return shootOuttake(robotPose, robotVelocity, pid, 47.0);
+    return shootOuttake(robotPose, robotVelocity, pid, 46.5);
   }
   public static double[] shootOuttake(Pose2d robotPose, boolean pid, double targetHeight){
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
