@@ -31,7 +31,7 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_SHOOT_HEADING = -90;
     public static double SPIKE_START_Y = -32.1017;
     public static double SPIKE_RAMP_END_Y = -45.1282;
-    public static double SPIKE_TUNNEL_END_Y = -51.1282;
+    public static double SPIKE_TUNNEL_END_Y = -55.1282;
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -12.3457;
     public static double GATE_X = -5.0;
@@ -72,12 +72,12 @@ public class AutoGoalZone extends LinearOpMode {
         double endSpikeX = spike == 2 ? SPIKE_2_END_X : currSpikeX;
         double endSpikeY = spike <= 1 ? SPIKE_RAMP_END_Y : SPIKE_TUNNEL_END_Y;
 
-        TrajectoryActionBuilder intake = builder.splineToSplineHeading(
-                new Pose2d(endSpikeX, endSpikeY, Math.toRadians(SPIKE_HEADING)),
-                Math.toRadians(-SPIKE_HEADING),
-                new TranslationalVelConstraint(15.0)
-        );
         if(spike == 1){
+            TrajectoryActionBuilder intake = builder.splineToSplineHeading(
+                    new Pose2d(endSpikeX, endSpikeY, Math.toRadians(SPIKE_HEADING)),
+                    Math.toRadians(-SPIKE_HEADING),
+                    new TranslationalVelConstraint(15.0)
+            );
             return intake.endTrajectory().splineToConstantHeading(
                     new Vector2d(GATE_X, GATE_Y + 13.0),
                     Math.toRadians(SPIKE_HEADING)
@@ -91,6 +91,11 @@ public class AutoGoalZone extends LinearOpMode {
             });
         }
         else {
+            TrajectoryActionBuilder intake = builder.splineToSplineHeading(
+                    new Pose2d(endSpikeX, endSpikeY, Math.toRadians(SPIKE_HEADING)),
+                    Math.toRadians(-SPIKE_HEADING),
+                    new TranslationalVelConstraint(30.0)
+            );
             return intake.splineToSplineHeading(
                     new Pose2d(endSpikeX, endSpikeY + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
                     Math.toRadians(-SPIKE_HEADING)
