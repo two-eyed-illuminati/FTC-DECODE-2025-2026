@@ -34,7 +34,7 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_TUNNEL_END_Y = -58.1282;
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -12.3457;
-    public static double GATE_X = -5.0;
+    public static double GATE_X = -7.0;
     public static double GATE_Y = -55.0;
     public static double SPIKE_1_SHOOT_X = -23.3370432609;
     public static double SPIKE_1_SHOOT_Y = -31.9996985274;
@@ -93,7 +93,8 @@ public class AutoGoalZone extends LinearOpMode {
         else {
             TrajectoryActionBuilder intake = builder.splineToSplineHeading(
                     new Pose2d(endSpikeX, endSpikeY, Math.toRadians(SPIKE_HEADING)),
-                    Math.toRadians(-SPIKE_HEADING)
+                    Math.toRadians(-SPIKE_HEADING),
+                    new TranslationalVelConstraint(40.0)
             );
             return intake.splineToSplineHeading(
                     new Pose2d(endSpikeX, endSpikeY + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
