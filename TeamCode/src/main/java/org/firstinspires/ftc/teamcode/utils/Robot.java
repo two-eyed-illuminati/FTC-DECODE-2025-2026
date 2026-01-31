@@ -81,7 +81,7 @@ public class Robot{
       outtake = new ContinuousMotorMechanism(outtakeMotor,
               360.0/28.0, 36000.0
       );
-      outtakeController = new PIDFController(1.0/1000.0, 1.0/35000.0);
+      outtakeController = new PIDFController(1.0/2000.0, 1.0/35000.0);
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
