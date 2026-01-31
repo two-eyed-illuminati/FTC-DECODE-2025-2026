@@ -339,7 +339,7 @@ public class Robot{
         return false;
       }
       aimOuttakeTurret();
-      double[] outtakeVels = shootOuttake(46.0);
+      double[] outtakeVels = shootOuttake();
 
       if(elapsedTime.seconds() < 0.2){
         attemptingToShoot = false;

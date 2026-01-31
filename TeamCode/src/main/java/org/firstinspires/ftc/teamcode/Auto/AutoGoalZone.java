@@ -93,8 +93,7 @@ public class AutoGoalZone extends LinearOpMode {
         else {
             TrajectoryActionBuilder intake = builder.splineToSplineHeading(
                     new Pose2d(endSpikeX, endSpikeY, Math.toRadians(SPIKE_HEADING)),
-                    Math.toRadians(-SPIKE_HEADING),
-                    new TranslationalVelConstraint(30.0)
+                    Math.toRadians(-SPIKE_HEADING)
             );
             return intake.splineToSplineHeading(
                     new Pose2d(endSpikeX, endSpikeY + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
@@ -165,13 +164,6 @@ public class AutoGoalZone extends LinearOpMode {
         TrajectoryActionBuilder toSpike1IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike1, 1), 1);
         Action doSpike1Shoot = new Robot.ShootSequenceAction();
 
-        VelConstraint toSpike2VelConstraint = (robotPose, _path, _disp) -> {
-            if (robotPose.position.x.value() > SPIKE_2_X - 5.0) {
-                return 25.0;
-            } else {
-                return 50.0;
-            }
-        };
         TrajectoryActionBuilder toSpike2 = toSpike1IntakeAndShoot.fresh()
                 .afterDisp(0, () -> {
                     Robot.intake.setPower(1.0);
@@ -181,20 +173,12 @@ public class AutoGoalZone extends LinearOpMode {
                 .setTangent(Math.toRadians(0))
                 .splineToSplineHeading(
                         new Pose2d(SPIKE_2_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
-                        Math.toRadians(SPIKE_HEADING),
-                        toSpike2VelConstraint
+                        Math.toRadians(SPIKE_HEADING)
                 );
 
         TrajectoryActionBuilder toSpike2IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike2, 2), 2);
         Action doSpike2Shoot = new Robot.ShootSequenceAction();
 
-        VelConstraint toSpike3VelConstraint = (robotPose, _path, _disp) -> {
-            if (robotPose.position.x.value() > SPIKE_3_X - 8.0) {
-                return 25.0;
-            } else {
-                return 50.0;
-            }
-        };
         TrajectoryActionBuilder toSpike3 = toSpike2IntakeAndShoot.fresh()
                 .afterDisp(0, () -> {
                     Robot.intake.setPower(1.0);
@@ -204,8 +188,7 @@ public class AutoGoalZone extends LinearOpMode {
                 .setTangent(Math.toRadians(0))
                 .splineToSplineHeading(
                         new Pose2d(SPIKE_3_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
-                        Math.toRadians(SPIKE_HEADING),
-                        toSpike3VelConstraint
+                        Math.toRadians(SPIKE_HEADING)
                 );
 
         TrajectoryActionBuilder toSpike3IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike3, 3), 3);
