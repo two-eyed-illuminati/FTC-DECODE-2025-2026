@@ -94,7 +94,7 @@ public class AutoGoalZone extends LinearOpMode {
             TrajectoryActionBuilder intake = builder.splineToSplineHeading(
                     new Pose2d(endSpikeX, endSpikeY, Math.toRadians(SPIKE_HEADING)),
                     Math.toRadians(-SPIKE_HEADING),
-                    new TranslationalVelConstraint(40.0)
+                    new TranslationalVelConstraint(30.0)
             );
             return intake.splineToSplineHeading(
                     new Pose2d(endSpikeX, endSpikeY + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
