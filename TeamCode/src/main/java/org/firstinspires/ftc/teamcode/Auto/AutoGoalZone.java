@@ -51,7 +51,7 @@ public class AutoGoalZone extends LinearOpMode {
             Pose2d endRobotPose = new Pose2d(PRELOAD_SHOOT_X, PRELOAD_SHOOT_Y, Math.toRadians(PRELOAD_SHOOT_HEADING));
             return builder.afterDisp(0, () -> {
                 Robot.aimOuttakeTurret(endRobotPose, false);
-                Robot.shootOuttake(endRobotPose, false);
+                Robot.shootOuttake(endRobotPose, 46.5, false);
             }).strafeToConstantHeading(endRobotPose.position);
         } else {
             double shootX = spike == 1 ? SPIKE_1_SHOOT_X : (spike == 2 ? SPIKE_2_SHOOT_X : SPIKE_3_SHOOT_X);
@@ -59,7 +59,7 @@ public class AutoGoalZone extends LinearOpMode {
             Pose2d endRobotPose = new Pose2d(shootX, shootY, Math.toRadians(SPIKE_SHOOT_HEADING));
             return builder.afterDisp(0, () -> {
                 Robot.aimOuttakeTurret(endRobotPose, false);
-                Robot.shootOuttake(endRobotPose, false);
+                Robot.shootOuttake(endRobotPose, 46.5, false);
             }).splineToSplineHeading(
                     endRobotPose,
                     Math.toRadians(-190)
