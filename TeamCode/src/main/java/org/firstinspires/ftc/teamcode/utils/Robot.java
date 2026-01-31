@@ -297,6 +297,26 @@ public class Robot{
     return shootOuttake(robotPose, robotVelocity, true);
   }
 
+  public static class PrepareShootAction implements Action {
+    Pose2d robotPose;
+    public PrepareShootAction(Pose2d robotPose){
+        this.robotPose = robotPose;
+    }
+    @Override
+    public boolean run(@NonNull TelemetryPacket packet) {
+      aimOuttakeTurret(robotPose, true);
+      double[] outtakeVels = shootOuttake(robotPose, true);
+
+      PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
+
+      if(outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1] && Math.abs(outtakeTurret.getPos() - calculateShoot(robotPose, robotVelocity, 44.0)[0]) < 2){
+        return false;
+      }
+
+      return true;
+    }
+  }
+
   public static class ShootSequenceAction implements Action {
     ElapsedTime elapsedTime = new ElapsedTime();
     ElapsedTime elapsedSinceTimeStartAttemptToShoot = new ElapsedTime();
