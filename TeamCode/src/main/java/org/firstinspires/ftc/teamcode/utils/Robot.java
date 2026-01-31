@@ -17,7 +17,9 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -40,6 +42,8 @@ public class Robot{
   public static ContinuousMotorMechanism outtake;
   public static PIDFController outtakeController;
   public static Limelight3A limelight;
+  public static DistanceSensor intakeDistanceSensor;
+  public static Servo led;
   public static MultipleTelemetry telemetry;
   //Stored Values
   public enum Alliance{
@@ -82,6 +86,10 @@ public class Robot{
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
       limelight.start();
+
+      intakeDistanceSensor = hardwareMap.get(DistanceSensor.class, "intakeDistanceSensor");
+
+      led = hardwareMap.get(Servo.class, "led");
 
       drive.localizer.setPose(new Pose2d(
               START_X,

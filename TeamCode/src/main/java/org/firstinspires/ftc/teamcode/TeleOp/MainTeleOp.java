@@ -7,6 +7,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
 import java.util.List;
@@ -124,6 +125,14 @@ public class MainTeleOp extends OpMode {
                 currentMaxOuttakeVel = 0.0;
             }
         }
+
+        if(Robot.intakeDistanceSensor.getDistance(DistanceUnit.INCH) < 3.0){
+            Robot.led.setPosition(0.50);
+        }
+        else{
+            Robot.led.setPosition(0.28);
+        }
+
         Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());
         Robot.telemetry.addData("Actual Transfer Up Vel (deg/s)", Robot.transfer.getVel());
 
