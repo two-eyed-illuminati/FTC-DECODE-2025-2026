@@ -242,7 +242,7 @@ public class Robot{
     telemetry.addData("Max Outtake Vel (ft/s)", maxOuttakeVel);
     double maxOuttakeAngVel = maxOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
     telemetry.addData("Max Outtake Ang Vel (deg/s)", maxOuttakeAngVel);
-    double maxOuttakeAngVelInitial = maxOuttakeAngVel/0.8;
+    double maxOuttakeAngVelInitial = maxOuttakeAngVel/0.77;
     telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", maxOuttakeAngVelInitial);
 
     double minMag = calculateShoot(robotPose, robotVelocity, 40.0)[1];
@@ -251,7 +251,7 @@ public class Robot{
     telemetry.addData("Min Outtake Vel (ft/s)", minOuttakeVel);
     double minOuttakeAngVel = minOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
     telemetry.addData("Min Outtake Ang Vel (deg/s)", minOuttakeAngVel);
-    double minOuttakeAngVelInitial = minOuttakeAngVel/0.8;
+    double minOuttakeAngVelInitial = minOuttakeAngVel/0.77;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
     double targetMag = calculateShoot(futureRobotPose, robotVelocity, targetHeight)[1];
@@ -260,7 +260,7 @@ public class Robot{
     telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
     double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
     telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
-    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.8;
+    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.77;
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
     shootOuttake(targetOuttakeAngVelInitial, pid);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
