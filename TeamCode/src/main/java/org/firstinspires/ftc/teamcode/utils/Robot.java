@@ -81,7 +81,7 @@ public class Robot{
       outtake = new ContinuousMotorMechanism(outtakeMotor,
               360.0/28.0, 36000.0
       );
-      outtakeController = new PIDFController(1.0/1000.0, 1.0/30345.0);
+      outtakeController = new PIDFController(1.0/1000.0, 1.0/35000.0);
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
@@ -278,9 +278,9 @@ public class Robot{
   public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
     return shootOuttake(robotPose, robotVelocity, pid, 47.0);
   }
-  public static double[] shootOuttake(Pose2d robotPose, boolean pid){
+  public static double[] shootOuttake(Pose2d robotPose, boolean pid, double targetHeight){
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
-    return shootOuttake(robotPose, robotVelocity, pid);
+    return shootOuttake(robotPose, robotVelocity, pid, targetHeight);
   }
   public static double[] shootOuttake(PoseVelocity2d robotVelocity){
     Pose2d robotPose = drive.localizer.getPose();
@@ -295,26 +295,6 @@ public class Robot{
     Pose2d robotPose = drive.localizer.getPose();
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
     return shootOuttake(robotPose, robotVelocity, true);
-  }
-
-  public static class PrepareShootAction implements Action {
-    Pose2d robotPose;
-    public PrepareShootAction(Pose2d robotPose){
-        this.robotPose = robotPose;
-    }
-    @Override
-    public boolean run(@NonNull TelemetryPacket packet) {
-      aimOuttakeTurret(robotPose, true);
-      double[] outtakeVels = shootOuttake(robotPose, true);
-
-      PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
-
-      if(outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1] && Math.abs(outtakeTurret.getPos() - calculateShoot(robotPose, robotVelocity, 44.0)[0]) < 2){
-        return false;
-      }
-
-      return true;
-    }
   }
 
   public static class ShootSequenceAction implements Action {
