@@ -126,7 +126,7 @@ public class MainTeleOp extends OpMode {
             }
         }
 
-        if(Robot.intakeDistanceSensor.getDistance(DistanceUnit.INCH) < 3.0){
+        if(Robot.intakeDistanceSensor.getDistance(DistanceUnit.CM) < 10.0){
             Robot.led.setPosition(0.50);
         }
         else{
