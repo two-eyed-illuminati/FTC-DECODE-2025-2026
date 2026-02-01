@@ -31,7 +31,7 @@ public class AutoGoalZone extends LinearOpMode {
     public static double SPIKE_SHOOT_HEADING = -90;
     public static double SPIKE_START_Y = -32.1017;
     public static double SPIKE_RAMP_END_Y = -45.1282;
-    public static double SPIKE_TUNNEL_END_Y = -58.1282;
+    public static double SPIKE_TUNNEL_END_Y = -60.1282;
     public static double SPIKE_HEADING = -90.0;
     public static double SPIKE_1_X = -12.3457;
     public static double GATE_X = -7.0;
