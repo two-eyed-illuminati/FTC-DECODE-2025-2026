@@ -7,7 +7,7 @@ public class PIDFController {
         this.pCoefficient = pCoefficient;
         this.feedforwardCoefficient = feedforwardCoefficient;
     }
-    double getPower(double currPos, double targetPos){
+    public double getPower(double currPos, double targetPos){
         return feedforwardCoefficient * targetPos + pCoefficient * (targetPos-currPos);
     }
 }

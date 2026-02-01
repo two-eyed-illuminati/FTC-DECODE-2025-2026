@@ -37,6 +37,7 @@ public class Robot{
   public static MecanumDrive drive;
   public static DcMotorEx intake;
   public static ContinuousMotorMechanism transfer;
+  public static PIDFController transferController;
   public static MotorMechanism outtakeTurret;
   public static PIDFController outtakeTurretController;
   public static ContinuousMotorMechanism outtake;
@@ -67,6 +68,7 @@ public class Robot{
       transfer = new ContinuousMotorMechanism(transferMotor,
               360.0/145.1, 6900
       );
+      transferController = new PIDFController(1.0/1000.0, 1/5000.0);
 
       DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "outtakeTurret");
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
