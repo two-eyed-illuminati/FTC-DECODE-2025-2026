@@ -79,7 +79,7 @@ public class MainTeleOp extends OpMode {
 
         if(gamepad1.a){
             Robot.intake.setPower(1.0);
-            Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
+            Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), 0));
             Robot.aimOuttakeTurret(currDriveVel);
             Robot.outtake.setPos(0, -5760.0);
         }
@@ -91,27 +91,28 @@ public class MainTeleOp extends OpMode {
             currentMaxOuttakeVel = outtakeVels[1];
 
             if(currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel) {
-                Robot.transfer.setPos(0, 1.0*Robot.transfer.maxVel);
+                Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), 1.0*Robot.transfer.maxVel));
             }
             else{
-                Robot.transfer.setPos(0, 0.0);
+                Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), 0));
             }
             Robot.aimOuttakeTurret(currDriveVel);
         }
         else if(gamepad1.x){
             Robot.intake.setPower(-1.0);
-            Robot.transfer.setPos(0, -Robot.transfer.maxVel);
+            Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), -Robot.transfer.maxVel));
             Robot.aimOuttakeTurret(currDriveVel);
         }
         else if(gamepad1.b){
             Robot.intake.setPower(-1.0);
+            Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), -Robot.transfer.maxVel));
             Robot.transfer.setPos(0, -Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
             Robot.outtake.setPos(0, -Robot.outtake.maxVel);
         }
         else{
             Robot.intake.setPower(0.0);
-            Robot.transfer.setPos(0, 0.0);
+            Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), 0));
             Robot.aimOuttakeTurret(currDriveVel);
             if(Robot.drive.localizer.getPose().position.x + Math.abs(Robot.drive.localizer.getPose().position.y) < 10){
                 double[] outtakeVels = Robot.shootOuttake(currDriveVel);
