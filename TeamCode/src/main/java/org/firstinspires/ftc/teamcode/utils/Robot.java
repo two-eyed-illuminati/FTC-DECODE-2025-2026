@@ -14,11 +14,13 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -44,6 +46,7 @@ public class Robot{
   public static PIDFController outtakeController;
   public static Limelight3A limelight;
   public static DistanceSensor intakeDistanceSensor;
+  public static NormalizedColorSensor intakeColorSensor;
   public static Servo led;
   public static MultipleTelemetry telemetry;
   //Stored Values
@@ -90,6 +93,7 @@ public class Robot{
       limelight.start();
 
       intakeDistanceSensor = hardwareMap.get(DistanceSensor.class, "intakeDistanceSensor");
+      intakeColorSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeDistanceSensor");
 
       led = hardwareMap.get(Servo.class, "led");
 

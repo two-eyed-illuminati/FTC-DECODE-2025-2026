@@ -55,7 +55,7 @@ public class MainTeleOp extends OpMode {
             }
             double mag = Math.sqrt(
                     gamepad1.left_stick_y*gamepad1.left_stick_y+
-                    gamepad1.left_stick_x*gamepad1.left_stick_x);
+                            gamepad1.left_stick_x*gamepad1.left_stick_x);
 
             double newTheta = theta - Robot.drive.localizer.getPose().heading.log();
             driveVector = new Vector2d(
@@ -80,7 +80,7 @@ public class MainTeleOp extends OpMode {
 
         if(gamepad1.a){
             Robot.intake.setPower(0.0);
-            Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), 0));
+            Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
             Robot.outtake.setPos(0, -2880.0);
         }
@@ -92,27 +92,27 @@ public class MainTeleOp extends OpMode {
             currentMaxOuttakeVel = outtakeVels[1];
 
             if(currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel) {
-                Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), Robot.transfer.maxVel));
+                Robot.transfer.setPos(0, 1.0*Robot.transfer.maxVel);
             }
             else{
-                Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), 0));
+                Robot.transfer.setPos(0, 0.0);
             }
             Robot.aimOuttakeTurret(currDriveVel);
         }
         else if(gamepad1.x){
             Robot.intake.setPower(-1.0);
-            Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), -Robot.transfer.maxVel));
+            Robot.transfer.setPos(0, -Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
         }
         else if(gamepad1.b){
             Robot.intake.setPower(-1.0);
-            Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), -Robot.transfer.maxVel));
+            Robot.transfer.setPos(0, -Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
             Robot.outtake.setPos(0, -Robot.outtake.maxVel);
         }
         else{
             Robot.intake.setPower(1.0);
-            Robot.transfer.motor.setPower(Robot.transferController.getPower(Robot.transfer.getVel(), 0));
+            Robot.transfer.setPos(0, 0.0);
             Robot.aimOuttakeTurret(currDriveVel);
             if(Robot.drive.localizer.getPose().position.x + Math.abs(Robot.drive.localizer.getPose().position.y) < 10){
                 double[] outtakeVels = Robot.shootOuttake(currDriveVel);
@@ -126,7 +126,10 @@ public class MainTeleOp extends OpMode {
             }
         }
 
-        if(Robot.intakeDistanceSensor.getDistance(DistanceUnit.CM) < 10.0){
+        Robot.telemetry.addData("Sensor Red", Robot.intakeColorSensor.getNormalizedColors().red);
+        Robot.telemetry.addData("Sensor Green", Robot.intakeColorSensor.getNormalizedColors().green);
+        Robot.telemetry.addData("Sensor Blue", Robot.intakeColorSensor.getNormalizedColors().blue);
+        if(Robot.intakeDistanceSensor.getDistance(DistanceUnit.CM) < 11.0){
             Robot.led.setPosition(0.50);
         }
         else{
