@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -82,9 +83,9 @@ public class MainTeleOp extends OpMode {
             Robot.intake.setPower(0.0);
             Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
-            Robot.outtake.setPos(0, -2880.0);
+            Robot.outtake.setPos(0, -5760.0);
         }
-        else if(gamepad1.y){
+        else if(gamepad1.right_trigger > 0.8){
             Robot.intake.setPower(1.0);
 
             double[] outtakeVels = Robot.shootOuttake(currDriveVel);
@@ -112,15 +113,18 @@ public class MainTeleOp extends OpMode {
         }
         else{
             Robot.intake.setPower(1.0);
-            Robot.transfer.setPos(0, 0.0);
+            Robot.transfer.setPos(0, -0.05*Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
-            if(Robot.drive.localizer.getPose().position.x + Math.abs(Robot.drive.localizer.getPose().position.y) < 10){
+            Pose2d futureRobotPose = new Pose2d(Robot.drive.localizer.getPose().position.x + 2.0*currDriveVel.linearVel.x, Robot.drive.localizer.getPose().position.y + 2.0*currDriveVel.linearVel.y, Robot.drive.localizer.getPose().heading.toDouble());
+            if(futureRobotPose.position.x + Math.abs(futureRobotPose.position.y) < 36){
+                Robot.telemetry.addData("In Launch Zone", 1);
                 double[] outtakeVels = Robot.shootOuttake(currDriveVel);
                 currentMinOuttakeVel = outtakeVels[0];
                 currentMaxOuttakeVel = outtakeVels[1];
             }
             else{
-                Robot.outtake.setPos(0, -2880.0);
+                Robot.telemetry.addData("In Launch Zone", 0);
+                Robot.outtake.setPos(0, -5760.0);
                 currentMinOuttakeVel = 0.0;
                 currentMaxOuttakeVel = 0.0;
             }
