@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Goal Zone 9 Gate Hit After Spike 2", group="Main")
+@Autonomous(name="Auto Goal Zone 9 Gate Hit Before Spike 2", group="Main")
 @Config
 public class AutoGoalZone9GateHitAfterSpike2 extends LinearOpMode {
     public static double START_X = -57.0586;
@@ -83,28 +83,6 @@ public class AutoGoalZone9GateHitAfterSpike2 extends LinearOpMode {
                     Math.toRadians(SPIKE_HEADING)
             ).strafeTo(
                     new Vector2d(GATE_X, GATE_Y)
-            ).waitSeconds(0.05).splineToSplineHeading(
-                    new Pose2d(GATE_X, GATE_Y + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
-                    Math.toRadians(-SPIKE_HEADING)
-            ).afterDisp(0, () ->{
-                Robot.intake.setPower(0.0);
-            });
-        }
-        else if(spike == 2){
-            TrajectoryActionBuilder intake = builder.splineToSplineHeading(
-                    new Pose2d(endSpikeX, endSpikeY, Math.toRadians(SPIKE_HEADING)),
-                    Math.toRadians(-SPIKE_HEADING),
-                    new TranslationalVelConstraint(15.0)
-            ).splineToSplineHeading(
-                    new Pose2d(endSpikeX, endSpikeY + 19, Math.toRadians(SPIKE_HEADING)),
-                    Math.toRadians(-SPIKE_HEADING)
-            );
-            return intake.endTrajectory().splineToConstantHeading(
-                    new Vector2d(GATE_X, GATE_Y + 15.0),
-                    Math.toRadians(SPIKE_HEADING)
-            ).strafeTo(
-                    new Vector2d(GATE_X + 5.0, GATE_Y),
-                    new TranslationalVelConstraint(25.0)
             ).waitSeconds(0.05).splineToSplineHeading(
                     new Pose2d(GATE_X, GATE_Y + 5, Math.toRadians((SPIKE_HEADING * 4 + SPIKE_SHOOT_HEADING) / 5.0)),
                     Math.toRadians(-SPIKE_HEADING)
@@ -195,6 +173,14 @@ public class AutoGoalZone9GateHitAfterSpike2 extends LinearOpMode {
                 })
                 .setTangent(Math.toRadians(0))
                 .splineToSplineHeading(
+                        new Pose2d(GATE_X, GATE_Y + 19.0, Math.toRadians(SPIKE_HEADING)),
+                        Math.toRadians(SPIKE_HEADING)
+                ).strafeTo(
+                        new Vector2d(GATE_X, GATE_Y)
+                ).waitSeconds(0.05).splineToConstantHeading(
+                        new Vector2d(GATE_X, GATE_Y + 19.0),
+                        Math.toRadians(45.0)
+                ).splineToSplineHeading(
                         new Pose2d(SPIKE_2_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
                         Math.toRadians(SPIKE_HEADING)
                 );
