@@ -37,6 +37,11 @@ public class MainTeleOp extends OpMode {
 
         PoseVelocity2d currDriveVel = Robot.drive.updatePoseEstimate();
         currDriveVel = Rotation2d.fromDouble(Robot.drive.localizer.getPose().heading.log()).times(currDriveVel);
+
+        Robot.telemetry.addData("Drive Heading (deg)", Math.toDegrees(Robot.drive.localizer.getPose().heading.toDouble()));
+        Robot.telemetry.addData("Drive X (in)", Robot.drive.localizer.getPose().position.x);
+        Robot.telemetry.addData("Drive Y (in)", Robot.drive.localizer.getPose().position.y);
+
         Robot.telemetry.addData("Drive Vel X (in/s)", currDriveVel.linearVel.x);
         Robot.telemetry.addData("Drive Vel Y (in/s)", currDriveVel.linearVel.y);
 
@@ -80,12 +85,14 @@ public class MainTeleOp extends OpMode {
         ));
 
         if(gamepad1.a){
+            telemetry.addData("Mode", "stop intake");
             Robot.intake.setPower(0.0);
             Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
             Robot.outtake.setPos(0, -5760.0);
         }
         else if(gamepad1.right_trigger > 0.8){
+            telemetry.addData("Mode", "shoot");
             Robot.intake.setPower(1.0);
 
             double[] outtakeVels = Robot.shootOuttake(currDriveVel);
@@ -101,17 +108,20 @@ public class MainTeleOp extends OpMode {
             Robot.aimOuttakeTurret(currDriveVel);
         }
         else if(gamepad1.x){
+            telemetry.addData("Mode", "reverse");
             Robot.intake.setPower(-1.0);
             Robot.transfer.setPos(0, -Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
         }
         else if(gamepad1.b){
+            telemetry.addData("Mode", "super reverse");
             Robot.intake.setPower(-1.0);
             Robot.transfer.setPos(0, -Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
             Robot.outtake.setPos(0, -Robot.outtake.maxVel);
         }
         else{
+            telemetry.addData("Mode", "intake");
             Robot.intake.setPower(1.0);
             Robot.transfer.setPos(0, -0.05*Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
