@@ -100,9 +100,11 @@ public class MainTeleOp extends OpMode {
             currentMaxOuttakeVel = outtakeVels[1];
 
             if(currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel) {
+                telemetry.addData("Can Shoot", 1);
                 Robot.transfer.setPos(0, 1.0*Robot.transfer.maxVel);
             }
             else{
+                telemetry.addData("Can Shoot", 0);
                 Robot.transfer.setPos(0, 0.0);
             }
             Robot.aimOuttakeTurret(currDriveVel);
