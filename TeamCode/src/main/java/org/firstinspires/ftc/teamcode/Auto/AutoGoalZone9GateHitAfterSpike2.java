@@ -79,8 +79,9 @@ public class AutoGoalZone9GateHitAfterSpike2 extends LinearOpMode {
                     new TranslationalVelConstraint(15.0)
             );
             return intake.endTrajectory().splineToConstantHeading(
-                    new Vector2d(GATE_X, GATE_Y + 19.0),
-                    Math.toRadians(SPIKE_HEADING)
+                    new Vector2d(GATE_X, GATE_Y + 11.0),
+                    Math.toRadians(SPIKE_HEADING),
+                    new TranslationalVelConstraint(20.0)
             ).strafeTo(
                     new Vector2d(GATE_X, GATE_Y),
                     new TranslationalVelConstraint(20.0)
