@@ -140,7 +140,7 @@ public class AutoGoalZone9GateHitAfterSpike2 extends LinearOpMode {
                 new Pose2d(startPose.position.x, -startPose.position.y, -startPose.heading.toDouble()));
 
         TrajectoryActionBuilder preloadShoot = trajToShoot(Robot.drive.actionBuilder(startPose, poseMap), 0);
-        Action doPreloadShoot = new Robot.ShootSequenceAction();
+        Action doPreloadShoot = new Robot.ShootSequenceAction(2.5);
 
         VelConstraint toSpike1VelConstraint = (robotPose, _path, _disp) -> {
             if (robotPose.position.x.value() > SPIKE_1_X - 5.0) {
@@ -163,7 +163,7 @@ public class AutoGoalZone9GateHitAfterSpike2 extends LinearOpMode {
                 );
 
         TrajectoryActionBuilder toSpike1IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike1, 1), 1);
-        Action doSpike1Shoot = new Robot.ShootSequenceAction();
+        Action doSpike1Shoot = new Robot.ShootSequenceAction(2.5);
 
         TrajectoryActionBuilder toSpike2 = toSpike1IntakeAndShoot.fresh()
                 .afterDisp(0, () -> {
@@ -182,12 +182,12 @@ public class AutoGoalZone9GateHitAfterSpike2 extends LinearOpMode {
                         new Vector2d(GATE_X, GATE_Y + 19.0),
                         Math.toRadians(45.0)
                 ).splineToSplineHeading(
-                        new Pose2d(SPIKE_2_X, SPIKE_START_Y, Math.toRadians(SPIKE_HEADING)),
+                        new Pose2d(SPIKE_2_X, SPIKE_START_Y+6.0, Math.toRadians(SPIKE_HEADING)),
                         Math.toRadians(SPIKE_HEADING)
                 );
 
         TrajectoryActionBuilder toSpike2IntakeAndShoot = trajToShoot(intakeFromSpike(toSpike2, 2), 2);
-        Action doSpike2Shoot = new Robot.ShootSequenceAction();
+        Action doSpike2Shoot = new Robot.ShootSequenceAction(2.5);
 
         TrajectoryActionBuilder leaveLaunchZone = toSpike2IntakeAndShoot.fresh().strafeToLinearHeading(
                 new Vector2d(SPIKE_3_SHOOT_X, SPIKE_3_SHOOT_Y-20),

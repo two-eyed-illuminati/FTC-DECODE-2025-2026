@@ -305,6 +305,12 @@ public class Robot{
     boolean attemptingToShoot = false;
     boolean started = false;
     double time = 2.25;
+    public ShootSequenceAction(){
+      time = 2.25;
+    }
+    public ShootSequenceAction(double time){
+      this.time = time;
+    }
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
