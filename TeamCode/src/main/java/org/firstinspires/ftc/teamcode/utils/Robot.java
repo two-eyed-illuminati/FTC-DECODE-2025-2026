@@ -33,6 +33,16 @@ public class Robot{
   public static double START_X = -57.0586;
   public static double START_Y = -43.8964;
   public static double START_HEADING = -126.5;
+  public static double SHOOT_LEAD_TIME = 0.6;
+  public static double SHOOT_MIN_HEIGHT = 40.0;
+  public static double SHOOT_MAX_HEIGHT = 49.0;
+  public static double SHOOT_TARGET_HEIGHT = 46.5;
+  public static double SHOOT_SLOWDOWN_FACTOR = 0.8;
+  public static double SHOOT_RADIUS = 0.1181102362;
+  public static double SHOOT_TRANSFER_FACTOR = 0.5714;
+  public static double SHOOT_GRAVITY = -30.183727034;
+  public static double SHOOT_DRAG = -3.4448818898;
+  public static double SHOOT_EXIT_HEIGHT = 1.25;
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
   public static DcMotorEx intake;
@@ -159,10 +169,10 @@ public class Robot{
 
     double v0x = v0*Math.cos(Math.toRadians(theta))*Math.cos(velAdjustedAngle.log()) + robotLinearVelGoalPerspective.x/12.0;
     double v0y = v0*Math.sin(Math.toRadians(theta));
-    double a = 0.5*(-3.4448818898);
+    double a = 0.5*(SHOOT_DRAG);
     double b = v0x;
     double t = (-b+Math.sqrt(b*b-4*a*(-x)))/(2*a);
-    double y = 1.25+v0y*t+0.5*(-30.183727034)*t*t;
+    double y = SHOOT_EXIT_HEIGHT+v0y*t+0.5*(SHOOT_GRAVITY)*t*t;
 
     return y;
   }
@@ -212,8 +222,8 @@ public class Robot{
     telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
   }
   public static void aimOuttakeTurret(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
-    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble());
-    double theta = calculateShoot(futureRobotPose, robotVelocity, 46.5)[0];
+    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + SHOOT_LEAD_TIME*robotVelocity.linearVel.x, robotPose.position.y + SHOOT_LEAD_TIME*robotVelocity.linearVel.y, robotPose.heading.toDouble());
+    double theta = calculateShoot(futureRobotPose, robotVelocity, SHOOT_TARGET_HEIGHT)[0];
     aimOuttakeTurret(theta, futureRobotPose, pid);
   }
   public static void aimOuttakeTurret(Pose2d robotPose, boolean pid){
@@ -244,33 +254,33 @@ public class Robot{
   }
 
   public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid, double targetHeight){
-    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + 0.6*robotVelocity.linearVel.x, robotPose.position.y + 0.6*robotVelocity.linearVel.y, robotPose.heading.toDouble());
+    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + SHOOT_LEAD_TIME*robotVelocity.linearVel.x, robotPose.position.y + SHOOT_LEAD_TIME*robotVelocity.linearVel.y, robotPose.heading.toDouble());
 
-    double maxMag = calculateShoot(robotPose, robotVelocity, 49.0)[1];
+    double maxMag = calculateShoot(robotPose, robotVelocity, SHOOT_MAX_HEIGHT)[1];
     telemetry.addData("Max Artifact Vel (ft/s)", maxMag);
-    double maxOuttakeVel = 1.4*(maxMag/0.8);
+    double maxOuttakeVel = maxMag/SHOOT_TRANSFER_FACTOR;
     telemetry.addData("Max Outtake Vel (ft/s)", maxOuttakeVel);
-    double maxOuttakeAngVel = maxOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
+    double maxOuttakeAngVel = maxOuttakeVel/(2*Math.PI*SHOOT_RADIUS)*360.0;
     telemetry.addData("Max Outtake Ang Vel (deg/s)", maxOuttakeAngVel);
-    double maxOuttakeAngVelInitial = maxOuttakeAngVel/0.8;
+    double maxOuttakeAngVelInitial = maxOuttakeAngVel/SHOOT_SLOWDOWN_FACTOR;
     telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", maxOuttakeAngVelInitial);
 
-    double minMag = calculateShoot(robotPose, robotVelocity, 40.0)[1];
+    double minMag = calculateShoot(robotPose, robotVelocity, SHOOT_MIN_HEIGHT)[1];
     telemetry.addData("Min Artifact Vel (ft/s)", minMag);
-    double minOuttakeVel = 1.4*(minMag/0.8);
+    double minOuttakeVel = minMag/SHOOT_TRANSFER_FACTOR;
     telemetry.addData("Min Outtake Vel (ft/s)", minOuttakeVel);
-    double minOuttakeAngVel = minOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
+    double minOuttakeAngVel = minOuttakeVel/(2*Math.PI*SHOOT_RADIUS)*360.0;
     telemetry.addData("Min Outtake Ang Vel (deg/s)", minOuttakeAngVel);
-    double minOuttakeAngVelInitial = minOuttakeAngVel/0.8;
+    double minOuttakeAngVelInitial = minOuttakeAngVel/SHOOT_SLOWDOWN_FACTOR;
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
     double targetMag = calculateShoot(futureRobotPose, robotVelocity, targetHeight)[1];
     telemetry.addData("Target Artifact Vel (ft/s)", targetMag);
-    double targetOuttakeVel = 1.4*(targetMag/0.8);
+    double targetOuttakeVel = targetMag/SHOOT_TRANSFER_FACTOR;
     telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
-    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*0.1181102362)*360.0;
+    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*SHOOT_RADIUS)*360.0;
     telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
-    double targetOuttakeAngVelInitial = targetOuttakeAngVel/0.8;
+    double targetOuttakeAngVelInitial = targetOuttakeAngVel/SHOOT_SLOWDOWN_FACTOR;
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
     shootOuttake(targetOuttakeAngVelInitial, pid);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
@@ -278,7 +288,7 @@ public class Robot{
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
   }
   public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
-    return shootOuttake(robotPose, robotVelocity, pid, 46.5);
+    return shootOuttake(robotPose, robotVelocity, pid, SHOOT_TARGET_HEIGHT);
   }
   public static double[] shootOuttake(Pose2d robotPose, boolean pid, double targetHeight){
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
@@ -327,7 +337,7 @@ public class Robot{
         return false;
       }
       aimOuttakeTurret();
-      double[] outtakeVels = shootOuttake(46.5);
+      double[] outtakeVels = shootOuttake(SHOOT_TARGET_HEIGHT);
 
       if(elapsedTime.seconds() < 0.2){
         attemptingToShoot = false;
