@@ -33,6 +33,8 @@ public class Robot{
   public static double START_X = -57.0586;
   public static double START_Y = -43.8964;
   public static double START_HEADING = -126.5;
+  public static double TURRET_OFFSET_LENGTH = 2.9;
+  public static double TURRET_OFFSET_ANGLE = -150.0;
   public static double SHOOT_LEAD_TIME = 0.6;
   public static double SHOOT_MIN_HEIGHT = 40.0;
   public static double SHOOT_MAX_HEIGHT = 49.0;
@@ -43,11 +45,17 @@ public class Robot{
   public static double SHOOT_GRAVITY = -30.183727034;
   public static double SHOOT_DRAG = -3.4448818898;
   public static double SHOOT_EXIT_HEIGHT = 1.25;
+  public static double OUTTAKE_MAX_VEL = 30345.0;
+  public static double OUTTAKE_C_COEFF = 1.12;
+  public static double HOOD_MIN_ANGLE = 45.0;
+  public static double HOOD_MAX_ANGLE = 68.5;
+  public static double HOOD_VEL = 0.5;
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
   public static DcMotorEx intake;
   public static ContinuousMotorMechanism transfer;
   public static MotorMechanism outtakeTurret;
+  public static ServoMechanism hood;
   public static PIDFController outtakeTurretController;
   public static ContinuousMotorMechanism outtake;
   public static PIDFController outtakeController;
@@ -85,6 +93,9 @@ public class Robot{
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -90, 90, -537.7/4*4, 537.7/4*4, 1872);
       outtakeTurretController = new PIDFController(1.0/8.0, 0);
+
+      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
+      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
 
       DcMotorEx outtakeMotor = hardwareMap.get(DcMotorEx.class, "outtake");
       outtakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -127,7 +138,7 @@ public class Robot{
       intake.setDirection(DcMotorSimple.Direction.REVERSE);
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-      outtakeTurret.motor.setTargetPosition(outtake.motor.getCurrentPosition());
+      outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
       outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
       outtake.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -144,13 +155,18 @@ public class Robot{
     }
   }
 
+  public static Vector2d calculateGoalRelativeToOuttake(Pose2d robotPose){
+    double turretXOffset = TURRET_OFFSET_LENGTH*Math.cos(Math.toRadians(TURRET_OFFSET_ANGLE)+robotPose.heading.log());
+    double turretYOffset = TURRET_OFFSET_LENGTH*Math.sin(Math.toRadians(TURRET_OFFSET_ANGLE)+robotPose.heading.log());
+
+    return new Vector2d(-71.0-robotPose.position.x-turretXOffset, (alliance == Alliance.BLUE ? -71.0 : 71.0)-robotPose.position.y-turretYOffset);
+  }
   public static double calculateOuttakeTurretAim(Pose2d robotPose){
-    double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
-    double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
+    Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
     double targetTurretPos = Math.toDegrees(
             Math.atan2(
-                    (alliance == Alliance.BLUE ? -72.0 : 72.0)-robotPose.position.y-turretYOffset,
-                    -72.0-robotPose.position.x-turretXOffset
+                    goalRelativeToOuttake.y,
+                    goalRelativeToOuttake.x
             )
     );
     return targetTurretPos;
@@ -162,7 +178,7 @@ public class Robot{
     double robotPovAngle = Rotation2d.fromDouble(theta).times(velAdjustedAngle).log();
     return Math.toDegrees(robotPovAngle);
   }
-  public static double artifactPos(Pose2d robotPose, PoseVelocity2d robotVel, double v0, double theta, double x){
+  public static double calculateArtifactPos(Pose2d robotPose, PoseVelocity2d robotVel, double v0, double theta, double x){
     double angleToGoal = Math.toRadians(calculateOuttakeTurretAim(robotPose));
     Vector2d robotLinearVelGoalPerspective = Rotation2d.fromDouble(-angleToGoal).times(robotVel.linearVel);
     Rotation2d velAdjustedAngle = Rotation2d.fromDouble(Math.asin(-(robotLinearVelGoalPerspective.y/12.0)/v0));
@@ -176,23 +192,47 @@ public class Robot{
 
     return y;
   }
-  public static double calculateArtifactShootVel(Pose2d robotPose, PoseVelocity2d robotVelocity, double height){
-    double turretXOffset = 2.9*Math.cos(Math.toRadians(-150.0)+robotPose.heading.log());
-    double turretYOffset = 2.9*Math.sin(Math.toRadians(-150.0)+robotPose.heading.log());
+  public static double calculateArtifactShootVel(Pose2d robotPose, PoseVelocity2d robotVelocity, double theta, double height){
+    Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
     double currDistance = Math.sqrt(
-            Math.pow((alliance == Alliance.BLUE ? -71.0 : 71.0)-robotPose.position.y-turretYOffset, 2)+
-                    Math.pow(-71.0-robotPose.position.x-turretXOffset, 2)
+            Math.pow(goalRelativeToOuttake.x, 2)+Math.pow(goalRelativeToOuttake.y, 2)
     );
     telemetry.addData("Curr Distance (in)", currDistance);
     double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> height/12.0 < artifactPos(robotPose, robotVelocity, vel,45.0, currDistance/12.0));
+            (vel) -> height/12.0 < calculateArtifactPos(robotPose, robotVelocity, vel,theta, currDistance/12.0));
     telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
     return targetArtifactVel;
   }
+  public static double calculateOuttakeVelInitial(double targetArtifactVel){
+    return (((targetArtifactVel/SHOOT_TRANSFER_FACTOR)/(2*Math.PI*SHOOT_RADIUS))*360.0)/SHOOT_SLOWDOWN_FACTOR;
+  }
+  public static double calculateTimeToChangeOuttakeVel(double initialVel, double targetVel){
+    if(targetVel > OUTTAKE_MAX_VEL || targetVel < -OUTTAKE_MAX_VEL){
+      return Double.POSITIVE_INFINITY;
+    }
+    double maxVel = targetVel > initialVel ? OUTTAKE_MAX_VEL : -OUTTAKE_MAX_VEL;
+    return Math.log((-targetVel+maxVel)/(-initialVel+maxVel))/(-OUTTAKE_C_COEFF);
+  }
+  public static double calculateTimeToChangeHoodAngle(double initialAngle, double targetAngle){
+    return Math.abs(targetAngle-initialAngle)/(HOOD_VEL*360.0);
+  }
   public static double[] calculateShoot(Pose2d robotPose, PoseVelocity2d robotVelocity, double height){
-    double mag = calculateArtifactShootVel(robotPose, robotVelocity, height);
-    double theta = calculateOuttakeTurretAim(robotPose, robotVelocity, mag);
-    return new double[]{theta, mag};
+    double bestMag = Double.POSITIVE_INFINITY;
+    double bestHoodTheta = HOOD_MIN_ANGLE;
+    double bestTime = Double.POSITIVE_INFINITY;
+    for(double hoodTheta = HOOD_MIN_ANGLE; hoodTheta <= HOOD_MAX_ANGLE; hoodTheta += 0.5){
+      double mag = calculateArtifactShootVel(robotPose, robotVelocity, hoodTheta, height);
+      double timeToVel = calculateTimeToChangeOuttakeVel(outtake.getVel(), calculateOuttakeVelInitial(mag));
+      double timeToAngle = calculateTimeToChangeHoodAngle(hood.getPos(), hoodTheta);
+      double timeToShoot = Math.max(timeToVel, timeToAngle);
+      if(timeToShoot < bestTime){
+          bestTime = timeToShoot;
+          bestMag = mag;
+          bestHoodTheta = hoodTheta;
+      }
+    }
+    double theta = calculateOuttakeTurretAim(robotPose, robotVelocity, bestMag);
+    return new double[]{theta, bestMag, bestHoodTheta};
   }
 
   public static void aimOuttakeTurret(double theta, Pose2d robotPose, boolean pid){
@@ -257,31 +297,17 @@ public class Robot{
     Pose2d futureRobotPose = new Pose2d(robotPose.position.x + SHOOT_LEAD_TIME*robotVelocity.linearVel.x, robotPose.position.y + SHOOT_LEAD_TIME*robotVelocity.linearVel.y, robotPose.heading.toDouble());
 
     double maxMag = calculateShoot(robotPose, robotVelocity, SHOOT_MAX_HEIGHT)[1];
-    telemetry.addData("Max Artifact Vel (ft/s)", maxMag);
-    double maxOuttakeVel = maxMag/SHOOT_TRANSFER_FACTOR;
-    telemetry.addData("Max Outtake Vel (ft/s)", maxOuttakeVel);
-    double maxOuttakeAngVel = maxOuttakeVel/(2*Math.PI*SHOOT_RADIUS)*360.0;
-    telemetry.addData("Max Outtake Ang Vel (deg/s)", maxOuttakeAngVel);
-    double maxOuttakeAngVelInitial = maxOuttakeAngVel/SHOOT_SLOWDOWN_FACTOR;
+    double maxOuttakeAngVelInitial = calculateOuttakeVelInitial(maxMag);
     telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", maxOuttakeAngVelInitial);
 
     double minMag = calculateShoot(robotPose, robotVelocity, SHOOT_MIN_HEIGHT)[1];
-    telemetry.addData("Min Artifact Vel (ft/s)", minMag);
-    double minOuttakeVel = minMag/SHOOT_TRANSFER_FACTOR;
-    telemetry.addData("Min Outtake Vel (ft/s)", minOuttakeVel);
-    double minOuttakeAngVel = minOuttakeVel/(2*Math.PI*SHOOT_RADIUS)*360.0;
-    telemetry.addData("Min Outtake Ang Vel (deg/s)", minOuttakeAngVel);
-    double minOuttakeAngVelInitial = minOuttakeAngVel/SHOOT_SLOWDOWN_FACTOR;
+    double minOuttakeAngVelInitial = calculateOuttakeVelInitial(minMag);
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
     double targetMag = calculateShoot(futureRobotPose, robotVelocity, targetHeight)[1];
-    telemetry.addData("Target Artifact Vel (ft/s)", targetMag);
-    double targetOuttakeVel = targetMag/SHOOT_TRANSFER_FACTOR;
-    telemetry.addData("Target Outtake Vel (ft/s)", targetOuttakeVel);
-    double targetOuttakeAngVel = targetOuttakeVel/(2*Math.PI*SHOOT_RADIUS)*360.0;
-    telemetry.addData("Target Outtake Ang Vel (deg/s)", targetOuttakeAngVel);
-    double targetOuttakeAngVelInitial = targetOuttakeAngVel/SHOOT_SLOWDOWN_FACTOR;
+    double targetOuttakeAngVelInitial = calculateOuttakeVelInitial(targetMag);
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
+
     shootOuttake(targetOuttakeAngVelInitial, pid);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
 
