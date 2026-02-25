@@ -195,7 +195,8 @@ public class Robot{
   public static double calculateArtifactShootVel(Pose2d robotPose, PoseVelocity2d robotVelocity, double theta, double height){
     Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
     double currDistance = Math.sqrt(
-            Math.pow(goalRelativeToOuttake.x, 2)+Math.pow(goalRelativeToOuttake.y, 2)
+            goalRelativeToOuttake.x*goalRelativeToOuttake.x+
+            goalRelativeToOuttake.y*goalRelativeToOuttake.y
     );
     telemetry.addData("Curr Distance (in)", currDistance);
     double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
@@ -304,11 +305,14 @@ public class Robot{
     double minOuttakeAngVelInitial = calculateOuttakeVelInitial(minMag);
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 
-    double targetMag = calculateShoot(futureRobotPose, robotVelocity, targetHeight)[1];
+    double[] targetShootParams = calculateShoot(futureRobotPose, robotVelocity, targetHeight);
+    double targetMag = targetShootParams[1];
+    double targetHoodTheta = targetShootParams[2];
     double targetOuttakeAngVelInitial = calculateOuttakeVelInitial(targetMag);
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
 
     shootOuttake(targetOuttakeAngVelInitial, pid);
+    hood.setPos(targetHoodTheta);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
 
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
