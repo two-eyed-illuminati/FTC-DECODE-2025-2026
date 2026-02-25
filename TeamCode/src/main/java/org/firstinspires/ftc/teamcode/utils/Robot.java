@@ -183,8 +183,8 @@ public class Robot{
     Vector2d robotLinearVelGoalPerspective = Rotation2d.fromDouble(-angleToGoal).times(robotVel.linearVel);
     Rotation2d velAdjustedAngle = Rotation2d.fromDouble(Math.asin(-(robotLinearVelGoalPerspective.y/12.0)/v0));
 
-    double v0x = v0*Math.cos(Math.toRadians(theta))*Math.cos(velAdjustedAngle.log()) + robotLinearVelGoalPerspective.x/12.0;
-    double v0y = v0*Math.sin(Math.toRadians(theta));
+    double v0x = v0*Math.sin(Math.toRadians(theta))*Math.cos(velAdjustedAngle.log()) + robotLinearVelGoalPerspective.x/12.0;
+    double v0y = v0*Math.cos(Math.toRadians(theta));
     double a = 0.5*(SHOOT_DRAG);
     double b = v0x;
     double t = (-b+Math.sqrt(b*b-4*a*(-x)))/(2*a);
