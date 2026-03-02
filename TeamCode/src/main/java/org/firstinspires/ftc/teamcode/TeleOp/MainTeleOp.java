@@ -150,7 +150,6 @@ public class MainTeleOp extends OpMode {
         }
 
         Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());
-        Robot.telemetry.addData("Actual Transfer Up Vel (deg/s)", Robot.transfer.getVel());
 
         Robot.telemetry.update();
     }

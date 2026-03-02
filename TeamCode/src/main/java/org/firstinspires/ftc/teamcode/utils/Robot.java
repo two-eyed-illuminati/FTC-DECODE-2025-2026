@@ -53,7 +53,6 @@ public class Robot{
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
   public static DcMotorEx intake;
-  public static ContinuousMotorMechanism transfer;
   public static MotorMechanism outtakeTurret;
   public static ServoMechanism hood;
   public static PIDFController outtakeTurretController;
@@ -80,11 +79,6 @@ public class Robot{
       intake = hardwareMap.get(DcMotorEx.class, "intake");
       intake.setDirection(DcMotorSimple.Direction.REVERSE);
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-      DcMotorEx transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
-      transfer = new ContinuousMotorMechanism(transferMotor,
-              360.0/145.1, 6900
-      );
 
       DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "outtakeTurret");
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -362,7 +356,6 @@ public class Robot{
 
       if(elapsedTime.seconds() > time){
         intake.setPower(0);
-        transfer.setPos(0, 0);
         outtake.setPos(0, 0);
         return false;
       }
@@ -381,22 +374,18 @@ public class Robot{
         }
         attemptingToShoot = true;
         intake.setPower(1.0);
-        transfer.setPos(0, 0.65*transfer.maxVel);
       }
       else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175){
         attemptingToShoot = false;
         intake.setPower(-1.0);
-        transfer.setPos(0, -transfer.maxVel);
       }
       else{
         attemptingToShoot = false;
-        intake.setPower(1.0);
-        transfer.setPos(0, (outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ? transfer.maxVel : 0.0);
+        intake.setPower((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ? 1.0 : 0.0);
       }
 
       packet.put("Elapsed Time (s)", elapsedTime.seconds());
       packet.put("Outtake Vel (deg/s)", outtake.getVel());
-      packet.put("Transfer Vel (deg/s)", transfer.getVel());
       packet.put("Min Outtake Vel (deg/s)", outtakeVels[0]);
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
       packet.put("Outtake Turret Pos (deg)", outtakeTurret.getPos());
