@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package com.example.meepmeep;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -6,8 +6,6 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
-
-import org.firstinspires.ftc.teamcode.utils.Robot;
 
 import java.util.ArrayList;
 
