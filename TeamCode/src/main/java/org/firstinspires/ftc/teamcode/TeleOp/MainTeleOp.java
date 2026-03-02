@@ -75,15 +75,20 @@ public class MainTeleOp extends OpMode {
                     -gamepad1.left_stick_x
             );
         }
-        double driveMultiplier = gamepad1.left_trigger > 0.8 ? 0.6 : 1.0;
-        driveVector = driveVector.times(driveMultiplier);
 
-        double rotation = (-gamepad1.right_stick_x) * driveMultiplier;
+        double rotation = (-gamepad1.right_stick_x);
         Robot.drive.setDrivePowers(new PoseVelocity2d(
                 driveVector,
                 rotation
         ));
 
+        if(gamepad1.left_trigger > 0.8){
+            telemetry.addData("Mode", "prep shoot");
+            Robot.intake.setPower(1.0);
+            Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
+            Robot.aimOuttakeTurret(currDriveVel);
+            Robot.shootOuttake(currDriveVel);
+        }
         if(gamepad1.a){
             telemetry.addData("Mode", "stop intake");
             Robot.intake.setPower(0.0);
