@@ -89,7 +89,7 @@ public class MainTeleOp extends OpMode {
             Robot.aimOuttakeTurret(currDriveVel);
             Robot.shootOuttake(currDriveVel);
         }
-        if(gamepad1.a){
+        else if(gamepad1.a){
             telemetry.addData("Mode", "stop intake");
             Robot.intake.setPower(0.0);
             Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
