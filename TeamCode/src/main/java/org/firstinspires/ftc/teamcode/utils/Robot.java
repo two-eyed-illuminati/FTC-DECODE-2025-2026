@@ -33,6 +33,8 @@ public class Robot{
   public static double START_X = -57.0586;
   public static double START_Y = -43.8964;
   public static double START_HEADING = -126.5;
+  public static double STOPPER_CLOSED_POS = 0.0;
+  public static double STOPPER_OPEN_POS = 0.5;
   public static double TURRET_OFFSET_LENGTH = 2.9;
   public static double TURRET_OFFSET_ANGLE = -150.0;
   public static double SHOOT_LEAD_TIME = 0.6;
@@ -53,6 +55,7 @@ public class Robot{
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
   public static DcMotorEx intake;
+  public static Servo stopper;
   public static MotorMechanism outtakeTurret;
   public static ServoMechanism hood;
   public static PIDFController outtakeTurretController;
@@ -79,6 +82,8 @@ public class Robot{
       intake = hardwareMap.get(DcMotorEx.class, "intake");
       intake.setDirection(DcMotorSimple.Direction.REVERSE);
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+      stopper = hardwareMap.get(Servo.class, "stopper");
 
       DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "outtakeTurret");
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -150,7 +155,8 @@ public class Robot{
   }
 
   public static void beginIntake(){
-    Robot.intake.setPower(1.0);
+    intake.setPower(1.0);
+    stopper.setPosition(STOPPER_CLOSED_POS);
   }
 
   public static Vector2d calculateGoalRelativeToOuttake(Pose2d robotPose){
@@ -359,6 +365,7 @@ public class Robot{
         outtake.setPos(0, 0);
         return false;
       }
+      stopper.setPosition(STOPPER_OPEN_POS);
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
 
