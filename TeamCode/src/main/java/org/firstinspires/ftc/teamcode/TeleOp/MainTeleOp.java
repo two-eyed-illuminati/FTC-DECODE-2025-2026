@@ -82,21 +82,7 @@ public class MainTeleOp extends OpMode {
                 rotation
         ));
 
-        if(gamepad1.left_trigger > 0.8){
-            telemetry.addData("Mode", "prep shoot");
-            Robot.intake.setPower(1.0);
-            Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
-            Robot.aimOuttakeTurret(currDriveVel);
-            Robot.shootOuttake(currDriveVel);
-        }
-        else if(gamepad1.a){
-            telemetry.addData("Mode", "stop intake");
-            Robot.intake.setPower(0.0);
-            Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
-            Robot.aimOuttakeTurret(currDriveVel);
-            Robot.outtake.setPos(0, -5760.0);
-        }
-        else if(gamepad1.right_trigger > 0.8){
+        if(gamepad1.right_trigger > 0.8){
             telemetry.addData("Mode", "shoot");
             Robot.intake.setPower(1.0);
 
@@ -113,6 +99,20 @@ public class MainTeleOp extends OpMode {
                 Robot.transfer.setPos(0, 0.0);
             }
             Robot.aimOuttakeTurret(currDriveVel);
+        }
+        else if(gamepad1.left_trigger > 0.8){
+            telemetry.addData("Mode", "prep shoot");
+            Robot.intake.setPower(1.0);
+            Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
+            Robot.aimOuttakeTurret(currDriveVel);
+            Robot.shootOuttake(currDriveVel);
+        }
+        else if(gamepad1.a){
+            telemetry.addData("Mode", "stop intake");
+            Robot.intake.setPower(0.0);
+            Robot.transfer.setPos(0, 0.0*Robot.transfer.maxVel);
+            Robot.aimOuttakeTurret(currDriveVel);
+            Robot.outtake.setPos(0, -5760.0);
         }
         else if(gamepad1.x){
             telemetry.addData("Mode", "reverse");
