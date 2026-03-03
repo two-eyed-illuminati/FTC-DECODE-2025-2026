@@ -95,7 +95,7 @@ public class MainTeleOp extends OpMode {
             telemetry.addData("Mode", "shoot");
             Robot.intake.setPower(1.0);
 
-            double[] outtakeVels = Robot.shootOuttake(currDriveVel);
+            double[] outtakeVels = Robot.shootOuttake(currDriveVel, true);
             currentMinOuttakeVel = outtakeVels[0];
             currentMaxOuttakeVel = outtakeVels[1];
 
@@ -127,16 +127,17 @@ public class MainTeleOp extends OpMode {
             Robot.intake.setPower(1.0);
             Robot.transfer.setPos(0, -0.05*Robot.transfer.maxVel);
             Robot.aimOuttakeTurret(currDriveVel);
-            Pose2d futureRobotPose = new Pose2d(Robot.drive.localizer.getPose().position.x + 2.0*currDriveVel.linearVel.x, Robot.drive.localizer.getPose().position.y + 2.0*currDriveVel.linearVel.y, Robot.drive.localizer.getPose().heading.toDouble());
-            if(futureRobotPose.position.x + Math.abs(futureRobotPose.position.y) < 36){
+            double LEAD_TIME = 0.25;
+            Pose2d futureRobotPose = new Pose2d(Robot.drive.localizer.getPose().position.x + LEAD_TIME*currDriveVel.linearVel.x, Robot.drive.localizer.getPose().position.y + LEAD_TIME*currDriveVel.linearVel.y, Robot.drive.localizer.getPose().heading.toDouble());
+            if(futureRobotPose.position.x + Math.abs(futureRobotPose.position.y) < 24){
                 Robot.telemetry.addData("In Launch Zone", 1);
-                double[] outtakeVels = Robot.shootOuttake(currDriveVel);
+                double[] outtakeVels = Robot.shootOuttake(currDriveVel, true);
                 currentMinOuttakeVel = outtakeVels[0];
                 currentMaxOuttakeVel = outtakeVels[1];
             }
             else{
                 Robot.telemetry.addData("In Launch Zone", 0);
-                Robot.outtake.setPos(0, -5760.0);
+                Robot.shootOuttake(currDriveVel, false);
                 currentMinOuttakeVel = 0.0;
                 currentMaxOuttakeVel = 0.0;
             }

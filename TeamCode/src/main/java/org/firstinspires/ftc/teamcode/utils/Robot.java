@@ -260,25 +260,25 @@ public class Robot{
     }
     telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
   }
-  public static void aimOuttakeTurret(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid, boolean findBestHoodAngle){
+  public static void aimOuttakeTurret(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
     Pose2d futureRobotPose = new Pose2d(robotPose.position.x + SHOOT_LEAD_TIME*robotVelocity.linearVel.x, robotPose.position.y + SHOOT_LEAD_TIME*robotVelocity.linearVel.y, robotPose.heading.toDouble());
-    double theta = calculateShoot(futureRobotPose, robotVelocity, SHOOT_TARGET_HEIGHT, findBestHoodAngle)[0];
+    double theta = calculateShoot(futureRobotPose, robotVelocity, SHOOT_TARGET_HEIGHT, false)[0];
     aimOuttakeTurret(theta, futureRobotPose, pid);
   }
   // For Auto
   public static void aimOuttakeTurret(Pose2d robotPose){
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
-    aimOuttakeTurret(robotPose, robotVelocity, false, false);
+    aimOuttakeTurret(robotPose, robotVelocity, false);
   }
   // For Tele
-  public static void aimOuttakeTurret(PoseVelocity2d robotVelocity, boolean findBestHoodAngle){
+  public static void aimOuttakeTurret(PoseVelocity2d robotVelocity){
     Pose2d robotPose = drive.localizer.getPose();
-    aimOuttakeTurret(robotPose, robotVelocity, true, findBestHoodAngle);
+    aimOuttakeTurret(robotPose, robotVelocity, true);
   }
   public static void aimOuttakeTurret(){
     Pose2d robotPose = drive.localizer.getPose();
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
-    aimOuttakeTurret(robotPose, robotVelocity,true, true);
+    aimOuttakeTurret(robotPose, robotVelocity, true);
   }
 
   public static void shootOuttake(double mag, boolean pid){
