@@ -96,9 +96,11 @@ public class Robot{
       Servo hoodServo = hardwareMap.get(Servo.class, "hood");
       hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
 
-      DcMotorEx outtakeMotor = hardwareMap.get(DcMotorEx.class, "outtake");
-      outtakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-      outtake = new ContinuousMotorMechanism(outtakeMotor,
+      DcMotorEx outtakeMotor1 = hardwareMap.get(DcMotorEx.class, "outtake1");
+      DcMotorEx outtakeMotor2 = hardwareMap.get(DcMotorEx.class, "outtake2");
+      DualMotor outtakeMotors = new DualMotor(outtakeMotor1, outtakeMotor2);
+      outtakeMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      outtake = new ContinuousMotorMechanism(outtakeMotors,
               360.0/28.0, 36000.0
       );
       outtakeController = new PIDFController(1.0/2000.0, 1.0/30345.0);
