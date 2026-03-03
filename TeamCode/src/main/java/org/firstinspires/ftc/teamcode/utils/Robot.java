@@ -36,7 +36,7 @@ public class Robot{
   public static double SHOOT_LEAD_TIME = 0.6;
   public static double SHOOT_MIN_HEIGHT = 40.0;
   public static double SHOOT_MAX_HEIGHT = 49.0;
-  public static double SHOOT_TARGET_HEIGHT = 46.5;
+  public static double SHOOT_TARGET_HEIGHT = 48.0;
   public static double SHOOT_SLOWDOWN_FACTOR = 0.89;
   public static double SHOOT_RADIUS = 0.1181102362;
   public static double SHOOT_TRANSFER_FACTOR = 0.5714;
