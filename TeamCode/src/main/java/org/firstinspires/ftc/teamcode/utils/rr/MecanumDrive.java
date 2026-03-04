@@ -346,7 +346,7 @@ public final class MecanumDrive {
             p.put("headingError (deg)", Math.toDegrees(error.heading.toDouble()));
 
             // only draw when active; only one drive action should be active at a time
-            Canvas c = p.fieldOverlay();
+            Canvas c = p.fieldOverlay().drawImage("/images/decode.webp", 0, 0, 144, 144);
             drawPoseHistory(c);
 
             c.setStroke("#4CAF50");
@@ -427,7 +427,7 @@ public final class MecanumDrive {
             rightBack.setPower(feedforward.compute(wheelVels.rightBack) / voltage);
             rightFront.setPower(feedforward.compute(wheelVels.rightFront) / voltage);
 
-            Canvas c = p.fieldOverlay();
+            Canvas c = p.fieldOverlay().drawImage("/images/decode.webp", 0, 0, 144, 144);
             drawPoseHistory(c);
 
             c.setStroke("#4CAF50");
