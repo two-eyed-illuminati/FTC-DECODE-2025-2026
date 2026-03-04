@@ -15,8 +15,8 @@ public class MeepMeepCurrent {
                 .setDimensions(15, 18)
                 .build();
 
-        double START_X = -57.0586;
-        double START_Y = -43.8964;
+        double START_X = -49.0;
+        double START_Y = -50.5;
         double START_HEADING = -126.5;
 
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));

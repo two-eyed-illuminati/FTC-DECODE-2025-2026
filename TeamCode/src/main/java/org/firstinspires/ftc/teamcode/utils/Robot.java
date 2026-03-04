@@ -84,7 +84,6 @@ public class Robot{
       drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
       intake = hardwareMap.get(DcMotorEx.class, "intake");
-      intake.setDirection(DcMotorSimple.Direction.REVERSE);
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
       stopper = hardwareMap.get(Servo.class, "stopper");
@@ -142,7 +141,6 @@ public class Robot{
             FtcDashboard.getInstance().getTelemetry() // Dashboard telemetry
     );
     if(initialized) {
-      intake.setDirection(DcMotorSimple.Direction.REVERSE);
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 //      outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
@@ -330,7 +328,7 @@ public class Robot{
     telemetry.addData("Target Outtake Ang Vel Initial (deg/s)", targetOuttakeAngVelInitial);
 
     shootOuttake(targetOuttakeAngVelInitial, pid);
-    hood.setPos(targetHoodTheta);
+//    hood.setPos(targetHoodTheta);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
 
     return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};

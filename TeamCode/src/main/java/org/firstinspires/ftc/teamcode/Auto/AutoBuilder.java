@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
@@ -30,8 +31,8 @@ public class AutoBuilder {
     public static double PRELOAD_SHOOT_Y = -23.9996985274;
     public AutoBuilder goToShoot(){
         currentTab = currentTab.afterTime(0, () -> {
-            Robot.aimOuttakeTurret(new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING));
-            Robot.shootOuttake(new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING), 46.5);
+//            Robot.aimOuttakeTurret(new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING));
+//            Robot.shootOuttake(new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING), 46.5);
         });
         if(!actions.isEmpty() && actions.get(actions.size()-1).contains("IntakeSpike")){
             currentTab = currentTab.splineToSplineHeading(
@@ -51,7 +52,7 @@ public class AutoBuilder {
         return this;
     }
     public AutoBuilder shoot(){
-        actionObjs.add(Robot.getShootSequenceAction());
+//        actionObjs.add(Robot.getShootSequenceAction());
         actions.add("Shoot");
         return this;
     }
@@ -93,6 +94,9 @@ public class AutoBuilder {
     public static double SPIKE_RAMP_END_Y = -55.1282;
     public static double SPIKE_TUNNEL_END_Y = -62.1282;
     public AutoBuilder intakeSpike1(){
+        currentTab = currentTab.afterTime(0, () -> {
+            Robot.beginIntake();
+        });
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(SPIKE_1_X, SPIKE_RAMP_END_Y),
                 SPIKE_HEADING,
@@ -103,6 +107,9 @@ public class AutoBuilder {
     }
     public static double SPIKE_2_END_X = 13.8457;
     public AutoBuilder intakeSpike2(){
+        currentTab = currentTab.afterTime(0, () -> {
+            Robot.beginIntake();
+        });
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(SPIKE_2_END_X, SPIKE_TUNNEL_END_Y),
                 SPIKE_HEADING,
@@ -122,6 +129,9 @@ public class AutoBuilder {
         return this;
     }
     public AutoBuilder intakeSpike3(){
+        currentTab = currentTab.afterTime(0, () -> {
+            Robot.beginIntake();
+        });
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(SPIKE_3_X, SPIKE_TUNNEL_END_Y),
                 SPIKE_HEADING,
@@ -139,17 +149,25 @@ public class AutoBuilder {
         return this;
     }
 
-    public static double GATE_X = -5.0;
+    public static double GATE_X = -6.5;
     public static double GATE_Y_BEFORE_HIT = -50.0;
     public static double GATE_Y_HIT = -55.0;
     public static double GATE_HIT_TIME = 0.05;
     public AutoBuilder goToGateHit(){
+        VelConstraint constraint = (robotPose, _path, _disp) -> {
+            if(Math.abs(robotPose.position.x.value()-GATE_X) < 5.0){
+                return 15.0;
+            }
+            return 50;
+        };
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(GATE_X, GATE_Y_BEFORE_HIT),
-                SPIKE_HEADING
+                SPIKE_HEADING,
+                constraint
         ).splineToConstantHeading(
                 new Vector2d(GATE_X, GATE_Y_HIT),
-                SPIKE_HEADING
+                SPIKE_HEADING,
+                new TranslationalVelConstraint(15.0)
         ).waitSeconds(GATE_HIT_TIME);
         actions.add("GoToGateHit");
         return this;

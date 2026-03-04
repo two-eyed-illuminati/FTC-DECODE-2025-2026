@@ -22,9 +22,9 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 @Autonomous(name="Auto Goal Zone", group="Main")
 @Config
 public class AutoGoalZone extends LinearOpMode {
-    public static double START_X = -57.0586;
-    public static double START_Y = -43.8964;
-    public static double START_HEADING = -126.5;
+    double START_X = -49.0;
+    double START_Y = -50.5;
+    double START_HEADING = -126.5;
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));

@@ -91,6 +91,9 @@ public class AutoBuilder {
     public static double SPIKE_RAMP_END_Y = -55.1282;
     public static double SPIKE_TUNNEL_END_Y = -62.1282;
     public AutoBuilder intakeSpike1(){
+        currentTab = currentTab.afterTime(0, () -> {
+            Robot.beginIntake();
+        });
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(SPIKE_1_X, SPIKE_RAMP_END_Y),
                 SPIKE_HEADING,
@@ -101,6 +104,9 @@ public class AutoBuilder {
     }
     public static double SPIKE_2_END_X = 13.8457;
     public AutoBuilder intakeSpike2(){
+        currentTab = currentTab.afterTime(0, () -> {
+            Robot.beginIntake();
+        });
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(SPIKE_2_END_X, SPIKE_TUNNEL_END_Y),
                 SPIKE_HEADING,
@@ -120,6 +126,9 @@ public class AutoBuilder {
         return this;
     }
     public AutoBuilder intakeSpike3(){
+        currentTab = currentTab.afterTime(0, () -> {
+            Robot.beginIntake();
+        });
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(SPIKE_3_X, SPIKE_TUNNEL_END_Y),
                 SPIKE_HEADING,
@@ -147,7 +156,8 @@ public class AutoBuilder {
                 SPIKE_HEADING
         ).splineToConstantHeading(
                 new Vector2d(GATE_X, GATE_Y_HIT),
-                SPIKE_HEADING
+                SPIKE_HEADING,
+                new TranslationalVelConstraint(15.0)
         ).waitSeconds(GATE_HIT_TIME);
         actions.add("GoToGateHit");
         return this;
