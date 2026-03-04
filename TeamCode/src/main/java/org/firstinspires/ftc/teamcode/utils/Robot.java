@@ -62,8 +62,10 @@ public class Robot{
   public static ContinuousMotorMechanism outtake;
   public static PIDFController outtakeController;
   public static Limelight3A limelight;
-  public static DistanceSensor intakeDistanceSensor;
-  public static Servo led;
+  public static DistanceSensor frontDistanceSensor;
+  public static DistanceSensor topDistanceSensor;
+  public static Servo ledLeft;
+  public static Servo ledRight;
   public static MultipleTelemetry telemetry;
   //Stored Values
   public enum Alliance{
@@ -109,9 +111,11 @@ public class Robot{
       limelight.pipelineSwitch(5);
       limelight.start();
 
-      intakeDistanceSensor = hardwareMap.get(DistanceSensor.class, "intakeDistanceSensor");
+      frontDistanceSensor = hardwareMap.get(DistanceSensor.class, "frontDistanceSensor");
+      topDistanceSensor = hardwareMap.get(DistanceSensor.class, "topDistanceSensor");
 
-      led = hardwareMap.get(Servo.class, "led");
+      ledLeft = hardwareMap.get(Servo.class, "ledLeft");
+      ledRight = hardwareMap.get(Servo.class, "ledRight");
 
       drive.localizer.setPose(new Pose2d(
               START_X,
