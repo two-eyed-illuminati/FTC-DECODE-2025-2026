@@ -141,7 +141,7 @@ public class MainTeleOp extends OpMode {
             }
         }
 
-        if(Robot.frontDistanceSensor.getDistance(DistanceUnit.CM) < 10.0){
+        if(Robot.voltageToDistance(Robot.frontDistanceSensor.getVoltage()) < Robot.FRONT_DISTANCE_SENSOR_DETECTION_THRESH){
             Robot.ledLeft.setPosition(0.50);
             Robot.ledRight.setPosition(0.50);
         }

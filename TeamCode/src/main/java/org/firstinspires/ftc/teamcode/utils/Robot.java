@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -33,8 +34,9 @@ public class Robot{
   public static double START_X = -57.0586;
   public static double START_Y = -43.8964;
   public static double START_HEADING = -126.5;
-  public static double STOPPER_CLOSED_POS = 0.0;
-  public static double STOPPER_OPEN_POS = 0.5;
+  public static double STOPPER_CLOSED_POS = 0.65;
+  public static double STOPPER_OPEN_POS = 0.3;
+  public static double FRONT_DISTANCE_SENSOR_DETECTION_THRESH = 8.2;
   public static double TURRET_OFFSET_LENGTH = 2.9;
   public static double TURRET_OFFSET_ANGLE = -150.0;
   public static double SHOOT_LEAD_TIME = 0.6;
@@ -62,8 +64,8 @@ public class Robot{
   public static ContinuousMotorMechanism outtake;
   public static PIDFController outtakeController;
   public static Limelight3A limelight;
-  public static DistanceSensor frontDistanceSensor;
-  public static DistanceSensor topDistanceSensor;
+  public static AnalogInput frontDistanceSensor;
+  public static AnalogInput topDistanceSensor;
   public static Servo ledLeft;
   public static Servo ledRight;
   public static MultipleTelemetry telemetry;
@@ -87,7 +89,7 @@ public class Robot{
 
       stopper = hardwareMap.get(Servo.class, "stopper");
 
-      DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "outtakeTurret");
+      DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "turret");
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       outtakeTurretMotor.setTargetPosition(0);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -95,24 +97,24 @@ public class Robot{
               -90, 90, -537.7/4*4, 537.7/4*4, 1872);
       outtakeTurretController = new PIDFController(1.0/8.0, 0);
 
-      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
-      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
+//      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
+//      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
 
-      DcMotorEx outtakeMotor1 = hardwareMap.get(DcMotorEx.class, "outtake1");
-      DcMotorEx outtakeMotor2 = hardwareMap.get(DcMotorEx.class, "outtake2");
-      DualMotor outtakeMotors = new DualMotor(outtakeMotor1, outtakeMotor2);
-      outtakeMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-      outtake = new ContinuousMotorMechanism(outtakeMotors,
-              360.0/28.0, 36000.0
-      );
-      outtakeController = new PIDFController(1.0/2000.0, 1.0/30345.0);
+//      DcMotorEx outtakeMotor1 = hardwareMap.get(DcMotorEx.class, "outtake1");
+//      DcMotorEx outtakeMotor2 = hardwareMap.get(DcMotorEx.class, "outtake2");
+//      DualMotor outtakeMotors = new DualMotor(outtakeMotor1, outtakeMotor2);
+//      outtakeMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//      outtake = new ContinuousMotorMechanism(outtakeMotors,
+//              360.0/28.0, 36000.0
+//      );
+//      outtakeController = new PIDFController(1.0/2000.0, 1.0/30345.0);
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
       limelight.start();
 
-      frontDistanceSensor = hardwareMap.get(DistanceSensor.class, "frontDistanceSensor");
-      topDistanceSensor = hardwareMap.get(DistanceSensor.class, "topDistanceSensor");
+      frontDistanceSensor = hardwareMap.get(AnalogInput.class, "frontDistance");
+      topDistanceSensor = hardwareMap.get(AnalogInput.class, "topDistance");
 
       ledLeft = hardwareMap.get(Servo.class, "ledLeft");
       ledRight = hardwareMap.get(Servo.class, "ledRight");
@@ -143,10 +145,10 @@ public class Robot{
       intake.setDirection(DcMotorSimple.Direction.REVERSE);
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-      outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
-      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//      outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
+//      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-      outtake.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//      outtake.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
       drive.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
       drive.leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -163,6 +165,10 @@ public class Robot{
   public static void beginIntake(){
     intake.setPower(1.0);
     stopper.setPosition(STOPPER_CLOSED_POS);
+  }
+
+  public static double voltageToDistance(double voltage){
+    return (voltage / 3.3) * 39.37;
   }
 
   public static Vector2d calculateGoalRelativeToOuttake(Pose2d robotPose){
