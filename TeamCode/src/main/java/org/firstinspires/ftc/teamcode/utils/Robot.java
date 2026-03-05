@@ -52,7 +52,7 @@ public class Robot{
   public static double OUTTAKE_MAX_VEL = 30345.0;
   public static double OUTTAKE_C_COEFF = 1.12;
   public static double HOOD_MIN_ANGLE = 45.0;
-  public static double HOOD_MAX_ANGLE = 68.5;
+  public static double HOOD_MAX_ANGLE = 45.0;
   public static double HOOD_VEL = 0.5;
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
@@ -93,20 +93,20 @@ public class Robot{
       outtakeTurretMotor.setTargetPosition(0);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
-              -90, 90, -537.7/4*4, 537.7/4*4, 1872);
-      outtakeTurretController = new PIDFController(1.0/8.0, 0);
+              -90, 90, -384.5/4*4, 384.5/4*4, 1872);
+      outtakeTurretController = new PIDFController(1.0/32.0, 0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
 //      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
 
-//      DcMotorEx outtakeMotor1 = hardwareMap.get(DcMotorEx.class, "outtake1");
+      DcMotorEx outtakeMotor1 = hardwareMap.get(DcMotorEx.class, "outtake");
 //      DcMotorEx outtakeMotor2 = hardwareMap.get(DcMotorEx.class, "outtake2");
 //      DualMotor outtakeMotors = new DualMotor(outtakeMotor1, outtakeMotor2);
 //      outtakeMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//      outtake = new ContinuousMotorMechanism(outtakeMotors,
-//              360.0/28.0, 36000.0
-//      );
-//      outtakeController = new PIDFController(1.0/2000.0, 1.0/30345.0);
+      outtake = new ContinuousMotorMechanism(outtakeMotor1,
+              360.0/28.0, 36000.0
+      );
+      outtakeController = new PIDFController(1.0/2000.0, 1.0/30345.0);
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
@@ -143,8 +143,8 @@ public class Robot{
     if(initialized) {
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-//      outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
-//      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+      outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
+      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 //      outtake.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -238,7 +238,8 @@ public class Robot{
     for(double hoodTheta = HOOD_MIN_ANGLE; hoodTheta <= (findBestHoodAngle ? HOOD_MAX_ANGLE : HOOD_MIN_ANGLE); hoodTheta += 0.5){
       double mag = calculateArtifactShootVel(robotPose, robotVelocity, hoodTheta, height);
       double timeToVel = calculateTimeToChangeOuttakeVel(outtake.getVel(), calculateOuttakeVelInitial(mag));
-      double timeToAngle = calculateTimeToChangeHoodAngle(hood.getPos(), hoodTheta);
+//      double timeToAngle = calculateTimeToChangeHoodAngle(hood.getPos(), hoodTheta);
+      double timeToAngle = 0.0;
       double timeToShoot = Math.max(timeToVel, timeToAngle);
       if(timeToShoot < bestTime){
           bestTime = timeToShoot;
@@ -284,7 +285,7 @@ public class Robot{
   // For Auto
   public static void aimOuttakeTurret(Pose2d robotPose){
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
-    aimOuttakeTurret(robotPose, robotVelocity, false);
+    aimOuttakeTurret(robotPose, robotVelocity, true);
   }
   // For Tele
   public static void aimOuttakeTurret(PoseVelocity2d robotVelocity){
@@ -348,6 +349,29 @@ public class Robot{
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
     return shootOuttake(robotPose, robotVelocity, true, SHOOT_TARGET_HEIGHT, true);
   }
+  public static class AimOuttakeTurretAction implements Action {
+    Pose2d endPose;
+    public AimOuttakeTurretAction(Pose2d endPose){
+      this.endPose = endPose;
+    }
+
+    @Override
+    public boolean run(@NonNull TelemetryPacket packet) {
+      aimOuttakeTurret(endPose);
+      packet.put("Outtake Turret Pos", outtakeTurret.getPos());
+      packet.put("Outtake Turret Error", Math.abs(outtakeTurret.getPos()-(calculateOuttakeTurretAim(endPose)-Math.toDegrees(endPose.heading.toDouble()))));
+      if(Math.abs(outtakeTurret.getPos()-(calculateOuttakeTurretAim(endPose)-Math.toDegrees(endPose.heading.toDouble()))) < 5.0
+              && Math.abs(outtakeTurret.getVel()) < 10.0
+      ){
+        outtakeTurret.motor.setPower(0);
+        return false;
+      }
+      return true;
+    }
+  }
+  public static Action getAimOuttakeTurretAction(Pose2d endPose){
+    return new AimOuttakeTurretAction(endPose);
+  }
 
   public static class ShootSequenceAction implements Action {
     ElapsedTime elapsedTime = new ElapsedTime();
@@ -410,7 +434,6 @@ public class Robot{
       return true;
     }
   }
-
   public static Action getShootSequenceAction(){
     return new ShootSequenceAction(); // Put this in a function so that it's easier to convert AutoBuilder to MeepMeep
   }

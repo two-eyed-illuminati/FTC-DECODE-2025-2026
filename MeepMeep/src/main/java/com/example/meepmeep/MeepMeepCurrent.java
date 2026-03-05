@@ -1,6 +1,10 @@
 package com.example.meepmeep;
 
+import com.acmerobotics.roadrunner.IdentityPoseMap;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
+import com.acmerobotics.roadrunner.PoseMap;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
@@ -21,29 +25,44 @@ public class MeepMeepCurrent {
 
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
 
-        AutoBuilder autoBuilder = new AutoBuilder(myBot.getDrive().actionBuilder(startPose));
+        PoseMap poseMap = Robot.alliance == Robot.Alliance.BLUE ? new IdentityPoseMap() :
+                pose -> new Pose2dDual<>(pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse());
+
+        TrajectoryActionBuilder tab = myBot.getDrive().actionBuilder(startPose);
+        TrajectoryActionBuilder tabMapped = new TrajectoryActionBuilder(
+                tab.getTurnActionFactory(),
+                tab.getTrajectoryActionFactory(),
+                tab.getTrajectoryBuilderParams(),
+                startPose,
+                tab.getBeginEndVel(),
+                tab.getBaseTurnConstraints(),
+                tab.getBaseVelConstraint(),
+                tab.getBaseAccelConstraint(),
+                poseMap
+        );
+        AutoBuilder autoBuilder = new AutoBuilder(tabMapped);
 
         autoBuilder
-                .goToShoot()
+                .goToShoot("strafe")
                 .shoot();
         autoBuilder
                 .goToSpike1()
                 .intakeSpike1()
                 .goToGateHit()
-                .goToShoot()
+                .goToShoot("strafe")
                 .shoot();
         autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
                 .goToGateHit()
-                .goToShoot()
+                .goToShoot("spline")
                 .shoot();
         autoBuilder
                 .goToSpike3()
                 .intakeSpike3()
                 .backUpAfterSpike3()
-                .goToShoot()
+                .goToShoot("spline")
                 .shoot();
 
         myBot.runAction(autoBuilder.build());

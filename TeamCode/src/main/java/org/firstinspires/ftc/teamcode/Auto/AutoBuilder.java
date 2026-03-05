@@ -16,36 +16,45 @@ public class AutoBuilder {
     ArrayList<String> actions;
     ArrayList<Action> actionObjs;
     TrajectoryActionBuilder currentTab;
-
     public AutoBuilder(TrajectoryActionBuilder tab){
         this.actions = new ArrayList<>();
         this.actionObjs = new ArrayList<>();
         currentTab = tab;
+    }
+    public static Pose2d pose2dMapped(Pose2d pose){
+        if(Robot.alliance == Robot.Alliance.BLUE){
+            return pose;
+        }
+        else{
+            return new Pose2d(pose.position.x, -pose.position.y, -pose.heading.log());
+        }
     }
 
     public static double SPIKE_SHOOT_HEADING = Math.toRadians(-90);
     public static double SPIKE_SHOOT_TANGENT_ANGLE = Math.toRadians(-225);
     public static double SPIKE_SHOOT_X = -23.3370432609;
     public static double SPIKE_SHOOT_Y = -31.9996985274;
+    public static double PRELOAD_SHOOT_HEADING = Math.toRadians(-126.5);
     public static double PRELOAD_SHOOT_X = -24.3370432609;
     public static double PRELOAD_SHOOT_Y = -23.9996985274;
-    public AutoBuilder goToShoot(){
-        currentTab = currentTab.afterTime(0, () -> {
-//            Robot.aimOuttakeTurret(new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING));
-//            Robot.shootOuttake(new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING), 46.5);
-        });
-        if(!actions.isEmpty() && actions.get(actions.size()-1).contains("IntakeSpike")){
+    public AutoBuilder goToShoot(String type){
+        Pose2d endPose = (
+                actions.isEmpty() ?
+                        new Pose2d(PRELOAD_SHOOT_X, PRELOAD_SHOOT_Y, PRELOAD_SHOOT_HEADING) :
+                        new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING)
+        );
+        currentTab = currentTab.afterTime(0, Robot.getAimOuttakeTurretAction(pose2dMapped(endPose)));
+        if(type.equals("spline")){
             currentTab = currentTab.splineToSplineHeading(
-                    new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING),
+                    endPose,
                     SPIKE_SHOOT_TANGENT_ANGLE
             );
         }
-        else{
+        else if(type.equals("strafe")){
             currentTab = currentTab.strafeToConstantHeading(
-                    new Vector2d(PRELOAD_SHOOT_X, PRELOAD_SHOOT_Y)
+                    endPose.position
             );
         }
-        System.out.println(currentTab.build());
         actionObjs.add(currentTab.build());
         currentTab = currentTab.fresh();
         actions.add("GoToShoot");
