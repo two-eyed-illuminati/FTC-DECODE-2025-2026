@@ -68,7 +68,7 @@ public class AutoBuilder {
 
     public static double TO_SPIKE_INITIAL_TANGENT_ANGLE = Math.toRadians(20.0);
     public static double SPIKE_HEADING = Math.toRadians(-90.0);
-    public static double SPIKE_START_Y = -32.1017;
+    public static double SPIKE_START_Y = -29.1017;
     public static double SPIKE_1_X = -12.3457;
     public AutoBuilder goToSpike1(){
         currentTab = currentTab.setTangent(TO_SPIKE_INITIAL_TANGENT_ANGLE).splineToSplineHeading(
@@ -102,6 +102,7 @@ public class AutoBuilder {
 
     public static double SPIKE_RAMP_END_Y = -55.1282;
     public static double SPIKE_TUNNEL_END_Y = -62.1282;
+    public static double INTAKE_SPEED = 25.0;
     public AutoBuilder intakeSpike1(){
         currentTab = currentTab.afterTime(0, () -> {
             Robot.beginIntake();
@@ -109,7 +110,7 @@ public class AutoBuilder {
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(SPIKE_1_X, SPIKE_RAMP_END_Y),
                 SPIKE_HEADING,
-                new TranslationalVelConstraint(15.0)
+                new TranslationalVelConstraint(INTAKE_SPEED)
         );
         actions.add("IntakeSpike1");
         return this;
@@ -122,7 +123,7 @@ public class AutoBuilder {
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(SPIKE_2_END_X, SPIKE_TUNNEL_END_Y),
                 SPIKE_HEADING,
-                new TranslationalVelConstraint(15.0)
+                new TranslationalVelConstraint(INTAKE_SPEED)
         );
         actions.add("IntakeSpike2");
         return this;
@@ -144,7 +145,7 @@ public class AutoBuilder {
         currentTab = currentTab.splineToConstantHeading(
                 new Vector2d(SPIKE_3_X, SPIKE_TUNNEL_END_Y),
                 SPIKE_HEADING,
-                new TranslationalVelConstraint(15.0)
+                new TranslationalVelConstraint(INTAKE_SPEED)
         );
         actions.add("IntakeSpike3");
         return this;

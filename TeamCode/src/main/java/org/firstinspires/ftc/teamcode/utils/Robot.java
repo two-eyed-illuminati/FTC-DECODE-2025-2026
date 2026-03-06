@@ -31,14 +31,14 @@ import org.firstinspires.ftc.teamcode.utils.rr.MecanumDrive;
 @Config
 public class Robot{
   //Constants
-  public static double START_X = -57.0586;
-  public static double START_Y = -43.8964;
+  public static double START_X = -49.0;
+  public static double START_Y = -50.5;
   public static double START_HEADING = -126.5;
   public static double STOPPER_CLOSED_POS = 0.65;
   public static double STOPPER_OPEN_POS = 0.3;
   public static double FRONT_DISTANCE_SENSOR_DETECTION_THRESH = 8.2;
   public static double TURRET_OFFSET_LENGTH = 2.9;
-  public static double TURRET_OFFSET_ANGLE = -150.0;
+  public static double TURRET_OFFSET_ANGLE = -180.0;
   public static double SHOOT_LEAD_TIME = 0.6;
   public static double SHOOT_MIN_HEIGHT = 40.0;
   public static double SHOOT_MAX_HEIGHT = 49.0;
@@ -93,7 +93,7 @@ public class Robot{
       outtakeTurretMotor.setTargetPosition(0);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
-              -90, 90, -384.5/4*4, 384.5/4*4, 1872);
+              -270, 120, -384.5*270/360*4, 384.5*120/360*4, 1872);
       outtakeTurretController = new PIDFController(1.0/32.0, 0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
