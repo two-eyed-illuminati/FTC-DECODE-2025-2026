@@ -8,14 +8,13 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-
 public class MeepMeepCurrent {
     public static void main(String[] args) {
         com.noahbres.meepmeep.MeepMeep meepMeep = new com.noahbres.meepmeep.MeepMeep(800);
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Robot constraints
-                .setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 14)
+                .setConstraints(60, 50, Math.toRadians(180), Math.toRadians(180), 14)
                 .setDimensions(15, 18)
                 .build();
 
@@ -48,15 +47,15 @@ public class MeepMeepCurrent {
         autoBuilder
                 .goToSpike1()
                 .intakeSpike1()
-                .goToGateHit()
+                .goToGateHit("left")
                 .goToShoot("strafe")
                 .shoot();
         autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
-                .goToGateHit()
-                .goToShoot("spline")
+                .goToGateHit("right")
+                .goToShoot("strafe")
                 .shoot();
         autoBuilder
                 .goToSpike3()

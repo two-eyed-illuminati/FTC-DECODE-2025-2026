@@ -61,6 +61,7 @@ public class Robot{
   public static MotorMechanism outtakeTurret;
   public static ServoMechanism hood;
   public static PIDFController outtakeTurretController;
+  public static DualMotor outtakeMotors;
   public static ContinuousMotorMechanism outtake;
   public static PIDFController outtakeController;
   public static Limelight3A limelight;
@@ -100,10 +101,11 @@ public class Robot{
 //      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
 
       DcMotorEx outtakeMotor1 = hardwareMap.get(DcMotorEx.class, "outtake");
-//      DcMotorEx outtakeMotor2 = hardwareMap.get(DcMotorEx.class, "outtake2");
-//      DualMotor outtakeMotors = new DualMotor(outtakeMotor1, outtakeMotor2);
-//      outtakeMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-      outtake = new ContinuousMotorMechanism(outtakeMotor1,
+      DcMotorEx outtakeMotor2 = hardwareMap.get(DcMotorEx.class, "outtake2");
+      outtakeMotors = new DualMotor(outtakeMotor1, outtakeMotor2);
+      outtakeMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      outtakeMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+      outtake = new ContinuousMotorMechanism(outtakeMotors,
               360.0/28.0, 36000.0
       );
       outtakeController = new PIDFController(1.0/2000.0, 1.0/30345.0);
@@ -146,7 +148,8 @@ public class Robot{
       outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
       outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-//      outtake.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      outtake.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      outtakeMotors.motor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
       drive.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
       drive.leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
