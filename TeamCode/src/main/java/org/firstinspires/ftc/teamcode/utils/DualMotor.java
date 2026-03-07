@@ -11,8 +11,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 public class DualMotor implements DcMotorEx{
-    DcMotorEx motor1;
-    DcMotorEx motor2;
+    public DcMotorEx motor1;
+    public DcMotorEx motor2;
 
     public DualMotor(DcMotorEx motor1, DcMotorEx motor2){
         this.motor1 = motor1;
