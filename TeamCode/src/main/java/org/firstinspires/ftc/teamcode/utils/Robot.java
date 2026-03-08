@@ -34,7 +34,7 @@ public class Robot{
   public static double START_X = -49.0;
   public static double START_Y = -50.5;
   public static double START_HEADING = -126.5;
-  public static double STOPPER_CLOSED_POS = 0.7;
+  public static double STOPPER_CLOSED_POS = 0.8;
   public static double STOPPER_OPEN_POS = 0.228;
   public static double FRONT_DISTANCE_SENSOR_DETECTION_THRESH = 8.2;
   public static double TURRET_OFFSET_LENGTH = 2.9;
