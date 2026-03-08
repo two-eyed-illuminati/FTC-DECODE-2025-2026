@@ -142,11 +142,16 @@ public class MainTeleOp extends OpMode {
             }
         }
 
-        if(Robot.voltageToDistance(Robot.frontDistanceSensor.getVoltage()) < Robot.FRONT_DISTANCE_SENSOR_DETECTION_THRESH){
+
+        double distanceFront = Robot.voltageToDistance(Robot.frontDistanceSensor.getVoltage());
+        double distanceTop = Robot.voltageToDistance(Robot.topDistanceSensor.getVoltage());
+        Robot.telemetry.addData("Distance Front (in)", distanceFront);
+        Robot.telemetry.addData("Distance Top (in)", distanceTop);
+        if(distanceFront < Robot.FRONT_DISTANCE_SENSOR_DETECTION_THRESH){
             Robot.ledLeft.setPosition(0.50);
             Robot.ledRight.setPosition(0.50);
         }
-        else if(Robot.voltageToDistance(Robot.topDistanceSensor.getVoltage()) < Robot.TOP_DISTANCE_SENSOR_DETECTION_THRESH){
+        else if(distanceTop < Robot.TOP_DISTANCE_SENSOR_DETECTION_THRESH){
             Robot.ledLeft.setPosition(0.388);
             Robot.ledRight.setPosition(0.388);
         }
