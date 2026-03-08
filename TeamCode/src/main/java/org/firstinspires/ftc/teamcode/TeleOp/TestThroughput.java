@@ -22,6 +22,7 @@ public class TestThroughput extends OpMode {
        Robot.intake.setPower(power);
        double outtakePower = gamepad1.y ? 1.0 : 0.0;
        Robot.outtake.motor.setPower(outtakePower);
+       Robot.stopper.setPosition(gamepad1.y ? Robot.STOPPER_OPEN_POS : Robot.STOPPER_CLOSED_POS);
        Robot.drive.setDrivePowers(new PoseVelocity2d(
                 new Vector2d(
                         -gamepad1.left_stick_y,
