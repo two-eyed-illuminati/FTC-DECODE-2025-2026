@@ -146,9 +146,13 @@ public class MainTeleOp extends OpMode {
             Robot.ledLeft.setPosition(0.50);
             Robot.ledRight.setPosition(0.50);
         }
+        else if(Robot.voltageToDistance(Robot.topDistanceSensor.getVoltage()) < Robot.TOP_DISTANCE_SENSOR_DETECTION_THRESH){
+            Robot.ledLeft.setPosition(0.388);
+            Robot.ledRight.setPosition(0.388);
+        }
         else{
-            Robot.ledLeft.setPosition(0.28);
-            Robot.ledRight.setPosition(0.28);
+            Robot.ledLeft.setPosition(0.388);
+            Robot.ledRight.setPosition(0.388);
         }
 
         Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());
