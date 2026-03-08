@@ -151,8 +151,8 @@ public class MainTeleOp extends OpMode {
             Robot.ledRight.setPosition(0.388);
         }
         else{
-            Robot.ledLeft.setPosition(0.388);
-            Robot.ledRight.setPosition(0.388);
+            Robot.ledLeft.setPosition(0.28);
+            Robot.ledRight.setPosition(0.28);
         }
 
         Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());
