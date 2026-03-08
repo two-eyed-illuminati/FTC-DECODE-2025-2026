@@ -135,8 +135,7 @@ public class MainTeleOp extends OpMode {
             }
             else{
                 Robot.telemetry.addData("In Launch Zone", 0);
-                Robot.outtake.setPos(0, 0);
-//                Robot.shootOuttake(currDriveVel, false);
+                Robot.shootOuttake(currDriveVel, false);
                 currentMinOuttakeVel = 0.0;
                 currentMaxOuttakeVel = 0.0;
             }
