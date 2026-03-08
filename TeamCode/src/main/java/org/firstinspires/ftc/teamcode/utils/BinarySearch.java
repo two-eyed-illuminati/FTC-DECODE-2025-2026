@@ -15,7 +15,7 @@ public class BinarySearch {
                 left = mid;
             }
         }
-        while (Math.abs(right - left) > 1e-6);
+        while (Math.abs(right - left) > 1e-2);
 
         return (left + right) / 2.0;
     }

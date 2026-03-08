@@ -34,8 +34,8 @@ public class Robot{
   public static double START_X = -49.0;
   public static double START_Y = -50.5;
   public static double START_HEADING = -126.5;
-  public static double STOPPER_CLOSED_POS = 0.65;
-  public static double STOPPER_OPEN_POS = 0.3;
+  public static double STOPPER_CLOSED_POS = 0.618;
+  public static double STOPPER_OPEN_POS = 0.228;
   public static double FRONT_DISTANCE_SENSOR_DETECTION_THRESH = 8.2;
   public static double TURRET_OFFSET_LENGTH = 2.9;
   public static double TURRET_OFFSET_ANGLE = -180.0;
@@ -214,8 +214,8 @@ public class Robot{
             goalRelativeToOuttake.y*goalRelativeToOuttake.y
     );
     telemetry.addData("Curr Distance (in)", currDistance);
-    double targetArtifactVel = BinarySearch.binarySearch(0.0, 1000.0,
-            (vel) -> height/12.0 < calculateArtifactPos(robotPose, robotVelocity, vel,theta, currDistance/12.0));
+    double targetArtifactVel = BinarySearch.binarySearch(0.0, 100.0,
+            (vel) -> height/12.0 < calculateArtifactPos(robotPose, robotVelocity, vel, theta, currDistance/12.0));
     telemetry.addData("Target Artifact Vel (ft/s)", targetArtifactVel);
     return targetArtifactVel;
   }
