@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -36,7 +37,7 @@ public class AutoBuilder {
     public static double SPIKE_SHOOT_X = -11.3370432609;
     public static double SPIKE_SHOOT_Y = -19.9996985274;
     public static double PRELOAD_SHOOT_HEADING = Math.toRadians(-126.5);
-    public static double PRELOAD_SHOOT_X = -27.3370432609;
+    public static double PRELOAD_SHOOT_X = -29.3370432609;
     public static double PRELOAD_SHOOT_Y = -26.9996985274;
     public AutoBuilder goToShoot(String type){
         Pose2d endPose = (
@@ -46,6 +47,9 @@ public class AutoBuilder {
         );
         currentTab = currentTab.afterTime(0,
                 new ParallelAction(
+                        new InstantAction(() -> {
+                            Robot.stopIntake();
+                        }),
                         Robot.getAimOuttakeTurretAction(pose2dMapped(endPose)),
                         Robot.getShootOuttakeAction(pose2dMapped(endPose))
                 )

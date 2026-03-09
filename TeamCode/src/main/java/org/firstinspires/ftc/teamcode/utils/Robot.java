@@ -166,6 +166,9 @@ public class Robot{
     intake.setPower(1.0);
     stopper.setPosition(STOPPER_CLOSED_POS);
   }
+  public static void stopIntake(){
+    intake.setPower(0.0);
+  }
 
   public static double voltageToDistance(double voltage){
     return (voltage / 3.3) * 39.37;
