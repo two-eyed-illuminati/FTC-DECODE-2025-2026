@@ -50,7 +50,7 @@ public class Robot{
   public static double SHOOT_GRAVITY = -30.183727034;
   public static double SHOOT_DRAG = -3.4448818898;
   public static double SHOOT_EXIT_HEIGHT = 1.25;
-  public static double OUTTAKE_MAX_VEL = 30345.0;
+  public static double OUTTAKE_MAX_VEL = 33500.0;
   public static double OUTTAKE_C_COEFF = 1.12;
   public static double HOOD_MIN_ANGLE = 45.0;
   public static double HOOD_MAX_ANGLE = 45.0;
@@ -96,7 +96,7 @@ public class Robot{
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -270, 120, -384.5*270/360*4, 384.5*120/360*4, 1872);
-      outtakeTurretController = new PIDFController(1.0/32.0, 0);
+      outtakeTurretController = new PIDFController(1.0/32.0, 0,0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
 //      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
@@ -108,7 +108,7 @@ public class Robot{
       outtake = new ContinuousMotorMechanism(outtakeMotors,
               360.0/28.0, 36000.0
       );
-      outtakeController = new PIDFController(1.0/2000.0, 1.0/33500.0);
+      outtakeController = new PIDFController(1.0/2000.0, 0,1.0/OUTTAKE_MAX_VEL);
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
@@ -307,11 +307,13 @@ public class Robot{
     if(pid) {
       double targetPower = outtakeController.getPower(outtake.getVel(), mag);
       telemetry.addData("Target Outtake Power", targetPower);
+      outtake.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtake.motor.setPower(targetPower);
     }
     else{
       double targetPower = outtakeController.getPower(mag, mag);
       telemetry.addData("Target Outtake Power", targetPower);
+      outtake.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtake.motor.setPower(targetPower);
     }
   }
@@ -363,12 +365,14 @@ public class Robot{
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
       aimOuttakeTurret(endPose);
+      double targetTurretPos = calculateOuttakeTurretAim(endPose)-Math.toDegrees(endPose.heading.toDouble());
       packet.put("Outtake Turret Pos", outtakeTurret.getPos());
-      packet.put("Outtake Turret Error", Math.abs(outtakeTurret.getPos()-(calculateOuttakeTurretAim(endPose)-Math.toDegrees(endPose.heading.toDouble()))));
-      if(Math.abs(outtakeTurret.getPos()-(calculateOuttakeTurretAim(endPose)-Math.toDegrees(endPose.heading.toDouble()))) < 5.0
+      packet.put("Outtake Turret Error", Math.abs(outtakeTurret.getPos()-targetTurretPos));
+      if(Math.abs(outtakeTurret.getPos()-targetTurretPos) < 5.0
               && Math.abs(outtakeTurret.getVel()) < 10.0
       ){
-        outtakeTurret.motor.setPower(0);
+        outtakeTurret.setPos(targetTurretPos);
+        outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         return false;
       }
       return true;
@@ -390,7 +394,8 @@ public class Robot{
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
       packet.put("Target Outtake Vel (deg/s)", outtakeVels[2]);
       if(Math.abs(outtake.getVel()-outtakeVels[2]) < 300.0){
-        outtake.motor.setPower(outtakeController.getPower(outtakeVels[2], outtakeVels[2]));
+        outtake.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        outtake.setPos(0, outtakeVels[2]);
         return false;
       }
       return true;
@@ -458,9 +463,12 @@ public class Robot{
       }
 
       packet.put("Elapsed Time (s)", elapsedTime.seconds());
+      packet.put("Intake Power", intake.getPower());
+      packet.put("Top Distance (in)", topDistance);
       packet.put("Outtake Vel (deg/s)", outtake.getVel());
       packet.put("Min Outtake Vel (deg/s)", outtakeVels[0]);
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
+      packet.put("Target Outtake Vel (deg/s)", outtakeVels[2]);
       packet.put("Outtake Turret Pos (deg)", outtakeTurret.getPos());
 
       return true;

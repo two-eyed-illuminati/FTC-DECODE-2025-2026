@@ -191,7 +191,7 @@ public class AutoBuilder {
         return this;
     }
 
-    public static double GATE_X_LEFT = -6.5;
+    public static double GATE_X_LEFT = -6.0;
     public static double GATE_X_RIGHT = 8.5;
     public static double GATE_Y_BEFORE_HIT = -50.0;
     public static double GATE_Y_HIT = -55.0;
