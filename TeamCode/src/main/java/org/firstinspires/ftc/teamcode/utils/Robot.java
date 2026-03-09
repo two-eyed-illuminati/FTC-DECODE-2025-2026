@@ -37,7 +37,7 @@ public class Robot{
   public static double STOPPER_CLOSED_POS = 0.8;
   public static double STOPPER_OPEN_POS = 0.228;
   public static double FRONT_DISTANCE_SENSOR_DETECTION_THRESH = 7.5;
-  public static double TOP_DISTANCE_SENSOR_DETECTION_THRESH = 3.0;
+  public static double TOP_DISTANCE_SENSOR_DETECTION_THRESH = 5.0;
   public static double TURRET_OFFSET_LENGTH = 2.9;
   public static double TURRET_OFFSET_ANGLE = -180.0;
   public static double SHOOT_LEAD_TIME = 0.6;
@@ -96,7 +96,7 @@ public class Robot{
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -270, 120, -384.5*270/360*4, 384.5*120/360*4, 1872);
-      outtakeTurretController = new PIDFController(1.0/32.0, 0,0);
+      outtakeTurretController = new PIDFController(1.0/16.0, 1/480.0,0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
 //      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);

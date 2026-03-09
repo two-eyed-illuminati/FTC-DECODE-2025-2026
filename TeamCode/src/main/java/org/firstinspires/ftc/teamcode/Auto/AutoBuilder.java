@@ -34,7 +34,7 @@ public class AutoBuilder {
 
     public static double SPIKE_SHOOT_HEADING = Math.toRadians(-90);
     public static double SPIKE_SHOOT_TANGENT_ANGLE = Math.toRadians(-225);
-    public static double SPIKE_SHOOT_X = -11.3370432609;
+    public static double SPIKE_SHOOT_X = -13.3370432609;
     public static double SPIKE_SHOOT_Y = -19.9996985274;
     public static double PRELOAD_SHOOT_HEADING = Math.toRadians(-126.5);
     public static double PRELOAD_SHOOT_X = -29.3370432609;

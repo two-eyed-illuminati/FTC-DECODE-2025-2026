@@ -7,8 +7,10 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.utils.Clamp;
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
 import java.util.List;
@@ -18,11 +20,14 @@ public class MainTeleOp extends OpMode {
     public static boolean FIELD_CENTRIC = true;
     public double currentMinOuttakeVel = 0.0;
     public double currentMaxOuttakeVel = 0.0;
+    public ElapsedTime timeSinceWantedLedStateChange;
+    public int wantedLedState = 0;
     List<LynxModule> allHubs;
 
     @Override
     public void init(){
         Robot.initialize(hardwareMap, telemetry);
+        timeSinceWantedLedStateChange = new ElapsedTime();
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
@@ -37,6 +42,11 @@ public class MainTeleOp extends OpMode {
 
         PoseVelocity2d currDriveVel = Robot.drive.updatePoseEstimate();
         currDriveVel = Rotation2d.fromDouble(Robot.drive.localizer.getPose().heading.log()).times(currDriveVel);
+        currDriveVel = new PoseVelocity2d(
+                new Vector2d(Clamp.clamp(currDriveVel.linearVel.x, -1.0, 1.0),
+                        Clamp.clamp(currDriveVel.linearVel.y, -1.0, 1.0)),
+                currDriveVel.angVel
+        );
 
         Robot.telemetry.addData("Drive Heading (deg)", Math.toDegrees(Robot.drive.localizer.getPose().heading.toDouble()));
         Robot.telemetry.addData("Drive X (in)", Robot.drive.localizer.getPose().position.x);
@@ -122,7 +132,7 @@ public class MainTeleOp extends OpMode {
         }
         else{
             Robot.telemetry.addData("Mode", "intake");
-            Robot.intake.setPower(1.0);
+            Robot.intake.setPower(wantedLedState == 2 ? 0.5 : 1.0);
             Robot.stopper.setPosition(Robot.STOPPER_CLOSED_POS);
             Robot.aimOuttakeTurret(currDriveVel);
             double LEAD_TIME = 0.25;
@@ -135,7 +145,7 @@ public class MainTeleOp extends OpMode {
             }
             else{
                 Robot.telemetry.addData("In Launch Zone", 0);
-                Robot.shootOuttake(currDriveVel, false);
+                Robot.outtake.setPos(0, 23000.0);
                 currentMinOuttakeVel = 0.0;
                 currentMaxOuttakeVel = 0.0;
             }
@@ -147,16 +157,36 @@ public class MainTeleOp extends OpMode {
         Robot.telemetry.addData("Distance Front (in)", distanceFront);
         Robot.telemetry.addData("Distance Top (in)", distanceTop);
         if(distanceFront < Robot.FRONT_DISTANCE_SENSOR_DETECTION_THRESH){
-            Robot.ledLeft.setPosition(0.50);
-            Robot.ledRight.setPosition(0.50);
+            if(wantedLedState != 2){
+                timeSinceWantedLedStateChange.reset();
+            }
+            wantedLedState = 2;
         }
         else if(distanceTop < Robot.TOP_DISTANCE_SENSOR_DETECTION_THRESH){
-            Robot.ledLeft.setPosition(0.388);
-            Robot.ledRight.setPosition(0.388);
+            if(wantedLedState != 1){
+                timeSinceWantedLedStateChange.reset();
+            }
+            wantedLedState = 1;
         }
         else{
-            Robot.ledLeft.setPosition(0.28);
-            Robot.ledRight.setPosition(0.28);
+            if(wantedLedState != 0){
+                timeSinceWantedLedStateChange.reset();
+            }
+            wantedLedState = 0;
+        }
+        if(timeSinceWantedLedStateChange.seconds() > 0.1){
+            if(wantedLedState == 0){
+                Robot.ledLeft.setPosition(0.28);
+                Robot.ledRight.setPosition(0.28);
+            }
+            else if(wantedLedState == 1){
+                Robot.ledLeft.setPosition(0.388);
+                Robot.ledRight.setPosition(0.388);
+            }
+            else{
+                Robot.ledLeft.setPosition(0.50);
+                Robot.ledRight.setPosition(0.50);
+            }
         }
 
         Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());
