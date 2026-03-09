@@ -385,6 +385,7 @@ public class Robot{
       packet.put("Outtake Vel (deg/s)", outtake.getVel());
       packet.put("Min Outtake Vel (deg/s)", outtakeVels[0]);
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
+      packet.put("Target Outtake Vel (deg/s)", outtakeVels[2]);
       if(Math.abs(outtake.getVel()-outtakeVels[2]) < 600.0){
         outtake.motor.setPower(outtakeController.getPower(outtakeVels[2], outtakeVels[2]));
         return false;
