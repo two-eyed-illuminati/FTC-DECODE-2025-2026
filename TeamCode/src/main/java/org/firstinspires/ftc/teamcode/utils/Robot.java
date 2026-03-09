@@ -108,7 +108,7 @@ public class Robot{
       outtake = new ContinuousMotorMechanism(outtakeMotors,
               360.0/28.0, 36000.0
       );
-      outtakeController = new PIDFController(1.0/2000.0, 1.0/30345.0);
+      outtakeController = new PIDFController(1.0/2000.0, 1.0/33500.0);
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.pipelineSwitch(5);
@@ -339,7 +339,7 @@ public class Robot{
   // For Auto
   public static double[] shootOuttake(Pose2d robotPose, double targetHeight){
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
-    return shootOuttake(robotPose, robotVelocity, false, targetHeight, false);
+    return shootOuttake(robotPose, robotVelocity, true, targetHeight, false);
   }
   // For Tele
   public static double[] shootOuttake(PoseVelocity2d robotVelocity, boolean findBestHoodAngle){
@@ -386,7 +386,7 @@ public class Robot{
       packet.put("Min Outtake Vel (deg/s)", outtakeVels[0]);
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
       packet.put("Target Outtake Vel (deg/s)", outtakeVels[2]);
-      if(Math.abs(outtake.getVel()-outtakeVels[2]) < 600.0){
+      if(Math.abs(outtake.getVel()-outtakeVels[2]) < 300.0){
         outtake.motor.setPower(outtakeController.getPower(outtakeVels[2], outtakeVels[2]));
         return false;
       }
