@@ -403,6 +403,7 @@ public class Robot{
   public static class ShootSequenceAction implements Action {
     ElapsedTime elapsedTime = new ElapsedTime();
     ElapsedTime elapsedSinceTimeStartAttemptToShoot = new ElapsedTime();
+    ElapsedTime elapsedTimeSinceBallDetected = new ElapsedTime();
     boolean attemptingToShoot = false;
     boolean started = false;
     double time = 2.25;
@@ -422,7 +423,10 @@ public class Robot{
       }
 
       double topDistance = voltageToDistance(topDistanceSensor.getVoltage());
-      if(elapsedTime.seconds() > time || topDistance > TOP_DISTANCE_SENSOR_DETECTION_THRESH){
+      if(topDistance < TOP_DISTANCE_SENSOR_DETECTION_THRESH){
+        elapsedTimeSinceBallDetected.reset();
+      }
+      if(elapsedTime.seconds() > time || elapsedTimeSinceBallDetected.seconds() > 0.5){
         intake.setPower(0);
         stopper.setPosition(STOPPER_CLOSED_POS);
         return false;
