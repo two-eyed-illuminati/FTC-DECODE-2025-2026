@@ -402,6 +402,8 @@ public class Robot{
 
   public static class ShootSequenceAction implements Action {
     ElapsedTime elapsedTime = new ElapsedTime();
+    ElapsedTime elapsedSinceTimeStartAttemptToShoot = new ElapsedTime();
+    boolean attemptingToShoot = false;
     boolean started = false;
     double time = 2.25;
     public ShootSequenceAction(){
@@ -415,6 +417,7 @@ public class Robot{
     public boolean run(@NonNull TelemetryPacket packet) {
       if(!started) {
         elapsedTime.reset();
+        elapsedSinceTimeStartAttemptToShoot.reset();
         started = true;
       }
 
@@ -423,18 +426,30 @@ public class Robot{
         stopper.setPosition(STOPPER_CLOSED_POS);
         return false;
       }
-
-      intake.setPower(1.0);
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
 
-      if(((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
-              elapsedTime.seconds() > time - 0.2)
+      if(elapsedTime.seconds() < 0.2){
+        attemptingToShoot = false;
+      }
+      else if(((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
+              elapsedTime.seconds() > time - 0.2) &&
+              elapsedSinceTimeStartAttemptToShoot.seconds() < 0.6
       ){
+        if(!attemptingToShoot){
+          elapsedSinceTimeStartAttemptToShoot.reset();
+        }
         stopper.setPosition(Robot.STOPPER_OPEN_POS);
+        attemptingToShoot = true;
+        intake.setPower(1.0);
+      }
+      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175){
+        attemptingToShoot = false;
+        intake.setPower(-1.0);
       }
       else{
-        stopper.setPosition(Robot.STOPPER_CLOSED_POS);
+        attemptingToShoot = false;
+        intake.setPower((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ? 1.0 : 0.0);
       }
 
       packet.put("Elapsed Time (s)", elapsedTime.seconds());
