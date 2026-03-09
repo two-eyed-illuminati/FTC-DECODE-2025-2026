@@ -421,7 +421,6 @@ public class Robot{
       if(elapsedTime.seconds() > time){
         intake.setPower(0);
         stopper.setPosition(STOPPER_CLOSED_POS);
-        outtake.setPos(0, 0);
         return false;
       }
 
