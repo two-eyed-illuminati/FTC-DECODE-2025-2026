@@ -407,7 +407,7 @@ public class Robot{
     boolean started = false;
     double time = 2.25;
     public ShootSequenceAction(){
-      time = 2.25;
+      time = 3.0;
     }
     public ShootSequenceAction(double time){
       this.time = time;
@@ -421,7 +421,8 @@ public class Robot{
         started = true;
       }
 
-      if(elapsedTime.seconds() > time){
+      double topDistance = voltageToDistance(topDistanceSensor.getVoltage());
+      if(elapsedTime.seconds() > time || topDistance > TOP_DISTANCE_SENSOR_DETECTION_THRESH){
         intake.setPower(0);
         stopper.setPosition(STOPPER_CLOSED_POS);
         return false;
