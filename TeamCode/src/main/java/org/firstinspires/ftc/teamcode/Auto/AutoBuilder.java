@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -43,7 +44,12 @@ public class AutoBuilder {
                         new Pose2d(PRELOAD_SHOOT_X, PRELOAD_SHOOT_Y, PRELOAD_SHOOT_HEADING) :
                         new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING)
         );
-        currentTab = currentTab.afterTime(0, Robot.getAimOuttakeTurretAction(pose2dMapped(endPose)));
+        currentTab = currentTab.afterTime(0,
+                new ParallelAction(
+                    Robot.getAimOuttakeTurretAction(pose2dMapped(endPose)),
+                    Robot.getShootOuttakeAction(pose2dMapped(endPose))
+                )
+        );
         if(type.equals("spline")){
             currentTab = currentTab.splineToSplineHeading(
                     endPose,
@@ -61,7 +67,7 @@ public class AutoBuilder {
         return this;
     }
     public AutoBuilder shoot(){
-//        actionObjs.add(Robot.getShootSequenceAction());
+        actionObjs.add(Robot.getShootSequenceAction());
         actions.add("Shoot");
         return this;
     }

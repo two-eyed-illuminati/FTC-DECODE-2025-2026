@@ -334,7 +334,7 @@ public class Robot{
 //    hood.setPos(targetHoodTheta);
     telemetry.addData("Actual Outtake Ang Vel (deg/s)", outtake.getVel());
 
-    return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial};
+    return new double[]{minOuttakeAngVelInitial, maxOuttakeAngVelInitial, targetOuttakeAngVelInitial};
   }
   // For Auto
   public static double[] shootOuttake(Pose2d robotPose, double targetHeight){
@@ -373,6 +373,27 @@ public class Robot{
   }
   public static Action getAimOuttakeTurretAction(Pose2d endPose){
     return new AimOuttakeTurretAction(endPose);
+  }
+
+  public static class ShootOuttakeAction implements Action {
+    Pose2d endPose;
+    public ShootOuttakeAction(Pose2d endPose){this.endPose = endPose;}
+
+    @Override
+    public boolean run(@NonNull TelemetryPacket packet) {
+      double[] outtakeVels = shootOuttake(endPose, SHOOT_TARGET_HEIGHT);
+      packet.put("Outtake Vel (deg/s)", outtake.getVel());
+      packet.put("Min Outtake Vel (deg/s)", outtakeVels[0]);
+      packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
+      if(Math.abs(outtake.getVel()-outtakeVels[2]) < 300.0){
+        outtake.motor.setPower(outtakeController.getPower(outtakeVels[2], outtakeVels[2]));
+        return false;
+      }
+      return true;
+    }
+  }
+  public static Action getShootOuttakeAction(Pose2d endPose){
+    return new ShootOuttakeAction(endPose);
   }
 
   public static class ShootSequenceAction implements Action {
@@ -415,6 +436,7 @@ public class Robot{
         if(!attemptingToShoot){
           elapsedSinceTimeStartAttemptToShoot.reset();
         }
+        Robot.stopper.setPosition(Robot.STOPPER_OPEN_POS);
         attemptingToShoot = true;
         intake.setPower(1.0);
       }
