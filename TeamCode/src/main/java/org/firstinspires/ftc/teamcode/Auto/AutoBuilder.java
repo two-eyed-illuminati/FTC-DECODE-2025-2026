@@ -33,11 +33,11 @@ public class AutoBuilder {
 
     public static double SPIKE_SHOOT_HEADING = Math.toRadians(-90);
     public static double SPIKE_SHOOT_TANGENT_ANGLE = Math.toRadians(-225);
-    public static double SPIKE_SHOOT_X = -23.3370432609;
-    public static double SPIKE_SHOOT_Y = -31.9996985274;
+    public static double SPIKE_SHOOT_X = -11.3370432609;
+    public static double SPIKE_SHOOT_Y = -19.9996985274;
     public static double PRELOAD_SHOOT_HEADING = Math.toRadians(-126.5);
-    public static double PRELOAD_SHOOT_X = -24.3370432609;
-    public static double PRELOAD_SHOOT_Y = -23.9996985274;
+    public static double PRELOAD_SHOOT_X = -27.3370432609;
+    public static double PRELOAD_SHOOT_Y = -26.9996985274;
     public AutoBuilder goToShoot(String type){
         Pose2d endPose = (
                 actions.isEmpty() ?
@@ -46,8 +46,8 @@ public class AutoBuilder {
         );
         currentTab = currentTab.afterTime(0,
                 new ParallelAction(
-                    Robot.getAimOuttakeTurretAction(pose2dMapped(endPose)),
-                    Robot.getShootOuttakeAction(pose2dMapped(endPose))
+                        Robot.getAimOuttakeTurretAction(pose2dMapped(endPose)),
+                        Robot.getShootOuttakeAction(pose2dMapped(endPose))
                 )
         );
         if(type.equals("spline")){
@@ -57,8 +57,9 @@ public class AutoBuilder {
             );
         }
         else if(type.equals("strafe")){
-            currentTab = currentTab.strafeToConstantHeading(
-                    endPose.position
+            currentTab = currentTab.strafeToLinearHeading(
+                    endPose.position,
+                    endPose.heading
             );
         }
         actionObjs.add(currentTab.build());
@@ -72,9 +73,9 @@ public class AutoBuilder {
         return this;
     }
 
-    public static double TO_SPIKE_INITIAL_TANGENT_ANGLE = Math.toRadians(20.0);
+    public static double TO_SPIKE_INITIAL_TANGENT_ANGLE = Math.toRadians(0.0);
     public static double SPIKE_HEADING = Math.toRadians(-90.0);
-    public static double SPIKE_START_Y = -29.1017;
+    public static double SPIKE_START_Y = -32.1017;
     public static double SPIKE_1_X = -12.3457;
     public static double INTAKE_SPEED = 25.0;
     public AutoBuilder goToSpike1(){
@@ -191,11 +192,12 @@ public class AutoBuilder {
     public static double GATE_Y_BEFORE_HIT = -50.0;
     public static double GATE_Y_HIT = -55.0;
     public static double GATE_HIT_TIME = 0.05;
+    public static double GATE_HIT_SPEED = 25.0;
     public AutoBuilder goToGateHit(String side){
         double GATE_X = side.equals("left") ? GATE_X_LEFT : GATE_X_RIGHT;
         VelConstraint constraint = (robotPose, _path, _disp) -> {
             if(Math.abs(robotPose.position.x.value()-GATE_X) < 5.0){
-                return 15.0;
+                return GATE_HIT_SPEED;
             }
             return 50;
         };
@@ -206,7 +208,7 @@ public class AutoBuilder {
         ).splineToConstantHeading(
                 new Vector2d(GATE_X, GATE_Y_HIT),
                 SPIKE_HEADING,
-                new TranslationalVelConstraint(15.0)
+                new TranslationalVelConstraint(GATE_HIT_SPEED)
         ).waitSeconds(GATE_HIT_TIME);
         actions.add("GoToGateHit");
         return this;

@@ -420,10 +420,10 @@ public class Robot{
 
       if(elapsedTime.seconds() > time){
         intake.setPower(0);
+        stopper.setPosition(STOPPER_CLOSED_POS);
         outtake.setPos(0, 0);
         return false;
       }
-      stopper.setPosition(STOPPER_OPEN_POS);
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
 
@@ -437,7 +437,7 @@ public class Robot{
         if(!attemptingToShoot){
           elapsedSinceTimeStartAttemptToShoot.reset();
         }
-        Robot.stopper.setPosition(Robot.STOPPER_OPEN_POS);
+        stopper.setPosition(Robot.STOPPER_OPEN_POS);
         attemptingToShoot = true;
         intake.setPower(1.0);
       }
