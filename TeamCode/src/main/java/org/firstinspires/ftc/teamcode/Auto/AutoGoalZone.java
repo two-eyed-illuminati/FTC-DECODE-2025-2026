@@ -75,7 +75,7 @@ public class AutoGoalZone extends LinearOpMode {
                 .intakeSpike2()
                 .backUpAfterSpike2()
                 .goToGateHit("right")
-                .goToShoot("spline")
+                .goToShoot("strafe")
                 .shoot();
         autoBuilder
                 .goToSpike3()

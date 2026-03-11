@@ -192,9 +192,9 @@ public class AutoBuilder {
     }
 
     public static double GATE_X_LEFT = -6.0;
-    public static double GATE_X_RIGHT = 8.5;
+    public static double GATE_X_RIGHT = 8.0;
     public static double GATE_Y_BEFORE_HIT = -50.0;
-    public static double GATE_Y_HIT = -55.0;
+    public static double GATE_Y_HIT = -57.0;
     public static double GATE_HIT_TIME = 0.05;
     public static double GATE_HIT_SPEED = 25.0;
     public AutoBuilder goToGateHit(String side){

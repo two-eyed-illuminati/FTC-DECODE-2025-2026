@@ -246,7 +246,7 @@ public class Robot{
 //      double timeToAngle = calculateTimeToChangeHoodAngle(hood.getPos(), hoodTheta);
       double timeToAngle = 0.0;
       double timeToShoot = Math.max(timeToVel, timeToAngle);
-      if(timeToShoot < bestTime){
+      if(timeToShoot < bestTime || bestTime == Double.POSITIVE_INFINITY){
           bestTime = timeToShoot;
           bestMag = mag;
           bestHoodTheta = hoodTheta;

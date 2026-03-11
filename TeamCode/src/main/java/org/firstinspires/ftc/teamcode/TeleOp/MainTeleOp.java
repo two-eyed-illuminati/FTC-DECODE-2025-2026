@@ -43,8 +43,10 @@ public class MainTeleOp extends OpMode {
         PoseVelocity2d currDriveVel = Robot.drive.updatePoseEstimate();
         currDriveVel = Rotation2d.fromDouble(Robot.drive.localizer.getPose().heading.log()).times(currDriveVel);
         currDriveVel = new PoseVelocity2d(
-                new Vector2d(Clamp.clamp(currDriveVel.linearVel.x, -1.0, 1.0),
-                        Clamp.clamp(currDriveVel.linearVel.y, -1.0, 1.0)),
+                new Vector2d(
+                        Math.abs(currDriveVel.linearVel.x) < 1.0 ? 0.0 : currDriveVel.linearVel.x,
+                        Math.abs(currDriveVel.linearVel.y) < 1.0 ? 0.0 : currDriveVel.linearVel.y
+                ),
                 currDriveVel.angVel
         );
 
