@@ -134,7 +134,7 @@ public class MainTeleOp extends OpMode {
         }
         else{
             Robot.telemetry.addData("Mode", "intake");
-            Robot.intake.setPower(1.0);
+            Robot.intake.setPower(wantedLedState == 2 && timeSinceWantedLedStateChange.seconds() > 0.5 ? 0.75 : 1.0);
             Robot.stopper.setPosition(Robot.STOPPER_CLOSED_POS);
             Robot.aimOuttakeTurret(currDriveVel);
             double LEAD_TIME = 0.25;
@@ -152,7 +152,6 @@ public class MainTeleOp extends OpMode {
                 currentMaxOuttakeVel = 0.0;
             }
         }
-
 
         double distanceFront = Robot.voltageToDistance(Robot.frontDistanceSensor.getVoltage());
         double distanceTop = Robot.voltageToDistance(Robot.topDistanceSensor.getVoltage());
