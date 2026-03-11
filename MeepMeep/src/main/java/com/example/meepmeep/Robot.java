@@ -14,13 +14,16 @@ public class Robot{
         BLUE, RED
     }
     public static Alliance alliance = Alliance.RED; //0 = blue, 1 = red
+    public static boolean STOP_SHOOT_OUTTAKE_ACTION = false;
     public static void beginIntake(){}
-    public static void aimOuttakeTurret(Pose2d robotPose){
-    }
-    public static double[] shootOuttake(Pose2d robotPose, double targetHeight){
-        return new double[]{0, 0};
+    public static void stopIntake(){}
+    public static Action getReverseIntakeAction(){
+        return new InstantAction(() -> {});
     }
     public static Action getAimOuttakeTurretAction(Pose2d endPose){
+        return new InstantAction(() -> {});
+    }
+    public static Action getShootOuttakeAction(Pose2d endPose){
         return new InstantAction(() -> {});
     }
     public static Action getShootSequenceAction(){

@@ -111,7 +111,8 @@ public class Robot{
       outtakeController = new PIDFController(1.0/2000.0, 0,1.0/OUTTAKE_MAX_VEL);
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
-      limelight.pipelineSwitch(5);
+      limelight.setPollRateHz(100);
+      limelight.pipelineSwitch(0);
       limelight.start();
 
       frontDistanceSensor = hardwareMap.get(AnalogInput.class, "frontDistance");
@@ -163,11 +164,12 @@ public class Robot{
   }
 
   public static void beginIntake(){
-    intake.setPower(1.0);
+    intake.setPower(0.75);
     stopper.setPosition(STOPPER_CLOSED_POS);
   }
   public static void stopIntake(){
-    intake.setPower(0.0);
+    intake.setPower(0.75);
+    stopper.setPosition(STOPPER_CLOSED_POS);
   }
 
   public static double voltageToDistance(double voltage){
@@ -356,6 +358,32 @@ public class Robot{
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
     return shootOuttake(robotPose, robotVelocity, true, SHOOT_TARGET_HEIGHT, true);
   }
+
+  public static class ReverseIntakeAction implements Action {
+    ElapsedTime elapsedTime = new ElapsedTime();
+    boolean started = false;
+    double time = 0.5;
+    @Override
+    public boolean run(@NonNull TelemetryPacket packet) {
+      if(!started){
+        started = true;
+        elapsedTime.reset();
+      }
+
+      if(elapsedTime.seconds() > time){
+        stopIntake();
+        return false;
+      }
+      else{
+        intake.setPower(-1.0);
+        return true;
+      }
+    }
+  }
+  public static Action getReverseIntakeAction(){
+    return new ReverseIntakeAction();
+  }
+
   public static class AimOuttakeTurretAction implements Action {
     Pose2d endPose;
     public AimOuttakeTurretAction(Pose2d endPose){
@@ -371,6 +399,12 @@ public class Robot{
       if(Math.abs(outtakeTurret.getPos()-targetTurretPos) < 5.0
               && Math.abs(outtakeTurret.getVel()) < 10.0
       ){
+//      Pose2d currPose = drive.localizer.getPose();
+//      double distance = Math.sqrt(
+//              Math.pow(currPose.position.x-endPose.position.x, 2)+
+//              Math.pow(currPose.position.y-endPose.position.y, 2)
+//      );
+//      if(distance < 4.5){
         outtakeTurret.setPos(targetTurretPos);
         outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         return false;
@@ -382,6 +416,7 @@ public class Robot{
     return new AimOuttakeTurretAction(endPose);
   }
 
+  public static boolean STOP_SHOOT_OUTTAKE_ACTION = false;
   public static class ShootOuttakeAction implements Action {
     Pose2d endPose;
     public ShootOuttakeAction(Pose2d endPose){this.endPose = endPose;}
@@ -393,9 +428,8 @@ public class Robot{
       packet.put("Min Outtake Vel (deg/s)", outtakeVels[0]);
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
       packet.put("Target Outtake Vel (deg/s)", outtakeVels[2]);
-      if(Math.abs(outtake.getVel()-outtakeVels[2]) < 300.0){
-        outtake.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        outtake.setPos(0, outtakeVels[2]);
+      if(STOP_SHOOT_OUTTAKE_ACTION){
+        STOP_SHOOT_OUTTAKE_ACTION = false;
         return false;
       }
       return true;
@@ -431,7 +465,7 @@ public class Robot{
       if(topDistance < TOP_DISTANCE_SENSOR_DETECTION_THRESH){
         elapsedTimeSinceBallDetected.reset();
       }
-      if(elapsedTime.seconds() > time || elapsedTimeSinceBallDetected.seconds() > 0.5){
+      if(elapsedTime.seconds() > time || (elapsedTimeSinceBallDetected.seconds() > 0.3 && elapsedTime.seconds() > 1.4)){
         intake.setPower(0);
         stopper.setPosition(STOPPER_CLOSED_POS);
         return false;
@@ -459,7 +493,7 @@ public class Robot{
       }
       else{
         attemptingToShoot = false;
-        intake.setPower((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ? 1.0 : 0.0);
+        intake.setPower(1.0);
       }
 
       packet.put("Elapsed Time (s)", elapsedTime.seconds());

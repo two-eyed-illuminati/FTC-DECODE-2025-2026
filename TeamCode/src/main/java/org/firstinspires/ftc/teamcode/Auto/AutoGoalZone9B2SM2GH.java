@@ -1,27 +1,19 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.IdentityPoseMap;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseMap;
-import com.acmerobotics.roadrunner.RaceAction;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Goal Zone", group="Main")
+@Autonomous(name="Auto Goal Zone 9B 2SM 2GH", group="Main")
 @Config
-public class AutoGoalZone extends LinearOpMode {
+public class AutoGoalZone9B2SM2GH extends LinearOpMode {
     double START_X = -49.0;
     double START_Y = -50.5;
     double START_HEADING = -126.5;
@@ -62,26 +54,20 @@ public class AutoGoalZone extends LinearOpMode {
         AutoBuilder autoBuilder = new AutoBuilder(Robot.drive.actionBuilder(startPose, poseMap));
 
         autoBuilder
-                .goToShoot("strafe")
+                .goToShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToSpike1()
                 .intakeSpike1()
                 .goToGateHit("left")
-                .goToShoot("strafe")
+                .goToShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
                 .goToGateHit("right")
-                .goToShoot("strafe")
-                .shoot();
-        autoBuilder
-                .goToSpike3()
-                .intakeSpike3()
-                .backUpAfterSpike3()
-                .goToShoot("spline")
+                .goToShoot("strafe", "")
                 .shoot();
 
         Actions.runBlocking(

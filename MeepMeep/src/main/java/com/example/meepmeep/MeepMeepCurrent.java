@@ -42,27 +42,33 @@ public class MeepMeepCurrent {
         AutoBuilder autoBuilder = new AutoBuilder(tabMapped);
 
         autoBuilder
-                .goToShoot("strafe")
-                .shoot();
-        autoBuilder
-                .goToSpike1()
-                .intakeSpike1()
-                .goToGateHit("left")
-                .goToShoot("strafe")
+                .goToShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
+                .goToShoot("spline", "")
+                .shoot();
+        autoBuilder
                 .goToGateHit("right")
-                .goToShoot("strafe")
+                .intakeFromGate()
+                .goToShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToSpike3()
                 .intakeSpike3()
                 .backUpAfterSpike3()
-                .goToShoot("spline")
+                .goToShoot("spline", "")
                 .shoot();
+        autoBuilder
+                .goToSpike1()
+                .intakeSpike1()
+                .backUpAfterSpike1()
+                .goToShoot("spline", "1")
+                .shoot();
+        autoBuilder
+                .leaveZone();
 
         myBot.runAction(autoBuilder.build());
 
