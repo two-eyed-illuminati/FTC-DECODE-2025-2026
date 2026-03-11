@@ -134,7 +134,7 @@ public class MainTeleOp extends OpMode {
         }
         else{
             Robot.telemetry.addData("Mode", "intake");
-            Robot.intake.setPower(wantedLedState == 2 ? 0.5 : 1.0);
+            Robot.intake.setPower(1.0);
             Robot.stopper.setPosition(Robot.STOPPER_CLOSED_POS);
             Robot.aimOuttakeTurret(currDriveVel);
             double LEAD_TIME = 0.25;
