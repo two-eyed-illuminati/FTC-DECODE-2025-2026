@@ -44,11 +44,11 @@ public class Robot{
   public static double SHOOT_MIN_HEIGHT = 40.0;
   public static double SHOOT_MAX_HEIGHT = 49.0;
   public static double SHOOT_TARGET_HEIGHT = 46.5;
-  public static double SHOOT_SLOWDOWN_FACTOR = 0.8;
+  public static double SHOOT_SLOWDOWN_FACTOR = 0.89;
   public static double SHOOT_RADIUS = 0.1181102362;
-  public static double SHOOT_TRANSFER_FACTOR = 0.5714;
-  public static double SHOOT_GRAVITY = -30.183727034;
-  public static double SHOOT_DRAG = -3.4448818898;
+  public static double SHOOT_TRANSFER_FACTOR = 0.46;
+  public static double SHOOT_GRAVITY = -28.0;
+  public static double SHOOT_DRAG = -0.1;
   public static double SHOOT_EXIT_HEIGHT = 1.25;
   public static double OUTTAKE_MAX_VEL = 33500.0;
   public static double OUTTAKE_C_COEFF = 1.12;
@@ -111,7 +111,8 @@ public class Robot{
       outtakeController = new PIDFController(1.0/2000.0, 0,1.0/OUTTAKE_MAX_VEL);
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
-      limelight.pipelineSwitch(5);
+      limelight.setPollRateHz(100);
+      limelight.pipelineSwitch(0);
       limelight.start();
 
       frontDistanceSensor = hardwareMap.get(AnalogInput.class, "frontDistance");
