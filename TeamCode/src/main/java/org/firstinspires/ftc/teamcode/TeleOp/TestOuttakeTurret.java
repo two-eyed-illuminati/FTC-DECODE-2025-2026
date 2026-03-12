@@ -6,7 +6,9 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.utils.Clamp;
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
 @TeleOp(name="Test Outtake Turret", group="Tests")
@@ -27,6 +29,7 @@ public class TestOuttakeTurret extends OpMode {
             mode = 1;
         }
         if(gamepad1.x){
+            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             mode = 2;
         }
         if(mode == 0) {

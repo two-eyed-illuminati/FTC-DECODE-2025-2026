@@ -290,7 +290,7 @@ public class Robot{
       angle = Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos);
       double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
       telemetry.addData("Target Outtake Turret Power", targetPower);
-      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtakeTurret.motor.setPower(targetPower);
     }
     else {
@@ -460,7 +460,7 @@ public class Robot{
     ElapsedTime elapsedTimeSinceBallDetected = new ElapsedTime();
     boolean attemptingToShoot = false;
     boolean started = false;
-    double time = 2.25;
+    double time;
     public ShootSequenceAction(){
       time = 3.0;
     }
@@ -531,13 +531,19 @@ public class Robot{
     boolean started = false;
     double time = 10.0;
     ElapsedTime elapsedTime;
+    ElapsedTime elapsedTimeOfBallDetected;
     public LooseIntakeAction(){
       elapsedTime = new ElapsedTime();
+      elapsedTimeOfBallDetected = new ElapsedTime();
     }
     public boolean run(@NonNull TelemetryPacket packet){
       if(!started){
         started = true;
         elapsedTime.reset();
+      }
+
+      if(voltageToDistance(frontDistanceSensor.getVoltage()) > FRONT_DISTANCE_SENSOR_DETECTION_THRESH){
+        elapsedTimeOfBallDetected.reset();
       }
 
       limelight.updatePythonInputs(new double[]{alliance == Alliance.BLUE ? 0 : 1});
@@ -555,7 +561,7 @@ public class Robot{
         );
       }
 
-      return elapsedTime.seconds() < time;
+      return elapsedTime.seconds() < time || elapsedTimeOfBallDetected.seconds() > 0.5;
     }
   }
   public static Action getLooseIntakeAction(){
