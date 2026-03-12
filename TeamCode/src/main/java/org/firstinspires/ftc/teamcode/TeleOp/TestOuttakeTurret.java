@@ -30,8 +30,6 @@ public class TestOuttakeTurret extends OpMode {
             mode = 2;
         }
         if(mode == 0) {
-            Robot.outtakeTurret.setPos(Math.signum(gamepad1.left_stick_y) == 1 ? Robot.outtakeTurret.maxPos : Robot.outtakeTurret.minPos,
-                    gamepad1.left_stick_y*Robot.outtakeTurret.maxVel);
             Robot.outtakeTurret.motor.setPower(gamepad1.left_stick_y);
             Robot.telemetry.addData("Outtake Turret Pos", Robot.outtakeTurret.getPos());
         }
