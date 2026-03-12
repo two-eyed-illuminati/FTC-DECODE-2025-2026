@@ -93,8 +93,7 @@ public class Robot{
 
       DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "turret");
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-      outtakeTurretMotor.setTargetPosition(0);
-      outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+      outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -180, 80, -384.5*180/360*4, 384.5*80/360*4, 1872);
       outtakeTurretController = new PIDFController(1.0/16.0, 1/480.0,0);
@@ -148,7 +147,7 @@ public class Robot{
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
       outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
-      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
       outtakeMotors.motor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -290,7 +289,7 @@ public class Robot{
       angle = Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos);
       double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
       telemetry.addData("Target Outtake Turret Power", targetPower);
-//      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+      outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtakeTurret.motor.setPower(targetPower);
     }
     else {
