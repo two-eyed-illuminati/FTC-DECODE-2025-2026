@@ -175,7 +175,7 @@ public class MainTeleOp extends OpMode {
             }
             wantedLedState = 0;
         }
-        if(timeSinceWantedLedStateChange.seconds() > 0.1){
+        if(timeSinceWantedLedStateChange.seconds() > 0.25){
             if(wantedLedState == 0){
                 Robot.ledLeft.setPosition(0.28);
                 Robot.ledRight.setPosition(0.28);

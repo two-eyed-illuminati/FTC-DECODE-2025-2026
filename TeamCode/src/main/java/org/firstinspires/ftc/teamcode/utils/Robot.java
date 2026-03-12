@@ -43,7 +43,8 @@ public class Robot{
   public static double SHOOT_LEAD_TIME = 0.6;
   public static double SHOOT_MIN_HEIGHT = 40.0;
   public static double SHOOT_MAX_HEIGHT = 49.0;
-  public static double SHOOT_TARGET_HEIGHT = 46.5;
+  public static double SHOOT_TARGET_HEIGHT_CLOSE = 46.5;
+  public static double SHOOT_TARGET_HEIGHT_FAR = 48.0;
   public static double SHOOT_SLOWDOWN_FACTOR = 0.8;
   public static double SHOOT_RADIUS = 0.1181102362;
   public static double SHOOT_TRANSFER_FACTOR = 0.5714;
@@ -258,6 +259,20 @@ public class Robot{
     return new double[]{theta, bestMag, bestHoodTheta};
   }
 
+  public static double shootTargetHeight(Pose2d robotPose){
+    Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
+    double currDistance = Math.sqrt(
+            goalRelativeToOuttake.x*goalRelativeToOuttake.x+
+                    goalRelativeToOuttake.y*goalRelativeToOuttake.y
+    );
+    if(currDistance > 120.0){
+      return SHOOT_TARGET_HEIGHT_FAR;
+    }
+    else{
+      return SHOOT_TARGET_HEIGHT_CLOSE;
+    }
+  }
+
   public static void aimOuttakeTurret(double theta, Pose2d robotPose, boolean pid){
     double angle = (theta-Math.toDegrees(robotPose.heading.toDouble())) % 360.0;
     if(angle > 180.0){
@@ -286,7 +301,7 @@ public class Robot{
   }
   public static void aimOuttakeTurret(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
     Pose2d futureRobotPose = new Pose2d(robotPose.position.x + SHOOT_LEAD_TIME*robotVelocity.linearVel.x, robotPose.position.y + SHOOT_LEAD_TIME*robotVelocity.linearVel.y, robotPose.heading.toDouble());
-    double theta = calculateShoot(futureRobotPose, robotVelocity, SHOOT_TARGET_HEIGHT, false)[0];
+    double theta = calculateShoot(futureRobotPose, robotVelocity, shootTargetHeight(robotPose), false)[0];
     aimOuttakeTurret(theta, futureRobotPose, pid);
   }
   // For Auto
@@ -351,12 +366,12 @@ public class Robot{
   // For Tele
   public static double[] shootOuttake(PoseVelocity2d robotVelocity, boolean findBestHoodAngle){
     Pose2d robotPose = drive.localizer.getPose();
-    return shootOuttake(robotPose, robotVelocity, true, SHOOT_TARGET_HEIGHT, findBestHoodAngle);
+    return shootOuttake(robotPose, robotVelocity, true, shootTargetHeight(robotPose), findBestHoodAngle);
   }
   public static double[] shootOuttake(){
     Pose2d robotPose = drive.localizer.getPose();
     PoseVelocity2d robotVelocity = new PoseVelocity2d(new Vector2d(0, 0), 0);
-    return shootOuttake(robotPose, robotVelocity, true, SHOOT_TARGET_HEIGHT, true);
+    return shootOuttake(robotPose, robotVelocity, true, shootTargetHeight(robotPose), true);
   }
 
   public static class ReverseIntakeAction implements Action {
@@ -423,7 +438,7 @@ public class Robot{
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
-      double[] outtakeVels = shootOuttake(endPose, SHOOT_TARGET_HEIGHT);
+      double[] outtakeVels = shootOuttake(endPose, shootTargetHeight(endPose));
       packet.put("Outtake Vel (deg/s)", outtake.getVel());
       packet.put("Min Outtake Vel (deg/s)", outtakeVels[0]);
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);

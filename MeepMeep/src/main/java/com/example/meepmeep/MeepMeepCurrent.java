@@ -62,7 +62,7 @@ public class MeepMeepCurrent {
                 .goToShoot("spline", "")
                 .shoot();
         autoBuilder
-                .goToSpike1()
+                .goToSpike1("")
                 .intakeSpike1()
                 .backUpAfterSpike1()
                 .goToShoot("spline", "1")

@@ -79,12 +79,13 @@ public class AutoBuilder {
     }
 
     public static double TO_SPIKE_INITIAL_TANGENT_ANGLE = Math.toRadians(0.0);
-    public static double TO_SPIKE_1_INITIAL_TANGENT_ANGLE = Math.toRadians(-40.0);
+    public static double TO_SPIKE_1_INITIAL_TANGENT_ANGLE = Math.toRadians(-90.0);
+    public static double TO_SPIKE_1_FROM_PRELOAD_INITIAL_TANGENT_ANGLE = Math.toRadians(-40.0);
     public static double SPIKE_HEADING = Math.toRadians(-90.0);
     public static double SPIKE_START_Y = -29.1017;
     public static double SPIKE_1_X = -12.3457;
     public static double INTAKE_SPEED = 45.0;
-    public AutoBuilder goToSpike1(){
+    public AutoBuilder goToSpike1(String type){
         VelConstraint constraint = (robotPose, _path, _disp) -> {
             if(Math.abs(robotPose.position.x.value()-SPIKE_1_X) < 5.0 && Math.abs(robotPose.position.y.value()-SPIKE_START_Y) < 7.0){
                 return INTAKE_SPEED;
@@ -248,7 +249,7 @@ public class AutoBuilder {
         }
         currentTab = currentTab.splineToLinearHeading(
                 new Pose2d(GATE_INTAKE_X, GATE_INTAKE_Y, GATE_INTAKE_HEADING),
-                Math.toRadians(0)
+                Math.toRadians(-90)
         );
         currentTab = currentTab.stopAndAdd(new SleepAction(GATE_INTAKE_TIME)).setTangent(Math.toRadians(90));
         actions.add("IntakeFromGate");
