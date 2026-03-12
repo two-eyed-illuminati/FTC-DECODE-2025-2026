@@ -11,9 +11,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Goal Zone 15B 3SM 2GH", group="Main")
+@Autonomous(name="Auto Goal Zone 15B 3SM 1GH", group="Main")
 @Config
-public class AutoGoalZone15B3SM2GH extends LinearOpMode {
+public class AutoGoalZone15B3SM1GH extends LinearOpMode {
     double START_X = -49.0;
     double START_Y = -50.5;
     double START_HEADING = -126.5;
