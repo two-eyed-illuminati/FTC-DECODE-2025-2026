@@ -96,7 +96,7 @@ public class Robot{
       outtakeTurretMotor.setTargetPosition(0);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
-              -270, 120, -384.5*270/360*4, 384.5*120/360*4, 1872);
+              -180, 80, -384.5*180/360*4, 384.5*80/360*4, 1872);
       outtakeTurretController = new PIDFController(1.0/16.0, 1/480.0,0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
@@ -525,5 +525,40 @@ public class Robot{
   }
   public static Action getShootSequenceAction(){
     return new ShootSequenceAction(); // Put this in a function so that it's easier to convert AutoBuilder to MeepMeep
+  }
+
+  public static class LooseIntakeAction implements Action {
+    boolean started = false;
+    double time = 10.0;
+    ElapsedTime elapsedTime;
+    public LooseIntakeAction(){
+      elapsedTime = new ElapsedTime();
+    }
+    public boolean run(@NonNull TelemetryPacket packet){
+      if(!started){
+        started = true;
+        elapsedTime.reset();
+      }
+
+      limelight.updatePythonInputs(new double[]{alliance == Alliance.BLUE ? 0 : 1});
+      LLResult result = Robot.limelight.getLatestResult();
+
+      if(result != null && result.isValid()) {
+        drive.setDrivePowers(
+                new PoseVelocity2d(
+                        new Vector2d(
+                                0,
+                                -result.getTx()/180.0
+                        ),
+                        0
+                )
+        );
+      }
+
+      return elapsedTime.seconds() < time;
+    }
+  }
+  public static Action getLooseIntakeAction(){
+    return new LooseIntakeAction();
   }
 }

@@ -258,12 +258,13 @@ public class AutoBuilder {
         actions.add("IntakeFromGate");
         return this;
     }
-    //    public AutoBuilder looseIntake(){
-//        Robot.limelight.updatePythonInputs(new double[]{1.0});
-//        LLResult result = Robot.limelight.getLatestResult();
-//
-//        return this;
-//    }
+    public AutoBuilder looseIntake(){
+        actionObjs.add(Robot.getLooseIntakeAction());
+        actionObjs.add(currentTab.build());
+        currentTab = currentTab.fresh();
+        actions.add("LooseIntake");
+        return this;
+    }
     public static double OUTSIDE_ZONE_Y = -40.0;
     public AutoBuilder leaveZone(){
         currentTab = currentTab.setTangent(Math.toRadians(-90)).lineToY(OUTSIDE_ZONE_Y);
