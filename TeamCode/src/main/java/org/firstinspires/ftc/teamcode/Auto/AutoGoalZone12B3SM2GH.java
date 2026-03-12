@@ -75,6 +75,8 @@ public class AutoGoalZone12B3SM2GH extends LinearOpMode {
                 .backUpAfterSpike3()
                 .goToShoot("spline", "")
                 .shoot();
+        autoBuilder
+                .leaveZone();
 
         Actions.runBlocking(
                 autoBuilder.build()

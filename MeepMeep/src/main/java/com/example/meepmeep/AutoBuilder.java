@@ -93,7 +93,7 @@ public class AutoBuilder {
             return 60;
         };
         currentTab = currentTab.afterTime(0, Robot.getReverseIntakeAction());
-        currentTab = currentTab.setTangent(TO_SPIKE_1_INITIAL_TANGENT_ANGLE).splineToSplineHeading(
+        currentTab = currentTab.setTangent(type.equals("preload") ? TO_SPIKE_1_FROM_PRELOAD_INITIAL_TANGENT_ANGLE : TO_SPIKE_1_INITIAL_TANGENT_ANGLE).splineToSplineHeading(
                 new Pose2d(SPIKE_1_X, SPIKE_START_Y, SPIKE_HEADING),
                 SPIKE_HEADING,
                 constraint
@@ -255,12 +255,13 @@ public class AutoBuilder {
         actions.add("IntakeFromGate");
         return this;
     }
-    //    public AutoBuilder looseIntake(){
-//        Robot.limelight.updatePythonInputs(new double[]{1.0});
-//        LLResult result = Robot.limelight.getLatestResult();
-//
-//        return this;
-//    }
+    public AutoBuilder looseIntake(){
+        actionObjs.add(Robot.getLooseIntakeAction());
+        actionObjs.add(currentTab.build());
+        currentTab = currentTab.fresh();
+        actions.add("LooseIntake");
+        return this;
+    }
     public static double OUTSIDE_ZONE_Y = -40.0;
     public AutoBuilder leaveZone(){
         currentTab = currentTab.setTangent(Math.toRadians(-90)).lineToY(OUTSIDE_ZONE_Y);

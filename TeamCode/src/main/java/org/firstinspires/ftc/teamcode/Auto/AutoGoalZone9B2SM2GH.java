@@ -69,6 +69,8 @@ public class AutoGoalZone9B2SM2GH extends LinearOpMode {
                 .goToGateHit("right")
                 .goToShoot("strafe", "")
                 .shoot();
+        autoBuilder
+                .leaveZone();
 
         Actions.runBlocking(
                 autoBuilder.build()

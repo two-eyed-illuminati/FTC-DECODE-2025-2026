@@ -17,6 +17,9 @@ public class Robot{
     public static boolean STOP_SHOOT_OUTTAKE_ACTION = false;
     public static void beginIntake(){}
     public static void stopIntake(){}
+    public static Action getLooseIntakeAction(){
+        return new InstantAction(() -> {});
+    }
     public static Action getReverseIntakeAction(){
         return new InstantAction(() -> {});
     }
