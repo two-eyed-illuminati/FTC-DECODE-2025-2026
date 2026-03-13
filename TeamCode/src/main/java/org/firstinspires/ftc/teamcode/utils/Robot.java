@@ -40,11 +40,14 @@ public class Robot{
   public static double TOP_DISTANCE_SENSOR_DETECTION_THRESH = 5.0;
   public static double TURRET_OFFSET_LENGTH = 2.9;
   public static double TURRET_OFFSET_ANGLE = -180.0;
-  public static double SHOOT_LEAD_TIME = 0.6;
-  public static double SHOOT_MIN_HEIGHT = 40.0;
-  public static double SHOOT_MAX_HEIGHT = 49.0;
+  public static double SHOOT_TURRET_LEAD_TIME = 0.0;
+  public static double SHOOT_OUTTAKE_LEAD_TIME = 0.3;
+  public static double SHOOT_MIN_HEIGHT_CLOSE = 40.0;
+  public static double SHOOT_MIN_HEIGHT_FAR = 40.0;
+  public static double SHOOT_MAX_HEIGHT_CLOSE = 49.0;
+  public static double SHOOT_MAX_HEIGHT_FAR = 51.0;
   public static double SHOOT_TARGET_HEIGHT_CLOSE = 46.5;
-  public static double SHOOT_TARGET_HEIGHT_FAR = 48.0;
+  public static double SHOOT_TARGET_HEIGHT_FAR = 50.0;
   public static double SHOOT_SLOWDOWN_FACTOR = 0.8;
   public static double SHOOT_RADIUS = 0.1181102362;
   public static double SHOOT_TRANSFER_FACTOR = 0.5714;
@@ -258,6 +261,32 @@ public class Robot{
     return new double[]{theta, bestMag, bestHoodTheta};
   }
 
+  public static double shootMinHeight(Pose2d robotPose){
+    Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
+    double currDistance = Math.sqrt(
+            goalRelativeToOuttake.x*goalRelativeToOuttake.x+
+                    goalRelativeToOuttake.y*goalRelativeToOuttake.y
+    );
+    if(currDistance > 120.0){
+      return SHOOT_MIN_HEIGHT_FAR;
+    }
+    else{
+      return SHOOT_MIN_HEIGHT_CLOSE;
+    }
+  }
+  public static double shootMaxHeight(Pose2d robotPose){
+    Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
+    double currDistance = Math.sqrt(
+            goalRelativeToOuttake.x*goalRelativeToOuttake.x+
+                    goalRelativeToOuttake.y*goalRelativeToOuttake.y
+    );
+    if(currDistance > 120.0){
+      return SHOOT_MAX_HEIGHT_FAR;
+    }
+    else{
+      return SHOOT_MAX_HEIGHT_CLOSE;
+    }
+  }
   public static double shootTargetHeight(Pose2d robotPose){
     Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
     double currDistance = Math.sqrt(
@@ -299,7 +328,7 @@ public class Robot{
     telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
   }
   public static void aimOuttakeTurret(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
-    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + SHOOT_LEAD_TIME*robotVelocity.linearVel.x, robotPose.position.y + SHOOT_LEAD_TIME*robotVelocity.linearVel.y, robotPose.heading.toDouble());
+    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + SHOOT_TURRET_LEAD_TIME*robotVelocity.linearVel.x, robotPose.position.y + SHOOT_TURRET_LEAD_TIME*robotVelocity.linearVel.y, robotPose.heading.toDouble());
     double theta = calculateShoot(futureRobotPose, robotVelocity, shootTargetHeight(robotPose), false)[0];
     aimOuttakeTurret(theta, futureRobotPose, pid);
   }
@@ -335,13 +364,13 @@ public class Robot{
   }
 
   public static double[] shootOuttake(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid, double targetHeight, boolean findBestHoodAngle){
-    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + SHOOT_LEAD_TIME*robotVelocity.linearVel.x, robotPose.position.y + SHOOT_LEAD_TIME*robotVelocity.linearVel.y, robotPose.heading.toDouble());
+    Pose2d futureRobotPose = new Pose2d(robotPose.position.x + SHOOT_OUTTAKE_LEAD_TIME*robotVelocity.linearVel.x, robotPose.position.y + SHOOT_OUTTAKE_LEAD_TIME*robotVelocity.linearVel.y, robotPose.heading.toDouble());
 
-    double maxMag = calculateShoot(robotPose, robotVelocity, SHOOT_MAX_HEIGHT, findBestHoodAngle)[1];
+    double maxMag = calculateShoot(robotPose, robotVelocity, shootMaxHeight(robotPose), findBestHoodAngle)[1];
     double maxOuttakeAngVelInitial = calculateOuttakeVelInitial(maxMag);
     telemetry.addData("Max Outtake Ang Vel Initial (deg/s)", maxOuttakeAngVelInitial);
 
-    double minMag = calculateShoot(robotPose, robotVelocity, SHOOT_MIN_HEIGHT, findBestHoodAngle)[1];
+    double minMag = calculateShoot(robotPose, robotVelocity, shootMinHeight(robotPose), findBestHoodAngle)[1];
     double minOuttakeAngVelInitial = calculateOuttakeVelInitial(minMag);
     telemetry.addData("Min Outtake Ang Vel Initial (deg/s)", minOuttakeAngVelInitial);
 

@@ -45,10 +45,17 @@ public class MeepMeepCurrent {
                 .goToShoot("strafe", "")
                 .shoot();
         autoBuilder
+                .goToSpike1("")
+                .intakeSpike1()
+                .goToGateHit("left")
+                .goToShoot("strafe", "")
+                .shoot();
+        autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
-                .goToShoot("spline", "")
+                .goToGateHit("right")
+                .goToShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToGateHit("right")
@@ -56,16 +63,9 @@ public class MeepMeepCurrent {
                 .goToShoot("strafe", "")
                 .shoot();
         autoBuilder
-                .goToSpike3()
-                .intakeSpike3()
-                .backUpAfterSpike3()
-                .goToShoot("spline", "")
-                .shoot();
-        autoBuilder
-                .goToSpike1("")
-                .intakeSpike1()
-                .backUpAfterSpike1()
-                .goToShoot("spline", "1")
+                .goToGateHit("right")
+                .intakeFromGate()
+                .goToShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .leaveZone();
