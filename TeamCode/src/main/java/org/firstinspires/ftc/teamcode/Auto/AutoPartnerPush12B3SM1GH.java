@@ -11,12 +11,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Goal Zone 15B 2SM 2GH", group="Main")
+@Autonomous(name="Auto Partner Push 12B 3SM 1GH", group="Main")
 @Config
-public class AutoGoalZone15B2SM2GH extends LinearOpMode {
-    double START_X = -49.0;
-    double START_Y = -50.5;
-    double START_HEADING = -126.5;
+public class AutoPartnerPush12B3SM1GH extends LinearOpMode {
+    double START_X = 64.0;
+    double START_Y = -7.0;
+    double START_HEADING = -180.0;
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
@@ -54,6 +54,16 @@ public class AutoGoalZone15B2SM2GH extends LinearOpMode {
         AutoBuilder autoBuilder = new AutoBuilder(Robot.drive.actionBuilder(startPose, poseMap));
 
         autoBuilder
+                .leaveZone()
+                .goToFarShoot("strafe");
+        autoBuilder.goToCloseShoot("strafe", "");
+        autoBuilder
+                .goToCloseShoot("strafe", "")
+                .shoot();
+        autoBuilder
+                .goToSpike1("")
+                .intakeSpike1()
+                .goToGateHit("left")
                 .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
@@ -63,20 +73,10 @@ public class AutoGoalZone15B2SM2GH extends LinearOpMode {
                 .goToCloseShoot("spline", "")
                 .shoot();
         autoBuilder
-                .goToGateHit("right")
-                .intakeFromGate()
-                .goToCloseShoot("strafe", "")
-                .shoot();
-        autoBuilder
-                .goToGateHit("right")
-                .intakeFromGate()
-                .goToCloseShoot("strafe", "")
-                .shoot();
-        autoBuilder
-                .goToSpike1("")
-                .intakeSpike1()
-                .backUpAfterSpike1()
-                .goToCloseShoot("spline", "1")
+                .goToSpike3()
+                .intakeSpike3()
+                .backUpAfterSpike3()
+                .goToCloseShoot("spline", "")
                 .shoot();
         autoBuilder
                 .leaveZone();

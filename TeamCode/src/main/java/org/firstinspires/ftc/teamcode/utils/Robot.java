@@ -508,7 +508,7 @@ public class Robot{
       if(topDistance < TOP_DISTANCE_SENSOR_DETECTION_THRESH){
         elapsedTimeSinceBallDetected.reset();
       }
-      if(elapsedTime.seconds() > time || (elapsedTimeSinceBallDetected.seconds() > 0.3 && elapsedTime.seconds() > 1.4)){
+      if(elapsedTime.seconds() > time || (elapsedTimeSinceBallDetected.seconds() > 0.2 && elapsedTime.seconds() > 1.05)){
         intake.setPower(0);
         stopper.setPosition(STOPPER_CLOSED_POS);
         return false;
@@ -516,10 +516,7 @@ public class Robot{
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
 
-      if(elapsedTime.seconds() < 0.2){
-        attemptingToShoot = false;
-      }
-      else if(((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
+      if(((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
               elapsedTime.seconds() > time - 0.2) &&
               elapsedSinceTimeStartAttemptToShoot.seconds() < 0.6
       ){
@@ -556,6 +553,7 @@ public class Robot{
   }
 
   public static class LooseIntakeAction implements Action {
+    double P_VALUE = 1/180.0;
     boolean started = false;
     double time = 10.0;
     ElapsedTime elapsedTime;
@@ -582,7 +580,7 @@ public class Robot{
                 new PoseVelocity2d(
                         new Vector2d(
                                 0,
-                                -result.getTx()/180.0
+                                -result.getTx()*P_VALUE
                         ),
                         0
                 )

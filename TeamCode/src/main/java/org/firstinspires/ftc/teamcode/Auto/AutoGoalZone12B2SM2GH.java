@@ -54,24 +54,24 @@ public class AutoGoalZone12B2SM2GH extends LinearOpMode {
         AutoBuilder autoBuilder = new AutoBuilder(Robot.drive.actionBuilder(startPose, poseMap));
 
         autoBuilder
-                .goToShoot("strafe", "")
+                .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
-                .goToShoot("spline", "")
+                .goToCloseShoot("spline", "")
                 .shoot();
         autoBuilder
                 .goToGateHit("right")
                 .intakeFromGate()
-                .goToShoot("strafe", "")
+                .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToSpike1("")
                 .intakeSpike1()
                 .goToGateHit("left")
-                .goToShoot("strafe", "")
+                .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .leaveZone();

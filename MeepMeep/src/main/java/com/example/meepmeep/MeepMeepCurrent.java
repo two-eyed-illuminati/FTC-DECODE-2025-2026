@@ -18,9 +18,9 @@ public class MeepMeepCurrent {
                 .setDimensions(15, 18)
                 .build();
 
-        double START_X = -49.0;
-        double START_Y = -50.5;
-        double START_HEADING = -126.5;
+        double START_X = 64.0;
+        double START_Y = -7.0;
+        double START_HEADING = -180.0;
 
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
 
@@ -42,30 +42,29 @@ public class MeepMeepCurrent {
         AutoBuilder autoBuilder = new AutoBuilder(tabMapped);
 
         autoBuilder
-                .goToShoot("strafe", "")
+                .leaveZone()
+                .goToFarShoot("strafe");
+        autoBuilder.goToCloseShoot("strafe", "");
+        autoBuilder
+                .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToSpike1("")
                 .intakeSpike1()
                 .goToGateHit("left")
-                .goToShoot("strafe", "")
+                .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
-                .goToGateHit("right")
-                .goToShoot("strafe", "")
+                .goToCloseShoot("spline", "")
                 .shoot();
         autoBuilder
-                .goToGateHit("right")
-                .intakeFromGate()
-                .goToShoot("strafe", "")
-                .shoot();
-        autoBuilder
-                .goToGateHit("right")
-                .intakeFromGate()
-                .goToShoot("strafe", "")
+                .goToSpike3()
+                .intakeSpike3()
+                .backUpAfterSpike3()
+                .goToCloseShoot("spline", "")
                 .shoot();
         autoBuilder
                 .leaveZone();

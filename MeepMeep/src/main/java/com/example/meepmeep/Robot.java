@@ -30,6 +30,6 @@ public class Robot{
         return new InstantAction(() -> {});
     }
     public static Action getShootSequenceAction(){
-        return new SleepAction(2.25);
+        return new SleepAction(1.2);
     }
 }

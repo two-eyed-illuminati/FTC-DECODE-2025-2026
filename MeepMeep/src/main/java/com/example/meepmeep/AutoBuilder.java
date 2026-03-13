@@ -31,19 +31,19 @@ public class AutoBuilder {
         }
     }
 
-    public static double SPIKE_SHOOT_HEADING = Math.toRadians(-90);
-    public static double SPIKE_SHOOT_TANGENT_ANGLE = Math.toRadians(-225);
-    public static double SPIKE_1_SHOOT_TANGENT_ANGLE = Math.toRadians(90);
-    public static double SPIKE_SHOOT_X = -12.3370432609;
-    public static double SPIKE_SHOOT_Y = -15.9996985274;
-    public static double PRELOAD_SHOOT_HEADING = Math.toRadians(-126.5);
-    public static double PRELOAD_SHOOT_X = -25.3370432609;
-    public static double PRELOAD_SHOOT_Y = -22.9996985274;
-    public AutoBuilder goToShoot(String type, String tangentType){
+    public static double SPIKE_CLOSE_SHOOT_HEADING = Math.toRadians(-90);
+    public static double SPIKE_CLOSE_SHOOT_TANGENT_ANGLE = Math.toRadians(-225);
+    public static double SPIKE_1_CLOSE_SHOOT_TANGENT_ANGLE = Math.toRadians(90);
+    public static double SPIKE_CLOSE_SHOOT_X = -12.3370432609;
+    public static double SPIKE_CLOSE_SHOOT_Y = -15.9996985274;
+    public static double PRELOAD_CLOSE_SHOOT_HEADING = Math.toRadians(-126.5);
+    public static double PRELOAD_CLOSE_SHOOT_X = -25.3370432609;
+    public static double PRELOAD_CLOSE_SHOOT_Y = -22.9996985274;
+    public AutoBuilder goToCloseShoot(String type, String tangentType){
         Pose2d endPose = (
                 actions.isEmpty() ?
-                        new Pose2d(PRELOAD_SHOOT_X, PRELOAD_SHOOT_Y, PRELOAD_SHOOT_HEADING) :
-                        new Pose2d(SPIKE_SHOOT_X, SPIKE_SHOOT_Y, SPIKE_SHOOT_HEADING)
+                        new Pose2d(PRELOAD_CLOSE_SHOOT_X, PRELOAD_CLOSE_SHOOT_Y, PRELOAD_CLOSE_SHOOT_HEADING) :
+                        new Pose2d(SPIKE_CLOSE_SHOOT_X, SPIKE_CLOSE_SHOOT_Y, SPIKE_CLOSE_SHOOT_HEADING)
         );
         currentTab = currentTab.afterTime(0,
                 new ParallelAction(
@@ -57,7 +57,42 @@ public class AutoBuilder {
         if(type.equals("spline")){
             currentTab = currentTab.splineToSplineHeading(
                     endPose,
-                    tangentType.equals("1") ? SPIKE_1_SHOOT_TANGENT_ANGLE : SPIKE_SHOOT_TANGENT_ANGLE
+                    tangentType.equals("1") ? SPIKE_1_CLOSE_SHOOT_TANGENT_ANGLE : SPIKE_CLOSE_SHOOT_TANGENT_ANGLE
+            );
+        }
+        else if(type.equals("strafe")){
+            currentTab = currentTab.strafeToLinearHeading(
+                    endPose.position,
+                    endPose.heading
+            );
+        }
+        currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.STOP_SHOOT_OUTTAKE_ACTION = true;}));
+        actionObjs.add(currentTab.build());
+        currentTab = currentTab.fresh();
+        actions.add("GoToShoot");
+        return this;
+    }
+    public static double FAR_SHOOT_TANGENT_ANGLE = Math.toRadians(90);
+    public static double FAR_SHOOT_HEADING = Math.toRadians(-180);
+    public static double FAR_SHOOT_X = 60.3370432609;
+    public static double FAR_SHOOT_Y = -12.9996985274;
+    public AutoBuilder goToFarShoot(String type){
+        Pose2d endPose = (
+                new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)
+        );
+        currentTab = currentTab.afterTime(0,
+                new ParallelAction(
+                        new InstantAction(() -> {
+                            Robot.stopIntake();
+                        }),
+                        Robot.getAimOuttakeTurretAction(pose2dMapped(endPose)),
+                        Robot.getShootOuttakeAction(pose2dMapped(endPose))
+                )
+        );
+        if(type.equals("spline")){
+            currentTab = currentTab.splineToSplineHeading(
+                    endPose,
+                    FAR_SHOOT_TANGENT_ANGLE
             );
         }
         else if(type.equals("strafe")){
@@ -204,7 +239,7 @@ public class AutoBuilder {
         return this;
     }
 
-    public static double GATE_X_LEFT = -6.0;
+    public static double GATE_X_LEFT = -4.0;
     public static double GATE_X_RIGHT = 8.0;
     public static double GATE_Y_BEFORE_HIT = -50.0;
     public static double GATE_Y_HIT = -57.0;
