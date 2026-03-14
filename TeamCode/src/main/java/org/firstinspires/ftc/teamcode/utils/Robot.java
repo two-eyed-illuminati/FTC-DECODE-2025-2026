@@ -41,7 +41,7 @@ public class Robot{
   public static double TOP_DISTANCE_SENSOR_DETECTION_THRESH = 5.0;
   public static double TURRET_OFFSET_LENGTH = 2.9;
   public static double TURRET_OFFSET_ANGLE = -180.0;
-  public static double SHOOT_TURRET_LEAD_TIME = 0.0;
+  public static double SHOOT_TURRET_LEAD_TIME = 0.45;
   public static double SHOOT_OUTTAKE_LEAD_TIME = 0.3;
   public static double SHOOT_MIN_HEIGHT_CLOSE = 40.0;
   public static double SHOOT_MIN_HEIGHT_FAR = 40.0;
@@ -67,6 +67,7 @@ public class Robot{
   public static MotorMechanism outtakeTurret;
   public static ServoMechanism hood;
   public static PIDFController outtakeTurretController;
+  public static PIDFController outtakeTurretVelocityController;
   public static DualMotor outtakeMotors;
   public static ContinuousMotorMechanism outtake;
   public static PIDFController outtakeController;
@@ -187,7 +188,7 @@ public class Robot{
     double turretXOffset = TURRET_OFFSET_LENGTH*Math.cos(Math.toRadians(TURRET_OFFSET_ANGLE)+robotPose.heading.log());
     double turretYOffset = TURRET_OFFSET_LENGTH*Math.sin(Math.toRadians(TURRET_OFFSET_ANGLE)+robotPose.heading.log());
 
-    return new Vector2d(-71.0-robotPose.position.x-turretXOffset, (alliance == Alliance.BLUE ? -71.0 : 71.0)-robotPose.position.y-turretYOffset);
+    return new Vector2d(-70.0-robotPose.position.x-turretXOffset, (alliance == Alliance.BLUE ? -70.0 : 70.0)-robotPose.position.y-turretYOffset);
   }
   public static double calculateOuttakeTurretAim(Pose2d robotPose){
     Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
@@ -530,6 +531,14 @@ public class Robot{
       }
       else{
         attemptingToShoot = false;
+        Vector2d goalRelativeToOuttake = Robot.calculateGoalRelativeToOuttake(Robot.drive.localizer.getPose());
+        double currDistance = Math.sqrt(
+                goalRelativeToOuttake.x*goalRelativeToOuttake.x+
+                        goalRelativeToOuttake.y*goalRelativeToOuttake.y
+        );
+        if(currDistance > 120.0){
+          Robot.stopper.setPosition(Robot.STOPPER_CLOSED_POS);
+        }
         intake.setPower(1.0);
       }
 

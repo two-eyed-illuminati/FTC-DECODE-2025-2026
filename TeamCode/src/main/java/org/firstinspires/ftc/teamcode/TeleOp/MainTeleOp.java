@@ -111,11 +111,25 @@ public class MainTeleOp extends OpMode {
             currentMinOuttakeVel = outtakeVels[0];
             currentMaxOuttakeVel = outtakeVels[1];
 
+            if(gamepad1.x){
+                Robot.intake.setPower(-1.0);
+                Robot.stopper.setPosition(Robot.STOPPER_OPEN_POS);
+                Robot.aimOuttakeTurret(currDriveVel);
+            }
+
             if(currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel) {
                 Robot.telemetry.addData("Can Shoot", 1);
                 Robot.stopper.setPosition(Robot.STOPPER_OPEN_POS);
             }
             else{
+                Vector2d goalRelativeToOuttake = Robot.calculateGoalRelativeToOuttake(Robot.drive.localizer.getPose());
+                double currDistance = Math.sqrt(
+                        goalRelativeToOuttake.x*goalRelativeToOuttake.x+
+                        goalRelativeToOuttake.y*goalRelativeToOuttake.y
+                );
+                if(currDistance > 120.0){
+                    Robot.stopper.setPosition(Robot.STOPPER_CLOSED_POS);
+                }
                 Robot.telemetry.addData("Can Shoot", 0);
             }
             Robot.aimOuttakeTurret(currDriveVel);
@@ -176,7 +190,20 @@ public class MainTeleOp extends OpMode {
             }
             wantedLedState = 0;
         }
-        if(timeSinceWantedLedStateChange.seconds() > 0.25){
+
+        if(gamepad1.dpadUpWasPressed()){
+            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            Robot.ledLeft.setPosition(1.0);
+            Robot.ledRight.setPosition(1.0);
+        }
+        else if(gamepad1.dpadDownWasPressed()){
+            Pose2d currPose = Robot.drive.localizer.getPose();
+            Robot.drive.localizer.setPose(new Pose2d(currPose.position.x-3.0, currPose.position.y, currPose.heading.toDouble()));
+            Robot.ledLeft.setPosition(1.0);
+            Robot.ledRight.setPosition(1.0);
+        }
+        else if(timeSinceWantedLedStateChange.seconds() > 0.25){
             if(wantedLedState == 0){
                 Robot.ledLeft.setPosition(0.28);
                 Robot.ledRight.setPosition(0.28);
@@ -189,11 +216,6 @@ public class MainTeleOp extends OpMode {
                 Robot.ledLeft.setPosition(0.50);
                 Robot.ledRight.setPosition(0.50);
             }
-        }
-
-        if(gamepad1.dpadUpWasPressed()){
-            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());
