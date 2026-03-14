@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -188,6 +189,11 @@ public class MainTeleOp extends OpMode {
                 Robot.ledLeft.setPosition(0.50);
                 Robot.ledRight.setPosition(0.50);
             }
+        }
+
+        if(gamepad1.dpadUpWasPressed()){
+            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());

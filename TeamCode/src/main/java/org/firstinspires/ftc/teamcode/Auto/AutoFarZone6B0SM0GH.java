@@ -11,9 +11,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Partner Push 12B 3SM 1GH", group="Main")
+@Autonomous(name="Auto Far Zone 6B 0SM 0GH", group="Main")
 @Config
-public class AutoPartnerPush12B3SM1GH extends LinearOpMode {
+public class AutoFarZone6B0SM0GH extends LinearOpMode {
     double START_X = 63.0;
     double START_Y = -10.0;
     double START_HEADING = -90.0;
@@ -54,29 +54,10 @@ public class AutoPartnerPush12B3SM1GH extends LinearOpMode {
         AutoBuilder autoBuilder = new AutoBuilder(Robot.drive.actionBuilder(startPose, poseMap));
 
         autoBuilder
-                .leaveZone()
-                .goToFarShoot("strafe", 0.0);
-        autoBuilder.goToCloseShoot("strafe", "");
-        autoBuilder
-                .goToCloseShoot("strafe", "")
+                .goToFarShoot("strafe", 2.0)
                 .shoot();
         autoBuilder
-                .goToSpike1("")
-                .intakeSpike1()
-                .goToGateHit("left")
-                .goToCloseShoot("strafe", "")
-                .shoot();
-        autoBuilder
-                .goToSpike2()
-                .intakeSpike2()
-                .backUpAfterSpike2()
-                .goToCloseShoot("spline", "")
-                .shoot();
-        autoBuilder
-                .goToSpike3()
-                .intakeSpike3()
-                .backUpAfterSpike3()
-                .goToCloseShoot("spline", "")
+                .looseIntake()
                 .shoot();
         autoBuilder
                 .leaveZone();

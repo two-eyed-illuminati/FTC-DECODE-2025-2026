@@ -15,6 +15,7 @@ public class Robot{
     }
     public static Alliance alliance = Alliance.RED; //0 = blue, 1 = red
     public static boolean STOP_SHOOT_OUTTAKE_ACTION = false;
+    public static boolean STOP_AIM_TURRET_ACTION = false;
     public static void beginIntake(){}
     public static void stopIntake(){}
     public static Action getLooseIntakeAction(){

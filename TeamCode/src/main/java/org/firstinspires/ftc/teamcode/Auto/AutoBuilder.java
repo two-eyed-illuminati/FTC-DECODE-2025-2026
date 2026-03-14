@@ -68,17 +68,19 @@ public class AutoBuilder {
                     endPose.heading
             );
         }
-        currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.STOP_SHOOT_OUTTAKE_ACTION = true;}));
+        currentTab = currentTab.afterTime(0, new InstantAction(() -> {
+            Robot.STOP_SHOOT_OUTTAKE_ACTION = true;
+            Robot.STOP_AIM_TURRET_ACTION = true;}));
         actionObjs.add(currentTab.build());
         currentTab = currentTab.fresh();
         actions.add("GoToShoot");
         return this;
     }
     public static double FAR_SHOOT_TANGENT_ANGLE = Math.toRadians(90);
-    public static double FAR_SHOOT_HEADING = Math.toRadians(-180);
-    public static double FAR_SHOOT_X = 60.3370432609;
+    public static double FAR_SHOOT_HEADING = Math.toRadians(-90);
+    public static double FAR_SHOOT_X = 50.3370432609;
     public static double FAR_SHOOT_Y = -12.9996985274;
-    public AutoBuilder goToFarShoot(String type){
+    public AutoBuilder goToFarShoot(String type, double waitTimeForShooter){
         Pose2d endPose = (
                 new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)
         );
@@ -103,7 +105,12 @@ public class AutoBuilder {
                     endPose.heading
             );
         }
-        currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.STOP_SHOOT_OUTTAKE_ACTION = true;}));
+        if(waitTimeForShooter > 0) {
+            currentTab = currentTab.waitSeconds(waitTimeForShooter);
+        }
+        currentTab = currentTab.afterTime(0, new InstantAction(() -> {
+            Robot.STOP_SHOOT_OUTTAKE_ACTION = true;
+            Robot.STOP_AIM_TURRET_ACTION = true;}));
         actionObjs.add(currentTab.build());
         currentTab = currentTab.fresh();
         actions.add("GoToShoot");
@@ -243,17 +250,17 @@ public class AutoBuilder {
 
     public static double GATE_X_LEFT = -4.0;
     public static double GATE_X_RIGHT = 8.0;
-    public static double GATE_Y_BEFORE_HIT = -50.0;
+    public static double GATE_Y_BEFORE_HIT = -47.0;
     public static double GATE_Y_HIT = -57.0;
     public static double GATE_HIT_TIME = 0.0;
-    public static double GATE_HIT_SPEED = 35.0;
+    public static double GATE_HIT_SPEED = 25.0;
     public AutoBuilder goToGateHit(String side){
         if(!actions.isEmpty() && (actions.get(actions.size()-1).equals("GoToShoot") || actions.get(actions.size()-1).equals("Shoot"))){
             currentTab = currentTab.setTangent(Math.toRadians(0));
         }
         double GATE_X = side.equals("left") ? GATE_X_LEFT : GATE_X_RIGHT;
         VelConstraint constraint = (robotPose, _path, _disp) -> {
-            if(Math.abs(robotPose.position.x.value()-GATE_X) < 5.0 && Math.abs(robotPose.position.y.value()-GATE_Y_BEFORE_HIT) < 7.0){
+            if(Math.abs(robotPose.position.x.value()-GATE_X) < 5.0 && Math.abs(robotPose.position.y.value()-GATE_Y_BEFORE_HIT) < 10.0){
                 return GATE_HIT_SPEED;
             }
             return 60;
@@ -292,10 +299,20 @@ public class AutoBuilder {
         actions.add("IntakeFromGate");
         return this;
     }
+//    public AutoBuilder cornerIntake(){
+//
+//    }
+    public static double LOOSE_INTAKE_START_X = 60;
+    public static double LOOSE_INTAKE_START_Y = -45.0;
+    public static double LOOSE_INTAKE_START_HEADING = Math.toRadians(-60.0);
+    public static double LOOSE_INTAKE_END_X = 40;
+    public static double LOOSE_INTAKE_END_Y = -60;
     public AutoBuilder looseIntake(){
-        actionObjs.add(Robot.getLooseIntakeAction());
+        currentTab = currentTab.strafeToLinearHeading(
+                new Vector2d(LOOSE_INTAKE_START_X, LOOSE_INTAKE_START_Y), LOOSE_INTAKE_START_HEADING
+        );
         actionObjs.add(currentTab.build());
-        currentTab = currentTab.fresh();
+        actionObjs.add(Robot.getLooseIntakeAction(new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)));
         actions.add("LooseIntake");
         return this;
     }

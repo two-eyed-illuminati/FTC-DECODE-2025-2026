@@ -24,6 +24,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Auto.AutoBuilder;
 import org.firstinspires.ftc.teamcode.utils.rr.MecanumDrive;
 
 //Allow configuration variables to be tuned without pushing code
@@ -34,7 +35,7 @@ public class Robot{
   public static double START_X = -49.0;
   public static double START_Y = -50.5;
   public static double START_HEADING = -126.5;
-  public static double STOPPER_CLOSED_POS = 0.8;
+  public static double STOPPER_CLOSED_POS = 1.0;
   public static double STOPPER_OPEN_POS = 0.228;
   public static double FRONT_DISTANCE_SENSOR_DETECTION_THRESH = 7.5;
   public static double TOP_DISTANCE_SENSOR_DETECTION_THRESH = 5.0;
@@ -173,6 +174,9 @@ public class Robot{
   public static void stopIntake(){
     intake.setPower(0.75);
     stopper.setPosition(STOPPER_CLOSED_POS);
+  }
+  public static void openStopper(){
+    stopper.setPosition(STOPPER_OPEN_POS);
   }
 
   public static double voltageToDistance(double voltage){
@@ -427,6 +431,7 @@ public class Robot{
     return new ReverseIntakeAction();
   }
 
+  public static boolean STOP_AIM_TURRET_ACTION = false;
   public static class AimOuttakeTurretAction implements Action {
     Pose2d endPose;
     public AimOuttakeTurretAction(Pose2d endPose){
@@ -439,17 +444,8 @@ public class Robot{
       double targetTurretPos = calculateOuttakeTurretAim(endPose)-Math.toDegrees(endPose.heading.toDouble());
       packet.put("Outtake Turret Pos", outtakeTurret.getPos());
       packet.put("Outtake Turret Error", Math.abs(outtakeTurret.getPos()-targetTurretPos));
-      if(Math.abs(outtakeTurret.getPos()-targetTurretPos) < 5.0
-              && Math.abs(outtakeTurret.getVel()) < 10.0
-      ){
-//      Pose2d currPose = drive.localizer.getPose();
-//      double distance = Math.sqrt(
-//              Math.pow(currPose.position.x-endPose.position.x, 2)+
-//              Math.pow(currPose.position.y-endPose.position.y, 2)
-//      );
-//      if(distance < 4.5){
-        outtakeTurret.setPos(targetTurretPos);
-        outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+      if(STOP_AIM_TURRET_ACTION){
+        STOP_AIM_TURRET_ACTION = false;
         return false;
       }
       return true;
@@ -508,7 +504,8 @@ public class Robot{
       if(topDistance < TOP_DISTANCE_SENSOR_DETECTION_THRESH){
         elapsedTimeSinceBallDetected.reset();
       }
-      if(elapsedTime.seconds() > time || (elapsedTimeSinceBallDetected.seconds() > 0.2 && elapsedTime.seconds() > 1.05)){
+      if(elapsedTime.seconds() > time ||
+        (elapsedTimeSinceBallDetected.seconds() > 0.2 && elapsedTime.seconds() > 1.0)){
         intake.setPower(0);
         stopper.setPosition(STOPPER_CLOSED_POS);
         return false;
@@ -553,12 +550,16 @@ public class Robot{
   }
 
   public static class LooseIntakeAction implements Action {
-    double P_VALUE = 1/180.0;
+    double P_VALUE = 1/35.0;
     boolean started = false;
+    boolean returning = false;
     double time = 10.0;
     ElapsedTime elapsedTime;
     ElapsedTime elapsedTimeOfBallDetected;
-    public LooseIntakeAction(){
+    Pose2d endPose;
+    Action goToEndPoseAction;
+    public LooseIntakeAction(Pose2d endPose){
+      this.endPose = endPose;
       elapsedTime = new ElapsedTime();
       elapsedTimeOfBallDetected = new ElapsedTime();
     }
@@ -566,31 +567,62 @@ public class Robot{
       if(!started){
         started = true;
         elapsedTime.reset();
+        beginIntake();
       }
 
-      if(voltageToDistance(frontDistanceSensor.getVoltage()) > FRONT_DISTANCE_SENSOR_DETECTION_THRESH){
-        elapsedTimeOfBallDetected.reset();
+      drive.updatePoseEstimate();
+
+      if(!returning) {
+        if (voltageToDistance(frontDistanceSensor.getVoltage()) > FRONT_DISTANCE_SENSOR_DETECTION_THRESH) {
+          elapsedTimeOfBallDetected.reset();
+        }
+        telemetry.addData("Front Distance", voltageToDistance(frontDistanceSensor.getVoltage()));
+        telemetry.addData("Elapsed Time of Ball Detected", elapsedTimeOfBallDetected.seconds());
+
+        limelight.updatePythonInputs(new double[]{alliance == Alliance.BLUE ? 0 : 1});
+        LLResult result = Robot.limelight.getLatestResult();
+
+        if (result != null) {
+          telemetry.addData("Artifact X", result.getTx());
+
+          double forwardPower = -0.1;
+          if (Math.abs(result.getTx()) < 14.0 && result.getTx() != 0) {
+            forwardPower = 0.5;
+          }
+
+          double sidePower = alliance == Alliance.BLUE ? -0.5 : 0.5;
+          if (result.getTx() != 0) {
+            sidePower = -result.getTx() * P_VALUE;
+          }
+
+          drive.setDrivePowers(
+                  new PoseVelocity2d(
+                          new Vector2d(
+                                  forwardPower,
+                                  sidePower
+                          ),
+                          0
+                  )
+          );
+        } else {
+          telemetry.addLine("Invalid Limelight Result");
+          telemetry.addData("Is Not Null?", result != null);
+        }
+
+        if (elapsedTime.seconds() > time || elapsedTimeOfBallDetected.seconds() > 0.5 || drive.localizer.getPose().position.x < 30) {
+          stopIntake();
+          returning = true;
+          goToEndPoseAction = drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(endPose.position, endPose.heading).build();
+        }
+      }
+      else{
+        return goToEndPoseAction.run(packet);
       }
 
-      limelight.updatePythonInputs(new double[]{alliance == Alliance.BLUE ? 0 : 1});
-      LLResult result = Robot.limelight.getLatestResult();
-
-      if(result != null && result.isValid()) {
-        drive.setDrivePowers(
-                new PoseVelocity2d(
-                        new Vector2d(
-                                0,
-                                -result.getTx()*P_VALUE
-                        ),
-                        0
-                )
-        );
-      }
-
-      return elapsedTime.seconds() < time || elapsedTimeOfBallDetected.seconds() > 0.5;
+      return true;
     }
   }
-  public static Action getLooseIntakeAction(){
-    return new LooseIntakeAction();
+  public static Action getLooseIntakeAction(Pose2d endPose){
+    return new LooseIntakeAction(endPose);
   }
 }

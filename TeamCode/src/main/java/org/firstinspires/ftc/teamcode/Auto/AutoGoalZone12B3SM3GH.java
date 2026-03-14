@@ -11,12 +11,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Partner Push 12B 3SM 1GH", group="Main")
+@Autonomous(name="Auto Goal Zone 12B 3SM 3GH", group="Main")
 @Config
-public class AutoPartnerPush12B3SM1GH extends LinearOpMode {
-    double START_X = 63.0;
-    double START_Y = -10.0;
-    double START_HEADING = -90.0;
+public class AutoGoalZone12B3SM3GH extends LinearOpMode {
+    double START_X = -49.0;
+    double START_Y = -50.5;
+    double START_HEADING = -126.5;
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
@@ -54,10 +54,6 @@ public class AutoPartnerPush12B3SM1GH extends LinearOpMode {
         AutoBuilder autoBuilder = new AutoBuilder(Robot.drive.actionBuilder(startPose, poseMap));
 
         autoBuilder
-                .leaveZone()
-                .goToFarShoot("strafe", 0.0);
-        autoBuilder.goToCloseShoot("strafe", "");
-        autoBuilder
                 .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
@@ -70,13 +66,15 @@ public class AutoPartnerPush12B3SM1GH extends LinearOpMode {
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
-                .goToCloseShoot("spline", "")
+                .goToGateHit("right")
+                .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .goToSpike3()
                 .intakeSpike3()
                 .backUpAfterSpike3()
-                .goToCloseShoot("spline", "")
+                .goToGateHit("right")
+                .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
                 .leaveZone();
