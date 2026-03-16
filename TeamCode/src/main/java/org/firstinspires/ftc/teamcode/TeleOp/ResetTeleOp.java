@@ -16,9 +16,9 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 
 import java.util.List;
 
-@TeleOp(name="Main TeleOp", group="Main")
-public class MainTeleOp extends OpMode {
-    public static boolean FIELD_CENTRIC = true;
+@TeleOp(name="Reset TeleOp", group="Main")
+public class ResetTeleOp extends OpMode {
+    public static boolean FIELD_CENTRIC = false;
     public double currentMinOuttakeVel = 0.0;
     public double currentMaxOuttakeVel = 0.0;
     public ElapsedTime timeSinceWantedLedStateChange;
@@ -74,7 +74,7 @@ public class MainTeleOp extends OpMode {
             }
             double mag = Math.sqrt(
                     gamepad1.left_stick_y*gamepad1.left_stick_y+
-                    gamepad1.left_stick_x*gamepad1.left_stick_x);
+                            gamepad1.left_stick_x*gamepad1.left_stick_x);
 
             double newTheta = theta - Robot.drive.localizer.getPose().heading.log();
             driveVector = new Vector2d(
@@ -125,7 +125,7 @@ public class MainTeleOp extends OpMode {
                 Vector2d goalRelativeToOuttake = Robot.calculateGoalRelativeToOuttake(Robot.drive.localizer.getPose());
                 double currDistance = Math.sqrt(
                         goalRelativeToOuttake.x*goalRelativeToOuttake.x+
-                        goalRelativeToOuttake.y*goalRelativeToOuttake.y
+                                goalRelativeToOuttake.y*goalRelativeToOuttake.y
                 );
                 if(currDistance > 120.0){
                     Robot.stopper.setPosition(Robot.STOPPER_CLOSED_POS);
@@ -157,7 +157,7 @@ public class MainTeleOp extends OpMode {
             Pose2d futureRobotPose = new Pose2d(currentPose.position.x + LEAD_TIME*currDriveVel.linearVel.x, currentPose.position.y + LEAD_TIME*currDriveVel.linearVel.y, currentPose.heading.toDouble());
             if(
                     futureRobotPose.position.x + Math.abs(futureRobotPose.position.y) < 24 ||
-                    currentPose.position.x + Math.abs(currentPose.position.y) < 24
+                            currentPose.position.x + Math.abs(currentPose.position.y) < 24
             ){
                 Robot.telemetry.addData("In Launch Zone", 1);
                 double[] outtakeVels = Robot.shootOuttake(currDriveVel, true);
@@ -197,8 +197,11 @@ public class MainTeleOp extends OpMode {
 
         double changeVal = 2.5;
         if(gamepad1.dpadUpWasPressed()){
-            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            Robot.drive.localizer.setPose(new Pose2d(
+                    Robot.START_X,
+                    Robot.alliance == Robot.Alliance.BLUE ? Robot.START_Y : -Robot.START_X,
+                    Math.toRadians(Robot.START_HEADING)
+            ));
             Robot.ledLeft.setPosition(1.0);
             Robot.ledRight.setPosition(1.0);
         }

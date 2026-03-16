@@ -39,7 +39,7 @@ public class AutoBuilder {
     public static double SPIKE_CLOSE_SHOOT_X = -12.3370432609;
     public static double SPIKE_CLOSE_SHOOT_Y = -15.9996985274;
     public static double PRELOAD_CLOSE_SHOOT_HEADING = Math.toRadians(-126.5);
-    public static double PRELOAD_CLOSE_SHOOT_X = -25.3370432609;
+    public static double PRELOAD_CLOSE_SHOOT_X = -27.3370432609;
     public static double PRELOAD_CLOSE_SHOOT_Y = -22.9996985274;
     public AutoBuilder goToCloseShoot(String type, String tangentType){
         Pose2d endPose = (
@@ -121,12 +121,17 @@ public class AutoBuilder {
         actions.add("Shoot");
         return this;
     }
+    public AutoBuilder shoot(double time){
+        actionObjs.add(Robot.getShootSequenceAction(time));
+        actions.add("Shoot");
+        return this;
+    }
 
     public static double TO_SPIKE_INITIAL_TANGENT_ANGLE = Math.toRadians(0.0);
     public static double TO_SPIKE_1_INITIAL_TANGENT_ANGLE = Math.toRadians(-90.0);
     public static double TO_SPIKE_1_FROM_PRELOAD_INITIAL_TANGENT_ANGLE = Math.toRadians(-40.0);
     public static double SPIKE_HEADING = Math.toRadians(-90.0);
-    public static double SPIKE_START_Y = -29.1017;
+    public static double SPIKE_START_Y = -27.1017;
     public static double SPIKE_1_X = -12.3457;
     public static double INTAKE_SPEED = 45.0;
     public AutoBuilder goToSpike1(String type){
@@ -146,7 +151,7 @@ public class AutoBuilder {
         return this;
     }
 
-    public static double SPIKE_2_X = 12.3457;
+    public static double SPIKE_2_X = 14.3457;
     public AutoBuilder goToSpike2(){
         VelConstraint constraint = (robotPose, _path, _disp) -> {
             if(Math.abs(robotPose.position.x.value()-SPIKE_2_X) < 5.0 && Math.abs(robotPose.position.y.value()-SPIKE_START_Y) < 7.0){
@@ -205,7 +210,7 @@ public class AutoBuilder {
         actions.add("BackUpAfterIntakeSpike1");
         return this;
     }
-    public static double SPIKE_2_END_X = 13.8457;
+    public static double SPIKE_2_END_X = 15.8457;
     public static double SPIKE_2_INTAKE_SPEED = 35.0;
     public AutoBuilder intakeSpike2(){
         currentTab = currentTab.afterTime(0, () -> {

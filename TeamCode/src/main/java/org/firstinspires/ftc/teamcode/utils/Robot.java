@@ -557,6 +557,9 @@ public class Robot{
   public static Action getShootSequenceAction(){
     return new ShootSequenceAction(); // Put this in a function so that it's easier to convert AutoBuilder to MeepMeep
   }
+  public static Action getShootSequenceAction(double time){
+    return new ShootSequenceAction(time); // Put this in a function so that it's easier to convert AutoBuilder to MeepMeep
+  }
 
   public static class LooseIntakeAction implements Action {
     double P_VALUE = 1/35.0;
