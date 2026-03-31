@@ -111,25 +111,11 @@ public class MainTeleOp extends OpMode {
             currentMinOuttakeVel = outtakeVels[0];
             currentMaxOuttakeVel = outtakeVels[1];
 
-            if(gamepad1.x){
-                Robot.intake.setPower(-1.0);
-                Robot.stopper.setPosition(Robot.STOPPER_OPEN_POS);
-                Robot.aimOuttakeTurret(currDriveVel);
-            }
-
             if(currentMaxOuttakeVel >= Robot.outtake.getVel() && Robot.outtake.getVel() >= currentMinOuttakeVel) {
                 Robot.telemetry.addData("Can Shoot", 1);
                 Robot.stopper.setPosition(Robot.STOPPER_OPEN_POS);
             }
             else{
-                Vector2d goalRelativeToOuttake = Robot.calculateGoalRelativeToOuttake(Robot.drive.localizer.getPose());
-                double currDistance = Math.sqrt(
-                        goalRelativeToOuttake.x*goalRelativeToOuttake.x+
-                        goalRelativeToOuttake.y*goalRelativeToOuttake.y
-                );
-                if(currDistance > 120.0){
-                    Robot.stopper.setPosition(Robot.STOPPER_CLOSED_POS);
-                }
                 Robot.telemetry.addData("Can Shoot", 0);
             }
             Robot.aimOuttakeTurret(currDriveVel);
