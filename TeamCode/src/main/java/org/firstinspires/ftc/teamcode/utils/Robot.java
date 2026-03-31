@@ -41,7 +41,7 @@ public class Robot{
   public static double TOP_DISTANCE_SENSOR_DETECTION_THRESH = 5.0;
   public static double TURRET_OFFSET_LENGTH = 2.9;
   public static double TURRET_OFFSET_ANGLE = -180.0;
-  public static double SHOOT_TURRET_LEAD_TIME = 0.45;
+  public static double SHOOT_TURRET_LEAD_TIME = 0.3;
   public static double SHOOT_OUTTAKE_LEAD_TIME = 0.3;
   public static double SHOOT_MIN_HEIGHT_CLOSE = 40.0;
   public static double SHOOT_MIN_HEIGHT_FAR = 40.0;
@@ -101,7 +101,7 @@ public class Robot{
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -180, 80, -384.5*180/360*4, 384.5*80/360*4, 1872);
-      outtakeTurretController = new PIDFController(1.0/16.0, 1/480.0,0);
+      outtakeTurretController = new PIDFController(1.0/16.0, 1/480.0,0, 1.0/180.0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
 //      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
@@ -113,7 +113,7 @@ public class Robot{
       outtake = new ContinuousMotorMechanism(outtakeMotors,
               360.0/28.0, 36000.0
       );
-      outtakeController = new PIDFController(1.0/2000.0, 0,1.0/OUTTAKE_MAX_VEL);
+      outtakeController = new PIDFController(1.0/2000.0, 0,1.0/OUTTAKE_MAX_VEL, 0);
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.setPollRateHz(100);
