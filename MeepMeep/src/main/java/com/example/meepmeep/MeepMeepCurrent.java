@@ -18,12 +18,12 @@ public class MeepMeepCurrent {
                 .setDimensions(15, 18)
                 .build();
 
-        double START_X = 63.0;
-        double START_Y = -10.0;
-        double START_HEADING = -90.0;
-//        double START_X = -49.0;
-//        double START_Y = -50.5;
-//        double START_HEADING = -126.5;
+//        double START_X = 63.0;
+//        double START_Y = -10.0;
+//        double START_HEADING = -90.0;
+        double START_X = -49.0;
+        double START_Y = -50.5;
+        double START_HEADING = -126.5;
 
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
 
@@ -45,11 +45,31 @@ public class MeepMeepCurrent {
         AutoBuilder autoBuilder = new AutoBuilder(tabMapped);
 
         autoBuilder
-                .goToFarShoot("strafe")
+                .goToCloseShoot("strafe", "")
                 .shoot();
         autoBuilder
-                .looseIntake()
-                .goToFarShoot("strafe")
+                .goToSpike2()
+                .intakeSpike2()
+                .backUpAfterSpike2()
+                .goToCloseShoot("spline", "")
+                .shoot();
+        autoBuilder
+                .goToGateHit("right")
+                .intakeFromGate()
+                .goToCloseShoot("strafe", "")
+                .shoot();
+        autoBuilder
+                .goToGateHit("right")
+                .intakeFromGate()
+                .goToCloseShoot("strafe", "")
+                .shoot();
+        autoBuilder
+                .goToSpike1("")
+                .intakeSpike1()
+                .backUpAfterSpike1()
+                .goToCloseShoot("spline", "1")
+                .shoot();
+        autoBuilder
                 .leaveZone();
 
         myBot.runAction(autoBuilder.build());
