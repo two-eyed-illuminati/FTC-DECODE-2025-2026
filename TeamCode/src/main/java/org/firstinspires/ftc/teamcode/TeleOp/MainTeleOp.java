@@ -152,7 +152,19 @@ public class MainTeleOp extends OpMode {
             }
             else{
                 Robot.telemetry.addData("In Launch Zone", 0);
-                Robot.outtake.setPos(0, 23000.0);
+
+                Vector2d goalRelativeToOuttake = Robot.calculateGoalRelativeToOuttake(Robot.drive.localizer.getPose());
+                double currDistance = Math.sqrt(
+                        goalRelativeToOuttake.x*goalRelativeToOuttake.x+
+                                goalRelativeToOuttake.y*goalRelativeToOuttake.y
+                );
+                if(currDistance > 120.0){
+                    Robot.outtake.setPos(0, 27000.0);
+                }
+                else{
+                    Robot.outtake.setPos(0, 20000.0);
+                }
+
                 currentMinOuttakeVel = 0.0;
                 currentMaxOuttakeVel = 0.0;
             }
