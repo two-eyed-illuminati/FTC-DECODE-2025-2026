@@ -531,14 +531,6 @@ public class Robot{
       }
       else{
         attemptingToShoot = false;
-        Vector2d goalRelativeToOuttake = Robot.calculateGoalRelativeToOuttake(Robot.drive.localizer.getPose());
-        double currDistance = Math.sqrt(
-                goalRelativeToOuttake.x*goalRelativeToOuttake.x+
-                        goalRelativeToOuttake.y*goalRelativeToOuttake.y
-        );
-        if(currDistance > 120.0){
-          Robot.stopper.setPosition(Robot.STOPPER_CLOSED_POS);
-        }
         intake.setPower(1.0);
       }
 
