@@ -54,7 +54,7 @@ public class AutoFarZone3B0SM0GH extends LinearOpMode {
         AutoBuilder autoBuilder = new AutoBuilder(Robot.drive.actionBuilder(startPose, poseMap));
 
         autoBuilder
-                .goToFarShoot("strafe", 2.0)
+                .goToFarShoot("strafe", 3.0)
                 .shoot();
         autoBuilder
                 .leaveZone();
