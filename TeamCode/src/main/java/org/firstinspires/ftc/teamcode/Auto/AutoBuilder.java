@@ -314,7 +314,11 @@ public class AutoBuilder {
                 new Vector2d(LOOSE_INTAKE_START_X, LOOSE_INTAKE_START_Y), LOOSE_INTAKE_START_HEADING
         );
         actionObjs.add(currentTab.build());
-        actionObjs.add(Robot.getLooseIntakeAction(new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)));
+        actionObjs.add(Robot.getLooseIntakeAction(
+                pose2dMapped(
+                    new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)
+                )
+        ));
         actions.add("LooseIntake");
         return this;
     }
