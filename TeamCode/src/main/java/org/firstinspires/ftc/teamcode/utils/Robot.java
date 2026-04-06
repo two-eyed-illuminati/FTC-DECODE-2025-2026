@@ -485,6 +485,7 @@ public class Robot{
     ElapsedTime elapsedTimeSinceBallDetected = new ElapsedTime();
     boolean attemptingToShoot = false;
     boolean started = false;
+    boolean spunUp = false;
     double time;
     public ShootSequenceAction(){
       time = 3.0;
@@ -495,6 +496,16 @@ public class Robot{
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
+      aimOuttakeTurret();
+      double[] outtakeVels = shootOuttake();
+
+      if(!spunUp && (outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1])){
+        spunUp = true;
+      }
+      else if(!spunUp){
+        return true;
+      }
+
       if(!started) {
         elapsedTime.reset();
         elapsedSinceTimeStartAttemptToShoot.reset();
@@ -511,8 +522,6 @@ public class Robot{
         stopper.setPosition(STOPPER_CLOSED_POS);
         return false;
       }
-      aimOuttakeTurret();
-      double[] outtakeVels = shootOuttake();
 
       if(((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
               elapsedTime.seconds() > time - 0.2) &&

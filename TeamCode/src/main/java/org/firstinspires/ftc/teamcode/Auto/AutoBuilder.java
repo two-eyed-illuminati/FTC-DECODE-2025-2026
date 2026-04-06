@@ -80,7 +80,7 @@ public class AutoBuilder {
     public static double FAR_SHOOT_HEADING = Math.toRadians(-90);
     public static double FAR_SHOOT_X = 50.3370432609;
     public static double FAR_SHOOT_Y = -12.9996985274;
-    public AutoBuilder goToFarShoot(String type, double waitTimeForShooter){
+    public AutoBuilder goToFarShoot(String type){
         Pose2d endPose = (
                 new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)
         );
@@ -104,9 +104,6 @@ public class AutoBuilder {
                     endPose.position,
                     endPose.heading
             );
-        }
-        if(waitTimeForShooter > 0) {
-            currentTab = currentTab.waitSeconds(waitTimeForShooter);
         }
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {
             Robot.STOP_SHOOT_OUTTAKE_ACTION = true;

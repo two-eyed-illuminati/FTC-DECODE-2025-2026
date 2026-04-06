@@ -55,7 +55,7 @@ public class AutoPartnerPush12B3SM1GH extends LinearOpMode {
 
         autoBuilder
                 .leaveZone()
-                .goToFarShoot("strafe", 0.0);
+                .goToFarShoot("strafe");
         autoBuilder.goToCloseShoot("strafe", "");
         autoBuilder
                 .goToCloseShoot("strafe", "")
