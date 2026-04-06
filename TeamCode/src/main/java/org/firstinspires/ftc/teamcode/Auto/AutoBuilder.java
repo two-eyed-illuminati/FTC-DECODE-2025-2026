@@ -301,14 +301,9 @@ public class AutoBuilder {
         actions.add("IntakeFromGate");
         return this;
     }
-//    public AutoBuilder cornerIntake(){
-//
-//    }
     public static double LOOSE_INTAKE_START_X = 60;
     public static double LOOSE_INTAKE_START_Y = -45.0;
-    public static double LOOSE_INTAKE_START_HEADING = Math.toRadians(-60.0);
-    public static double LOOSE_INTAKE_END_X = 40;
-    public static double LOOSE_INTAKE_END_Y = -60;
+    public static double LOOSE_INTAKE_START_HEADING = Math.toRadians(-75.0);
     public AutoBuilder looseIntake(){
         currentTab = currentTab.strafeToLinearHeading(
                 new Vector2d(LOOSE_INTAKE_START_X, LOOSE_INTAKE_START_Y), LOOSE_INTAKE_START_HEADING
