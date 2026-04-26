@@ -301,7 +301,7 @@ public class AutoBuilder {
         actions.add("IntakeFromGate");
         return this;
     }
-    public static double LOOSE_INTAKE_START_X = 60;
+    public static double LOOSE_INTAKE_START_X = 65;
     public static double LOOSE_INTAKE_START_Y = -45.0;
     public static double LOOSE_INTAKE_START_HEADING = Math.toRadians(-75.0);
     public AutoBuilder looseIntake(){

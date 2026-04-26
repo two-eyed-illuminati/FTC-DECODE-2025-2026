@@ -18,6 +18,7 @@ public class TestAutoIntake extends OpMode {
     @Override
     public void init(){
         Robot.initialize(hardwareMap, telemetry);
+        Robot.drive.localizer.setPose(new Pose2d(new Vector2d(60, -40), Math.toRadians(-90)));
         looseIntakeAction = new Robot.LooseIntakeAction(new Pose2d(-60, 40, 0));
     }
 

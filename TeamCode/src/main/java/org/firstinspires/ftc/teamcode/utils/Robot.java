@@ -55,7 +55,7 @@ public class Robot{
   public static double SHOOT_GRAVITY = -30.183727034;
   public static double SHOOT_DRAG = -3.4448818898;
   public static double SHOOT_EXIT_HEIGHT = 1.25;
-  public static double OUTTAKE_MAX_VEL = 33500.0;
+  public static double OUTTAKE_MAX_VEL = 27400.0;
   public static double OUTTAKE_C_COEFF = 1.12;
   public static double HOOD_MIN_ANGLE = 45.0;
   public static double HOOD_MAX_ANGLE = 45.0;
@@ -111,7 +111,7 @@ public class Robot{
       outtakeMotors = new DualMotor(outtakeMotor1, outtakeMotor2);
       outtakeMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
       outtake = new ContinuousMotorMechanism(outtakeMotors,
-              360.0/28.0, 36000.0
+              360.0/28.0, 27400.0
       );
       outtakeController = new PIDFController(1.0/2000.0, 0,1.0/OUTTAKE_MAX_VEL);
 
@@ -551,6 +551,10 @@ public class Robot{
       packet.put("Max Outtake Vel (deg/s)", outtakeVels[1]);
       packet.put("Target Outtake Vel (deg/s)", outtakeVels[2]);
       packet.put("Outtake Turret Pos (deg)", outtakeTurret.getPos());
+      packet.put("Outtake Power", outtake.motor.getPower());
+      double targetTurretPos = calculateOuttakeTurretAim(drive.localizer.getPose())-Math.toDegrees(drive.localizer.getPose().heading.toDouble());
+      packet.put("Outtake Turret Pos", outtakeTurret.getPos());
+      packet.put("Outtake Turret Error", Math.abs(outtakeTurret.getPos()-targetTurretPos));
 
       return true;
     }
@@ -569,19 +573,25 @@ public class Robot{
     double time = 10.0;
     ElapsedTime elapsedTime;
     ElapsedTime elapsedTimeOfBallDetected;
+    ElapsedTime elapsedTimeSinceLastForward;
     Pose2d endPose;
     Action goToEndPoseAction;
     public LooseIntakeAction(Pose2d endPose){
       this.endPose = endPose;
       elapsedTime = new ElapsedTime();
       elapsedTimeOfBallDetected = new ElapsedTime();
+      elapsedTimeSinceLastForward = new ElapsedTime();
     }
     public boolean run(@NonNull TelemetryPacket packet){
       if(!started){
         started = true;
         elapsedTime.reset();
+        elapsedTimeOfBallDetected.reset();
+        elapsedTimeSinceLastForward.reset();
         beginIntake();
       }
+
+      packet.put("Returning?", returning);
 
       drive.updatePoseEstimate();
 
@@ -589,17 +599,21 @@ public class Robot{
         if (voltageToDistance(frontDistanceSensor.getVoltage()) > FRONT_DISTANCE_SENSOR_DETECTION_THRESH) {
           elapsedTimeOfBallDetected.reset();
         }
-        telemetry.addData("Front Distance", voltageToDistance(frontDistanceSensor.getVoltage()));
-        telemetry.addData("Elapsed Time of Ball Detected", elapsedTimeOfBallDetected.seconds());
+        packet.put("Front Distance", voltageToDistance(frontDistanceSensor.getVoltage()));
+        packet.put("Elapsed Time of Ball Detected", elapsedTimeOfBallDetected.seconds());
 
         limelight.updatePythonInputs(new double[]{alliance == Alliance.BLUE ? 0 : 1});
         LLResult result = Robot.limelight.getLatestResult();
 
         if (result != null) {
-          telemetry.addData("Artifact X", result.getTx());
+          packet.put("Artifact X", result.getTx());
 
           double forwardPower = -0.1;
-          if (Math.abs(result.getTx()) < 14.0 && result.getTx() != 0) {
+          if (Math.abs(result.getTx()) < 20.0 && result.getTx() != 0) {
+            forwardPower = 0.5;
+            elapsedTimeSinceLastForward.reset();
+          }
+          else if (elapsedTimeSinceLastForward.seconds() < 0.3){
             forwardPower = 0.5;
           }
 
@@ -607,6 +621,8 @@ public class Robot{
           if (result.getTx() != 0) {
             sidePower = -result.getTx() * P_VALUE;
           }
+
+          packet.put("Forward Power", forwardPower);
 
           drive.setDrivePowers(
                   new PoseVelocity2d(
@@ -618,17 +634,21 @@ public class Robot{
                   )
           );
         } else {
-          telemetry.addLine("Invalid Limelight Result");
-          telemetry.addData("Is Not Null?", result != null);
+          packet.addLine("Invalid Limelight Result");
+          packet.put("Is Not Null?", result != null);
         }
 
-        if (elapsedTime.seconds() > time || elapsedTimeOfBallDetected.seconds() > 0.5 || drive.localizer.getPose().position.x < 30) {
+        packet.put("Time of Ball Detected", elapsedTimeOfBallDetected);
+        packet.put("X", drive.localizer.getPose().position.x);
+
+        if (elapsedTime.seconds() > time || elapsedTimeOfBallDetected.seconds() > 1.0 || drive.localizer.getPose().position.x < 30) {
           stopIntake();
           returning = true;
           goToEndPoseAction = drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(endPose.position, endPose.heading).build();
         }
       }
       else{
+//        return false;
         return goToEndPoseAction.run(packet);
       }
 

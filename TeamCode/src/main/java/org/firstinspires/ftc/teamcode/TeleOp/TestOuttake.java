@@ -15,10 +15,9 @@ public class TestOuttake extends OpMode {
 
     @Override
     public void loop() {
-        double targetPower = Robot.outtakeController.getPower(Robot.outtake.getVel(), 20000.0);
-        Robot.outtake.motor.setPower(targetPower);
+        Robot.outtake.motor.setPower(1);
 
-        telemetry.addData("Target Outtake Power", targetPower);
+        telemetry.addData("Target Outtake Power", 1);
 //        Robot.outtake.motor.setPower(targetPower);
         Robot.telemetry.addData("Gamepad", gamepad1.x);
         Robot.telemetry.addData("Gamepad", gamepad1.left_stick_y);
