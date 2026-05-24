@@ -97,7 +97,9 @@ public class MainTeleOp extends OpMode {
                 rotation
         ));
 
-        Robot.intake.setPower(1.0);
+        if(gamepad1.dpad_up) {
+            Robot.intake.setPower(1.0);
+        }
 
         Robot.telemetry.update();
     }
