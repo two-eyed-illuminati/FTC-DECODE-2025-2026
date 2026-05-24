@@ -97,6 +97,8 @@ public class MainTeleOp extends OpMode {
                 rotation
         ));
 
+        Robot.intake.setPower(1.0);
+
         Robot.telemetry.update();
     }
 }

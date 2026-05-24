@@ -34,6 +34,7 @@ public class Robot{
   public static double START_HEADING = -126.5;
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
+  public static DcMotorEx intake;
   public static MultipleTelemetry telemetry;
   //Stored Values
   public enum Alliance{
@@ -54,6 +55,8 @@ public class Robot{
               alliance == Alliance.BLUE ? START_Y : -START_Y,
               alliance == Alliance.BLUE ? Math.toRadians(START_HEADING) : -Math.toRadians(START_HEADING)
       ));
+
+      intake = hardwareMap.get(DcMotorEx.class, "intake");
 
       telemetry.addLine("Robot successfully initialized");
     }
