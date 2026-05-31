@@ -55,7 +55,7 @@ public class Robot{
   public static double SHOOT_GRAVITY = -30.183727034;
   public static double SHOOT_DRAG = -3.4448818898;
   public static double SHOOT_EXIT_HEIGHT = 1.25;
-  public static double OUTTAKE_MAX_VEL = 27400.0;
+  public static double OUTTAKE_MAX_VEL = 27200.0;
   public static double OUTTAKE_C_COEFF = 1.12;
   public static double HOOD_MIN_ANGLE = 45.0;
   public static double HOOD_MAX_ANGLE = 45.0;
@@ -111,7 +111,7 @@ public class Robot{
       outtakeMotors = new DualMotor(outtakeMotor1, outtakeMotor2);
       outtakeMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
       outtake = new ContinuousMotorMechanism(outtakeMotors,
-              360.0/28.0, 27200.0
+              360.0/28.0, OUTTAKE_MAX_VEL
       );
       outtakeController = new PIDFController(1.0/2000.0, 0,1.0/OUTTAKE_MAX_VEL);
 
