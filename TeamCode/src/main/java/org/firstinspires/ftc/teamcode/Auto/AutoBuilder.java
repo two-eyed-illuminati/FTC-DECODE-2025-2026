@@ -76,6 +76,13 @@ public class AutoBuilder {
         actions.add("GoToShoot");
         return this;
     }
+    public static double INSIDE_ZONE_X = -50;
+    public static double INSIDE_ZONE_Y = -16;
+    public AutoBuilder goInsideZone(){
+        currentTab = currentTab.strafeTo(new Vector2d(INSIDE_ZONE_X, INSIDE_ZONE_Y));
+        actions.add("GoInsideZone");
+        return this;
+    }
     public static double FAR_SHOOT_TANGENT_ANGLE = Math.toRadians(90);
     public static double FAR_SHOOT_HEADING = Math.toRadians(-90);
     public static double FAR_SHOOT_X = 50.3370432609;
@@ -315,6 +322,15 @@ public class AutoBuilder {
                 )
         ));
         actions.add("LooseIntake");
+        return this;
+    }
+    public static double CORNER_X = 62.0;
+    public static double CORNER_Y = -62.0;
+    public AutoBuilder intakeFromCorner(){
+        currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
+        currentTab = currentTab.waitSeconds(0.5);
+        currentTab = currentTab.strafeTo(new Vector2d(CORNER_X, CORNER_Y));
+        actions.add("IntakeFromCorner");
         return this;
     }
     public static double OUTSIDE_ZONE_Y = -40.0;

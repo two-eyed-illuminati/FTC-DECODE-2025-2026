@@ -18,7 +18,7 @@ public class Robot{
     public static boolean STOP_AIM_TURRET_ACTION = false;
     public static void beginIntake(){}
     public static void stopIntake(){}
-    public static Action getLooseIntakeAction(){
+    public static Action getLooseIntakeAction(Pose2d endPose){
         return new InstantAction(() -> {});
     }
     public static Action getReverseIntakeAction(){
@@ -31,6 +31,9 @@ public class Robot{
         return new InstantAction(() -> {});
     }
     public static Action getShootSequenceAction(){
+        return new SleepAction(1.2);
+    }
+    public static Action getShootSequenceAction(double time){
         return new SleepAction(1.2);
     }
 }
