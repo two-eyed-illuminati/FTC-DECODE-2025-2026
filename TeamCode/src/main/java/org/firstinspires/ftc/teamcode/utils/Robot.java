@@ -111,7 +111,7 @@ public class Robot{
       outtakeMotors = new DualMotor(outtakeMotor1, outtakeMotor2);
       outtakeMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
       outtake = new ContinuousMotorMechanism(outtakeMotors,
-              360.0/28.0, 27400.0
+              360.0/28.0, 27200.0
       );
       outtakeController = new PIDFController(1.0/2000.0, 0,1.0/OUTTAKE_MAX_VEL);
 
