@@ -48,7 +48,7 @@ public class Robot{
   public static double SHOOT_MAX_HEIGHT_CLOSE = 47.0;
   public static double SHOOT_MAX_HEIGHT_FAR = 51.0;
   public static double SHOOT_TARGET_HEIGHT_CLOSE = 45.0;
-  public static double SHOOT_TARGET_HEIGHT_FAR = 49.5;
+  public static double SHOOT_TARGET_HEIGHT_FAR = 48.5;
   public static double SHOOT_SLOWDOWN_FACTOR = 0.83;
   public static double SHOOT_RADIUS = 0.1181102362;
   public static double SHOOT_TRANSFER_FACTOR = 0.5714;
@@ -534,7 +534,7 @@ public class Robot{
         attemptingToShoot = true;
         intake.setPower(1.0);
       }
-      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175){
+      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175 && elapsedTime.seconds() > 0.5){
         attemptingToShoot = false;
         intake.setPower(-1.0);
       }
