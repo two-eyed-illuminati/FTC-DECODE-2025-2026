@@ -44,11 +44,11 @@ public class Robot{
   public static double SHOOT_TURRET_LEAD_TIME = 0.45;
   public static double SHOOT_OUTTAKE_LEAD_TIME = 0.3;
   public static double SHOOT_MIN_HEIGHT_CLOSE = 40.0;
-  public static double SHOOT_MIN_HEIGHT_FAR = 48.0;
-  public static double SHOOT_MAX_HEIGHT_CLOSE = 49.0;
-  public static double SHOOT_MAX_HEIGHT_FAR = 51.0;
-  public static double SHOOT_TARGET_HEIGHT_CLOSE = 46.5;
-  public static double SHOOT_TARGET_HEIGHT_FAR = 50.0;
+  public static double SHOOT_MIN_HEIGHT_FAR = 46.0;
+  public static double SHOOT_MAX_HEIGHT_CLOSE = 47.0;
+  public static double SHOOT_MAX_HEIGHT_FAR = 49.0;
+  public static double SHOOT_TARGET_HEIGHT_CLOSE = 45.0;
+  public static double SHOOT_TARGET_HEIGHT_FAR = 47.0;
   public static double SHOOT_SLOWDOWN_FACTOR = 0.83;
   public static double SHOOT_RADIUS = 0.1181102362;
   public static double SHOOT_TRANSFER_FACTOR = 0.5714;
