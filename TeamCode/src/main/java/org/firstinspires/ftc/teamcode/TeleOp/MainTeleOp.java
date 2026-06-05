@@ -159,10 +159,10 @@ public class MainTeleOp extends OpMode {
                                 goalRelativeToOuttake.y*goalRelativeToOuttake.y
                 );
                 if(currDistance > 120.0){
-                    Robot.outtake.setPos(0, 27000.0);
+                    Robot.outtake.setPos(0, 23000.0);
                 }
                 else{
-                    Robot.outtake.setPos(0, 20000.0);
+                    Robot.outtake.setPos(0, 19000.0);
                 }
 
                 currentMinOuttakeVel = 0.0;
