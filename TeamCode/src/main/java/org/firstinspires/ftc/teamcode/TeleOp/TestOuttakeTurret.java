@@ -26,7 +26,7 @@ public class TestOuttakeTurret extends OpMode {
 
     @Override
     public void loop(){
-        telemetry.addLine("A for manual mode, B for limelight aim mode, X for odometry, Y for PID test");
+        Robot.telemetry.addLine("A for manual mode, B for limelight aim mode, X for odometry, Y for PID test");
         if(gamepad1.a){
             mode = 0;
         }
