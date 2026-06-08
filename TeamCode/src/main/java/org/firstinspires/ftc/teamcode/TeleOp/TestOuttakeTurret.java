@@ -7,6 +7,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.utils.Clamp;
 import org.firstinspires.ftc.teamcode.utils.Robot;
@@ -14,6 +15,8 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 @TeleOp(name="Test Outtake Turret", group="Tests")
 public class TestOuttakeTurret extends OpMode {
     int mode = 0;
+    double angle = Robot.outtakeTurret.minPos;
+    ElapsedTime time;
     @Override
     public void init(){
         Robot.initialize(hardwareMap, telemetry);
@@ -21,7 +24,7 @@ public class TestOuttakeTurret extends OpMode {
 
     @Override
     public void loop(){
-        telemetry.addLine("A for manual mode, B for limelight aim mode, X for odometry");
+        telemetry.addLine("A for manual mode, B for limelight aim mode, X for odometry, Y for PID test");
         if(gamepad1.a){
             mode = 0;
         }
@@ -31,6 +34,9 @@ public class TestOuttakeTurret extends OpMode {
         if(gamepad1.x){
             Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             mode = 2;
+        }
+        if(gamepad1.y){
+            mode = 3;
         }
         if(mode == 0) {
             Robot.outtakeTurret.motor.setPower(gamepad1.left_stick_y);
@@ -74,6 +80,23 @@ public class TestOuttakeTurret extends OpMode {
 
             Robot.drive.updatePoseEstimate();
             Robot.aimOuttakeTurret();
+        }
+        if(mode == 3){
+            if(time.seconds() > 4){
+                if(angle == Robot.outtakeTurret.maxPos){
+                    angle = Robot.outtakeTurret.minPos;
+                }
+                else{
+                    angle = Robot.outtakeTurret.maxPos;
+                }
+                time.reset();
+            }
+            double targetPower = Robot.outtakeTurretController.getPower(Robot.outtakeTurret.getPos(), angle);
+            Robot.telemetry.addData("Target Outtake Turret Power", targetPower);
+            Robot.telemetry.addData("Target Angle", angle);
+            Robot.telemetry.addData("Actual Angle", Robot.outtakeTurret.getPos());
+            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            Robot.outtakeTurret.motor.setPower(targetPower);
         }
     }
 }
