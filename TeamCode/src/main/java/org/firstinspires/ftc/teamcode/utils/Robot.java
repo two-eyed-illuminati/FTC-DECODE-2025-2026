@@ -529,6 +529,8 @@ public class Robot{
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
+      //This action is only used in auto, where loop times are longer so PID needs to be different
+      outtakeTurretController.pCoefficient = 1/16.0;
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
 
@@ -553,6 +555,7 @@ public class Robot{
         (elapsedTimeSinceBallDetected.seconds() > 0.2 && elapsedTime.seconds() > 1.0)){
         intake.setPower(0);
         stopper.setPosition(STOPPER_CLOSED_POS);
+        outtakeTurretController.pCoefficient = 1/4.0;
         return false;
       }
 
