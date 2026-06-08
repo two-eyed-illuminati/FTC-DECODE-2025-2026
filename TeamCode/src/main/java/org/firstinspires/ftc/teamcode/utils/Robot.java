@@ -102,7 +102,7 @@ public class Robot{
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
-              -180, 132, -384.5*180/360*4, 384.5*80/360*4, 1872);
+              -180, 132, -384.5*180/360*4, 384.5*132/360*4, 1872);
       outtakeTurretController = new PIDFController(1.0/16.0, 1/480.0,0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
