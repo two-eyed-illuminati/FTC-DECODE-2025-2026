@@ -15,11 +15,12 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 @TeleOp(name="Test Outtake Turret", group="Tests")
 public class TestOuttakeTurret extends OpMode {
     int mode = 0;
-    double angle = Robot.outtakeTurret.minPos;
-    ElapsedTime time;
+    double angle = 0;
+    ElapsedTime time = new ElapsedTime();
     @Override
     public void init(){
         Robot.initialize(hardwareMap, telemetry);
+        angle = Robot.outtakeTurret.minPos;
     }
 
     @Override
