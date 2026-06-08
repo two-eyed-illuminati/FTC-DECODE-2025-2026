@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 public class TestOuttakeTurret extends OpMode {
     int mode = 0;
     double angle = 0;
+    boolean direction = false;
     ElapsedTime time = new ElapsedTime();
     @Override
     public void init(){
@@ -83,14 +84,19 @@ public class TestOuttakeTurret extends OpMode {
             Robot.aimOuttakeTurret();
         }
         if(mode == 3){
-            if(time.seconds() > 4){
-                if(angle == Robot.outtakeTurret.maxPos){
-                    angle = Robot.outtakeTurret.minPos;
-                }
-                else{
-                    angle = Robot.outtakeTurret.maxPos;
-                }
+            if(angle >= Robot.outtakeTurret.maxPos){
+                direction = true;
                 time.reset();
+            }
+            else if(angle <= Robot.outtakeTurret.minPos){
+                direction = false;
+                time.reset();
+            }
+            if(direction){
+                angle -= time.seconds()*100;
+            }
+            else{
+                angle += time.seconds()*100;
             }
             double targetPower = Robot.outtakeTurretController.getPower(Robot.outtakeTurret.getPos(), angle);
             Robot.telemetry.addData("Target Outtake Turret Power", targetPower);
