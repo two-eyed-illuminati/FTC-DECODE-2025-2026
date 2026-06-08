@@ -83,19 +83,19 @@ public class TestOuttakeTurret extends OpMode {
             Robot.aimOuttakeTurret();
         }
         if(mode == 3){
-            if(angle >= Robot.outtakeTurret.maxPos - 2){
+            if(angle >= Robot.outtakeTurret.maxPos - 2 && direction == false){
                 direction = true;
                 time.reset();
             }
-            else if(angle <= Robot.outtakeTurret.minPos + 2){
+            else if(angle <= Robot.outtakeTurret.minPos + 2 && direction == true){
                 direction = false;
                 time.reset();
             }
             if(direction){
-                angle -= time.seconds()*20;
+                angle = Robot.outtakeTurret.maxPos - time.seconds()*20;
             }
             else{
-                angle += time.seconds()*20;
+                angle = Robot.outtakeTurret.minPos + time.seconds()*20;
             }
             double targetPower = Robot.outtakeTurretController.getPower(Robot.outtakeTurret.getPos(), angle);
             Robot.telemetry.addData("Target Outtake Turret Power", targetPower);
