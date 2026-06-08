@@ -99,5 +99,6 @@ public class TestOuttakeTurret extends OpMode {
             Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             Robot.outtakeTurret.motor.setPower(targetPower);
         }
+        Robot.telemetry.update();
     }
 }
