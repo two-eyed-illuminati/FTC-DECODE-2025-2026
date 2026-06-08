@@ -151,6 +151,8 @@ public class Robot{
             FtcDashboard.getInstance().getTelemetry() // Dashboard telemetry
     );
     if(initialized) {
+      outtakeTurretController.pCoefficient = 1/4.0; //make sure we reset the pCoefficient in case we have to stop in the middle of an AimOuttakeTurretAction in auto.
+
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
       outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
@@ -469,12 +471,15 @@ public class Robot{
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
+      //This action is only used in auto, where loop times are longer so PID needs to be different
+      outtakeTurretController.pCoefficient = 1/16.0;
       aimOuttakeTurret(endPose);
       double targetTurretPos = calculateOuttakeTurretAim(endPose)-Math.toDegrees(endPose.heading.toDouble());
       packet.put("Outtake Turret Pos", outtakeTurret.getPos());
       packet.put("Outtake Turret Error", Math.abs(outtakeTurret.getPos()-targetTurretPos));
       if(STOP_AIM_TURRET_ACTION){
         STOP_AIM_TURRET_ACTION = false;
+        outtakeTurretController.pCoefficient = 1/4.0;
         return false;
       }
       return true;
