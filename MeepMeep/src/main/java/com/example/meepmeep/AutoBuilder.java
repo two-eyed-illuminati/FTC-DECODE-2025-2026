@@ -349,7 +349,8 @@ public class AutoBuilder {
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
         currentTab = currentTab.waitSeconds(0.5);
         currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_START_X, CORNER_Y), CORNER_START_HEADING);
-        currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_END_X, CORNER_Y), CORNER_END_HEADING);
+        currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, CORNER_Y));
+        currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_END_X+0.01, CORNER_Y), CORNER_END_HEADING);
         actions.add("IntakeFromCorner");
         return this;
     }
