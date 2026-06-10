@@ -318,7 +318,7 @@ public class AutoBuilder {
                 Math.toRadians(-90),
                 constraint
         );
-        currentTab = currentTab.stopAndAdd(new SleepAction(GATE_INTAKE_TIME)).setTangent(Math.toRadians(90));
+        currentTab = currentTab.stopAndAdd(Robot.getCorrectSecondsAction(new Pose2d(GATE_INTAKE_X, GATE_INTAKE_Y, GATE_INTAKE_HEADING), GATE_INTAKE_TIME)).setTangent(Math.toRadians(90));
         actions.add("IntakeFromGate");
         return this;
     }
