@@ -329,12 +329,11 @@ public class AutoBuilder {
         actions.add("IntakeFromGate");
         return this;
     }
-    public static double LOOSE_INTAKE_START_X = 50.0;
     public static double LOOSE_INTAKE_START_Y = -35.0;
     public static double LOOSE_INTAKE_START_HEADING = Math.toRadians(-75.0);
-    public AutoBuilder looseIntake(){
+    public AutoBuilder looseIntake(double x){
         currentTab = currentTab.strafeToLinearHeading(
-                new Vector2d(LOOSE_INTAKE_START_X, LOOSE_INTAKE_START_Y), LOOSE_INTAKE_START_HEADING
+                new Vector2d(x, LOOSE_INTAKE_START_Y), LOOSE_INTAKE_START_HEADING
         );
         actionObjs.add(currentTab.build());
         actionObjs.add(Robot.getLooseIntakeAction(
