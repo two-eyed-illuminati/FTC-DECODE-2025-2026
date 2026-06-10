@@ -115,7 +115,7 @@ public class Robot{
       outtake = new ContinuousMotorMechanism(outtakeMotors,
               360.0/28.0, OUTTAKE_MAX_VEL
       );
-      outtakeController = new PIDFController(1.0/2000.0, 0,1.0/OUTTAKE_MAX_VEL);
+      outtakeController = new PIDFController(1.0/2000.0, 0,1.0/(OUTTAKE_MAX_VEL*12.7));
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.setPollRateHz(100);
@@ -354,6 +354,9 @@ public class Robot{
         outtakeTurretController.pCoefficient = 1/28.0;
       }
       double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
+      if(Math.abs(outtakeTurret.getPos() - angle) > 0.5){
+        targetPower = Math.signum(targetPower)*(Math.abs(targetPower)+0.05);
+      }
       outtakeTurretController.pCoefficient = oldP;
       telemetry.addData("Target Outtake Turret Power", targetPower);
       outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -519,9 +522,10 @@ public class Robot{
     boolean attemptingToShoot = false;
     boolean started = false;
     boolean spunUp = false;
+    double MAX_TIME = 3.0;
     double time;
     public ShootSequenceAction(){
-      time = 3.0;
+      time = 1.0;
     }
     public ShootSequenceAction(double time){
       this.time = time;
@@ -549,15 +553,15 @@ public class Robot{
       if(topDistance < TOP_DISTANCE_SENSOR_DETECTION_THRESH){
         elapsedTimeSinceBallDetected.reset();
       }
-      if(elapsedTime.seconds() > time ||
-        (elapsedTimeSinceBallDetected.seconds() > 0.2 && elapsedTime.seconds() > 1.0)){
+      if(elapsedTime.seconds() > MAX_TIME ||
+        (elapsedTimeSinceBallDetected.seconds() > 0.2 && elapsedTime.seconds() > time)){
         intake.setPower(0);
         stopper.setPosition(STOPPER_CLOSED_POS);
         return false;
       }
 
       if(((outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1]) ||
-              elapsedTime.seconds() > time - 0.2) &&
+              elapsedTime.seconds() > MAX_TIME - 0.2) &&
               elapsedSinceTimeStartAttemptToShoot.seconds() < 0.6
       ){
         if(!attemptingToShoot){
@@ -567,7 +571,7 @@ public class Robot{
         attemptingToShoot = true;
         intake.setPower(1.0);
       }
-      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175 && elapsedTime.seconds() > 1.0){
+      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175 && elapsedTime.seconds() > time){
         attemptingToShoot = false;
         intake.setPower(-1.0);
       }

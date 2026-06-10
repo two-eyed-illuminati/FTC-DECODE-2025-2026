@@ -24,6 +24,7 @@ public class TestOuttake extends OpMode {
         Robot.telemetry.addData("Outtake Power", Robot.outtake.motor.getPower());
         Robot.telemetry.addData("Outtake Vel (deg/s)", Robot.outtake.getVel());
         Robot.telemetry.addData("Outtake Pos (deg)", Robot.outtake.getPos());
+        Robot.telemetry.addData("Voltage", Robot.drive.voltageSensor.getVoltage());
         Robot.telemetry.update();
 //        Robot.outtake.setVelocity(235*360/28);
 //        Robot.outtake.setVelocity(200*360/28);
