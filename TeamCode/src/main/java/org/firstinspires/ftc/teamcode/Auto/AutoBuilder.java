@@ -294,7 +294,7 @@ public class AutoBuilder {
         return this;
     }
     public static double GATE_INTAKE_X = 16.2;
-    public static double GATE_INTAKE_Y = -57.0;
+    public static double GATE_INTAKE_Y = -56.0;
     public static double GATE_INTAKE_HEADING = Math.toRadians(-110);
     public static double GATE_INTAKE_TIME = 1.2;
     public AutoBuilder intakeFromGate(){
