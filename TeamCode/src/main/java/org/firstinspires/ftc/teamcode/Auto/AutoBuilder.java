@@ -341,12 +341,14 @@ public class AutoBuilder {
     public static double CORNER_START_X = 56.0;
     public static double CORNER_END_X = 64.0;
     public static double CORNER_Y = -62.0;
-    public static double CORNER_HEADING = Math.toRadians(-80);
+    public static double CORNER_START_HEADING = Math.toRadians(-80);
+    public static double CORNER_END_HEADING = Math.toRadians(-90);
     public AutoBuilder intakeFromCorner(){
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
         currentTab = currentTab.waitSeconds(0.5);
         currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_START_X, CORNER_Y), CORNER_HEADING);
         currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, CORNER_Y));
+        currentTab = currentTab.turnTo(CORNER_END_HEADING);
         actions.add("IntakeFromCorner");
         return this;
     }

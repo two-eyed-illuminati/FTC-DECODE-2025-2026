@@ -292,7 +292,7 @@ public class AutoBuilder {
         return this;
     }
     public static double GATE_INTAKE_X = 16.2;
-    public static double GATE_INTAKE_Y = -57.0;
+    public static double GATE_INTAKE_Y = -56.0;
     public static double GATE_INTAKE_HEADING = Math.toRadians(-110);
     public static double GATE_INTAKE_TIME = 1.2;
     public AutoBuilder intakeFromGate(){
@@ -306,7 +306,7 @@ public class AutoBuilder {
             currentTab = currentTab.setTangent(Math.toRadians(-20));
         }
         VelConstraint constraint = (robotPose, _path, _disp) -> {
-            if(Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(GATE_Y_BEFORE_HIT)) < 10.0){
+            if(Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(GATE_INTAKE_Y)) < 10.0){
                 return GATE_HIT_SPEED;
             }
             return 60;
@@ -336,12 +336,15 @@ public class AutoBuilder {
         actions.add("LooseIntake");
         return this;
     }
-    public static double CORNER_X = 62.0;
+    public static double CORNER_START_X = 56.0;
+    public static double CORNER_END_X = 64.0;
     public static double CORNER_Y = -62.0;
+    public static double CORNER_HEADING = Math.toRadians(-80);
     public AutoBuilder intakeFromCorner(){
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
         currentTab = currentTab.waitSeconds(0.5);
-        currentTab = currentTab.strafeTo(new Vector2d(CORNER_X, CORNER_Y));
+        currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_START_X, CORNER_Y), CORNER_HEADING);
+        currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, CORNER_Y));
         actions.add("IntakeFromCorner");
         return this;
     }
