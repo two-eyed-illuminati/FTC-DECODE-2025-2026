@@ -175,20 +175,24 @@ public class AutoBuilder {
     }
 
     public static double SPIKE_3_X = 34.3457;
-    public AutoBuilder goToSpike3(){
+    public static double TO_SPIKE_3_INITIAL_TANGENT_ANGLE_FAR = Math.toRadians(-150);
+    public AutoBuilder goToSpike3(String tangentType){
         VelConstraint constraint = (robotPose, _path, _disp) -> {
             if(Math.abs(robotPose.position.x.value()-SPIKE_3_X) < 5.0 && Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(SPIKE_START_Y)) < 7.0){
                 return INTAKE_SPEED;
             }
             return 60;
         };
-        currentTab = currentTab.setTangent(TO_SPIKE_INITIAL_TANGENT_ANGLE).splineToSplineHeading(
+        currentTab = currentTab.setTangent(tangentType.equals("far") ? TO_SPIKE_3_INITIAL_TANGENT_ANGLE_FAR : TO_SPIKE_INITIAL_TANGENT_ANGLE).splineToSplineHeading(
                 new Pose2d(SPIKE_3_X, SPIKE_START_Y, SPIKE_HEADING),
                 SPIKE_HEADING,
                 constraint
         );
         actions.add("GoToSpike3");
         return this;
+    }
+    public AutoBuilder goToSpike3(){
+        return goToSpike3("close");
     }
 
 
@@ -339,12 +343,13 @@ public class AutoBuilder {
     public static double CORNER_START_X = 56.0;
     public static double CORNER_END_X = 64.0;
     public static double CORNER_Y = -62.0;
-    public static double CORNER_HEADING = Math.toRadians(-80);
+    public static double CORNER_START_HEADING = Math.toRadians(-80);
+    public static double CORNER_END_HEADING = Math.toRadians(-90);
     public AutoBuilder intakeFromCorner(){
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
         currentTab = currentTab.waitSeconds(0.5);
-        currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_START_X, CORNER_Y), CORNER_HEADING);
-        currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, CORNER_Y));
+        currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_START_X, CORNER_Y), CORNER_START_HEADING);
+        currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_END_X, CORNER_Y), CORNER_END_HEADING);
         actions.add("IntakeFromCorner");
         return this;
     }

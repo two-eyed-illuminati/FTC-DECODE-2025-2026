@@ -15,11 +15,11 @@ public class MeepMeepCurrent {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Robot constraints
                 .setConstraints(60, 50, Math.toRadians(180), Math.toRadians(180), 14)
-                .setDimensions(17.2, 18)
+                .setDimensions(15, 18)
                 .build();
 
         double START_X = 63.0;
-        double START_Y = -10.0;
+        double START_Y = -11.0;
         double START_HEADING = -90.0;
 //        double START_X = -49.0;
 //        double START_Y = -50.5;
@@ -49,6 +49,11 @@ public class MeepMeepCurrent {
                 .shoot();
         autoBuilder
                 .intakeFromCorner()
+                .goToFarShoot("strafe")
+                .shoot();
+        autoBuilder
+                .goToSpike3("far")
+                .intakeSpike3()
                 .goToFarShoot("strafe")
                 .shoot();
         autoBuilder
