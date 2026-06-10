@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.utils.Robot;
 @Config
 public class AutoFarZone9B1SM0GH extends LinearOpMode {
     double START_X = 63.0;
-    double START_Y = -12.0;
+    double START_Y = -14.0;
     double START_HEADING = -90.0;
     @Override
     public void runOpMode() throws InterruptedException {

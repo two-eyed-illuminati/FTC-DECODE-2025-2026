@@ -19,7 +19,7 @@ public class MeepMeepCurrent {
                 .build();
 
         double START_X = 63.0;
-        double START_Y = -12.0;
+        double START_Y = -14.0;
         double START_HEADING = -90.0;
 //        double START_X = -49.0;
 //        double START_Y = -50.5;
