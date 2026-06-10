@@ -647,16 +647,16 @@ public class Robot{
         if (result != null) {
           packet.put("Artifact X", result.getTx());
 
-          double forwardPower = -0.2;
+          double forwardPower = -0.35;
           if (Math.abs(result.getTx()) < 20.0 && result.getTx() != 0) {
-            forwardPower = 0.5;
+            forwardPower = 0.8;
             elapsedTimeSinceLastForward.reset();
           }
           else if (elapsedTimeSinceLastForward.seconds() < 0.3){
-            forwardPower = 0.5;
+            forwardPower = 0.8;
           }
 
-          double sidePower = alliance == Alliance.BLUE ? -0.5 : 0.5;
+          double sidePower = alliance == Alliance.BLUE ? -0.7 : 0.7;
           if (result.getTx() != 0) {
             sidePower = -result.getTx() * P_VALUE;
           }
@@ -680,7 +680,7 @@ public class Robot{
         packet.put("Time of Ball Detected", elapsedTimeOfBallDetected);
         packet.put("X", drive.localizer.getPose().position.x);
 
-        if (elapsedTime.seconds() > time || elapsedTimeOfBallDetected.seconds() > 1.0 || drive.localizer.getPose().position.x < 30) {
+        if (elapsedTime.seconds() > time || elapsedTimeOfBallDetected.seconds() > 1.0 || drive.localizer.getPose().position.x < 15) {
           stopIntake();
           returning = true;
           goToEndPoseAction = drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(endPose.position, endPose.heading).build();
