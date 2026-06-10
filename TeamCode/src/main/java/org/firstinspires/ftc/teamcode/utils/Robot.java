@@ -57,7 +57,7 @@ public class Robot{
   public static double SHOOT_GRAVITY = -30.183727034;
   public static double SHOOT_DRAG = -3.4448818898;
   public static double SHOOT_EXIT_HEIGHT = 1.25;
-  public static double OUTTAKE_MAX_VEL = 27200.0;
+  public static double OUTTAKE_MAX_VEL = 28200.0;
   public static double OUTTAKE_C_COEFF = 1.12;
   public static double HOOD_MIN_ANGLE = 45.0;
   public static double HOOD_MAX_ANGLE = 45.0;
@@ -103,7 +103,7 @@ public class Robot{
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -180, 132, -384.5*180/360*4, 384.5*132/360*4, 1872);
-      outtakeTurretController = new PIDFController(1.0/28.0, 1/480.0,0);
+      outtakeTurretController = new PIDFController(1/28.0, 1/480.0,0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
 //      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
@@ -115,7 +115,7 @@ public class Robot{
       outtake = new ContinuousMotorMechanism(outtakeMotors,
               360.0/28.0, OUTTAKE_MAX_VEL
       );
-      outtakeController = new PIDFController(1.0/2000.0, 0,1.0/(OUTTAKE_MAX_VEL*12.7));
+      outtakeController = new PIDFController(1.0/2000.0, 0,1.0/(OUTTAKE_MAX_VEL*12.4));
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.setPollRateHz(100);
@@ -393,12 +393,14 @@ public class Robot{
     if(pid) {
       double targetPower = outtakeController.getPower(outtake.getVel(), mag);
       telemetry.addData("Target Outtake Power", targetPower);
+      telemetry.addData("Voltage", drive.voltageSensor.getVoltage());
       outtake.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtake.motor.setPower(targetPower);
     }
     else{
       double targetPower = outtakeController.getPower(mag, mag);
       telemetry.addData("Target Outtake Power", targetPower);
+      telemetry.addData("Voltage", drive.voltageSensor.getVoltage());
       outtake.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtake.motor.setPower(targetPower);
     }
