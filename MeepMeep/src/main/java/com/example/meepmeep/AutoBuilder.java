@@ -342,7 +342,7 @@ public class AutoBuilder {
     }
     public static double CORNER_START_X = 56.0;
     public static double CORNER_END_X = 64.0;
-    public static double CORNER_Y = -64.0;
+    public static double CORNER_Y = -61.0;
     public static double CORNER_START_HEADING = Math.toRadians(-80);
     public static double CORNER_END_HEADING = Math.toRadians(-90);
     public AutoBuilder intakeFromCorner(){
