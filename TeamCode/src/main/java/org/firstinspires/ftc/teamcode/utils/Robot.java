@@ -647,7 +647,7 @@ public class Robot{
         if (result != null) {
           packet.put("Artifact X", result.getTx());
 
-          double forwardPower = -0.1;
+          double forwardPower = -0.2;
           if (Math.abs(result.getTx()) < 20.0 && result.getTx() != 0) {
             forwardPower = 0.5;
             elapsedTimeSinceLastForward.reset();
