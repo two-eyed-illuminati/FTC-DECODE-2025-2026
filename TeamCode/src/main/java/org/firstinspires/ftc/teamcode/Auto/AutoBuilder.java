@@ -95,12 +95,15 @@ public class AutoBuilder {
         Pose2d endPose = (
                 new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)
         );
+        Pose2d endPoseWithCorrection = (
+                new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y-4, FAR_SHOOT_HEADING)
+        ); //For some reason the turret is eternally pointed too much to the left. So this should help.
         currentTab = currentTab.afterTime(0,
                 new ParallelAction(
                         new InstantAction(() -> {
                             Robot.stopIntake();
                         }),
-                        Robot.getAimOuttakeTurretAction(pose2dMapped(endPose)),
+                        Robot.getAimOuttakeTurretAction(pose2dMapped(endPoseWithCorrection)),
                         Robot.getShootOuttakeAction(pose2dMapped(endPose))
                 )
         );
@@ -345,7 +348,7 @@ public class AutoBuilder {
     public static double CORNER_START_X = 56.0;
     public static double CORNER_END_X = 64.0;
     public static double CORNER_Y = -60.25;
-    public static double CORNER_START_HEADING = Math.toRadians(-80);
+    public static double CORNER_START_HEADING = Math.toRadians(-75);
     public static double CORNER_END_HEADING = Math.toRadians(-90);
     public AutoBuilder intakeFromCorner(){
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
