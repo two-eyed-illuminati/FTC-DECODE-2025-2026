@@ -342,6 +342,7 @@ public class AutoBuilder {
                         new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)
                 )
         ));
+        currentTab = Robot.drive.actionBuilder(new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING), currentTab.getPoseMap());
         actions.add("LooseIntake");
         return this;
     }
