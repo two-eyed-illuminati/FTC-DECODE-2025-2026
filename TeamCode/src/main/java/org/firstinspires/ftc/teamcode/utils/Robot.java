@@ -656,7 +656,7 @@ public class Robot{
             forwardPower = 0.8;
           }
 
-          double sidePower = alliance == Alliance.BLUE ? -0.7 : 0.7;
+          double sidePower = alliance == Alliance.BLUE ? -0.5 : 0.5;
           if (result.getTx() != 0) {
             sidePower = -result.getTx() * P_VALUE;
           }
