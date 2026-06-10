@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Far Zone 6B 0SM 0GH", group="Main")
+@Autonomous(name="Auto Far Zone 9B 1SM 0GH", group="Main")
 @Config
 public class AutoFarZone9B1SM0GH extends LinearOpMode {
     double START_X = 63.0;
