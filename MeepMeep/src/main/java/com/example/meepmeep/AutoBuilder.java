@@ -39,11 +39,15 @@ public class AutoBuilder {
     public static double PRELOAD_CLOSE_SHOOT_HEADING = Math.toRadians(-126.5);
     public static double PRELOAD_CLOSE_SHOOT_X = -27.3370432609;
     public static double PRELOAD_CLOSE_SHOOT_Y = -22.9996985274;
-    public AutoBuilder goToCloseShoot(String type, String tangentType){
+    public static double PRELOAD_CLOSE_SHOOT_X_GO_TO_SPIKE_1 = -13.3370432609;
+    public static double PRELOAD_CLOSE_SHOOT_Y_GO_TO_SPIKE_1 = -19.9996985274;
+    public static double LAST_CLOSE_SHOOT_X = -38.3370432609;
+    public static double LAST_CLOSE_SHOOT_Y = -15.9996985274;
+    public AutoBuilder goToCloseShoot(String type, String tangentType, String posType){
         Pose2d endPose = (
                 actions.isEmpty() ?
-                        new Pose2d(PRELOAD_CLOSE_SHOOT_X, PRELOAD_CLOSE_SHOOT_Y, PRELOAD_CLOSE_SHOOT_HEADING) :
-                        new Pose2d(SPIKE_CLOSE_SHOOT_X, SPIKE_CLOSE_SHOOT_Y, SPIKE_CLOSE_SHOOT_HEADING)
+                        (posType.equals("1") ? new Pose2d(PRELOAD_CLOSE_SHOOT_X_GO_TO_SPIKE_1, PRELOAD_CLOSE_SHOOT_Y_GO_TO_SPIKE_1, PRELOAD_CLOSE_SHOOT_HEADING) : new Pose2d(PRELOAD_CLOSE_SHOOT_X, PRELOAD_CLOSE_SHOOT_Y, PRELOAD_CLOSE_SHOOT_HEADING)) :
+                        (posType.equals("last") ? new Pose2d(LAST_CLOSE_SHOOT_X, LAST_CLOSE_SHOOT_Y, SPIKE_CLOSE_SHOOT_HEADING) : new Pose2d(SPIKE_CLOSE_SHOOT_X, SPIKE_CLOSE_SHOOT_Y, SPIKE_CLOSE_SHOOT_HEADING))
         );
         currentTab = currentTab.afterTime(0,
                 new ParallelAction(
@@ -131,14 +135,14 @@ public class AutoBuilder {
 
     public static double TO_SPIKE_INITIAL_TANGENT_ANGLE = Math.toRadians(0.0);
     public static double TO_SPIKE_1_INITIAL_TANGENT_ANGLE = Math.toRadians(-90.0);
-    public static double TO_SPIKE_1_FROM_PRELOAD_INITIAL_TANGENT_ANGLE = Math.toRadians(-40.0);
+    public static double TO_SPIKE_1_FROM_PRELOAD_INITIAL_TANGENT_ANGLE = Math.toRadians(-90.0);
     public static double SPIKE_HEADING = Math.toRadians(-90.0);
     public static double SPIKE_START_Y = -27.1017;
     public static double SPIKE_1_X = -12.3457;
     public static double INTAKE_SPEED = 45.0;
     public AutoBuilder goToSpike1(String type){
         VelConstraint constraint = (robotPose, _path, _disp) -> {
-            if(Math.abs(robotPose.position.x.value()-SPIKE_1_X) < 5.0 && Math.abs(robotPose.position.y.value()-SPIKE_START_Y) < 7.0){
+            if(Math.abs(robotPose.position.x.value()-SPIKE_1_X) < 5.0 && Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(SPIKE_START_Y)) < 7.0){
                 return INTAKE_SPEED;
             }
             return 60;
@@ -153,10 +157,10 @@ public class AutoBuilder {
         return this;
     }
 
-    public static double SPIKE_2_X = 14.3457;
+    public static double SPIKE_2_X = 12.3457;
     public AutoBuilder goToSpike2(){
         VelConstraint constraint = (robotPose, _path, _disp) -> {
-            if(Math.abs(robotPose.position.x.value()-SPIKE_2_X) < 5.0 && Math.abs(robotPose.position.y.value()-SPIKE_START_Y) < 7.0){
+            if(Math.abs(robotPose.position.x.value()-SPIKE_2_X) < 5.0 && Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(SPIKE_START_Y)) < 7.0){
                 return INTAKE_SPEED;
             }
             return 60;
@@ -173,7 +177,7 @@ public class AutoBuilder {
     public static double SPIKE_3_X = 34.3457;
     public AutoBuilder goToSpike3(){
         VelConstraint constraint = (robotPose, _path, _disp) -> {
-            if(Math.abs(robotPose.position.x.value()-SPIKE_3_X) < 5.0 && Math.abs(robotPose.position.y.value()-SPIKE_START_Y) < 7.0){
+            if(Math.abs(robotPose.position.x.value()-SPIKE_3_X) < 5.0 && Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(SPIKE_START_Y)) < 7.0){
                 return INTAKE_SPEED;
             }
             return 60;
@@ -202,7 +206,7 @@ public class AutoBuilder {
         actions.add("IntakeSpike1");
         return this;
     }
-    public static double SPIKE_BACKUP_Y = -52.1282;
+    public static double SPIKE_BACKUP_Y = -47.1282;
     public static double SPIKE_BACKUP_TANGENT_ANGLE = Math.toRadians(90.0);
     public AutoBuilder backUpAfterSpike1(){
         currentTab = currentTab.splineToConstantHeading(
@@ -212,7 +216,7 @@ public class AutoBuilder {
         actions.add("BackUpAfterIntakeSpike1");
         return this;
     }
-    public static double SPIKE_2_END_X = 15.8457;
+    public static double SPIKE_2_END_X = 15.3457;
     public static double SPIKE_2_INTAKE_SPEED = 35.0;
     public AutoBuilder intakeSpike2(){
         currentTab = currentTab.afterTime(0, () -> {
@@ -255,11 +259,11 @@ public class AutoBuilder {
         return this;
     }
 
-    public static double GATE_X_LEFT = -4.0;
-    public static double GATE_X_RIGHT = 8.0;
+    public static double GATE_X_LEFT = -6.0;
+    public static double GATE_X_RIGHT = 12;
     public static double GATE_Y_BEFORE_HIT = -47.0;
-    public static double GATE_Y_HIT = -57.0;
-    public static double GATE_HIT_TIME = 0.0;
+    public static double GATE_Y_HIT = -56.0;
+    public static double GATE_HIT_TIME = 0.1;
     public static double GATE_HIT_SPEED = 25.0;
     public AutoBuilder goToGateHit(String side){
         if(!actions.isEmpty() && (actions.get(actions.size()-1).equals("GoToShoot") || actions.get(actions.size()-1).equals("Shoot"))){
@@ -267,7 +271,7 @@ public class AutoBuilder {
         }
         double GATE_X = side.equals("left") ? GATE_X_LEFT : GATE_X_RIGHT;
         VelConstraint constraint = (robotPose, _path, _disp) -> {
-            if(Math.abs(robotPose.position.x.value()-GATE_X) < 5.0 && Math.abs(robotPose.position.y.value()-GATE_Y_BEFORE_HIT) < 10.0){
+            if(Math.abs(robotPose.position.x.value()-GATE_X) < 5.0 && Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(GATE_Y_BEFORE_HIT)) < 10.0){
                 return GATE_HIT_SPEED;
             }
             return 60;
@@ -287,10 +291,10 @@ public class AutoBuilder {
         actions.add("GoToGateHit");
         return this;
     }
-    public static double GATE_INTAKE_X = 20.0;
-    public static double GATE_INTAKE_Y = -60;
-    public static double GATE_INTAKE_HEADING = Math.toRadians(-150);
-    public static double GATE_INTAKE_TIME = 0.5;
+    public static double GATE_INTAKE_X = 16.2;
+    public static double GATE_INTAKE_Y = -57.0;
+    public static double GATE_INTAKE_HEADING = Math.toRadians(-110);
+    public static double GATE_INTAKE_TIME = 1.2;
     public AutoBuilder intakeFromGate(){
         currentTab = currentTab.afterTime(0, () -> {
             Robot.beginIntake();
@@ -298,9 +302,19 @@ public class AutoBuilder {
         if(!actions.isEmpty() && actions.get(actions.size()-1).equals("GoToGateHit")){
             currentTab = currentTab.setTangent(Math.toRadians(20));
         }
+        if(!actions.isEmpty() && actions.get(actions.size()-1).equals("Shoot")){
+            currentTab = currentTab.setTangent(Math.toRadians(-20));
+        }
+        VelConstraint constraint = (robotPose, _path, _disp) -> {
+            if(Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(GATE_Y_BEFORE_HIT)) < 10.0){
+                return GATE_HIT_SPEED;
+            }
+            return 60;
+        };
         currentTab = currentTab.splineToLinearHeading(
                 new Pose2d(GATE_INTAKE_X, GATE_INTAKE_Y, GATE_INTAKE_HEADING),
-                Math.toRadians(-90)
+                Math.toRadians(-90),
+                constraint
         );
         currentTab = currentTab.stopAndAdd(new SleepAction(GATE_INTAKE_TIME)).setTangent(Math.toRadians(90));
         actions.add("IntakeFromGate");

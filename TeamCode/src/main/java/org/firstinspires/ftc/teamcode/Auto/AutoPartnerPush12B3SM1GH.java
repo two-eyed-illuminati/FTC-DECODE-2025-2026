@@ -56,27 +56,27 @@ public class AutoPartnerPush12B3SM1GH extends LinearOpMode {
         autoBuilder
                 .leaveZone()
                 .goToFarShoot("strafe");
-        autoBuilder.goToCloseShoot("strafe", "");
+        autoBuilder.goToCloseShoot("strafe", "", "");
         autoBuilder
-                .goToCloseShoot("strafe", "")
+                .goToCloseShoot("strafe", "", "")
                 .shoot();
         autoBuilder
                 .goToSpike1("")
                 .intakeSpike1()
                 .goToGateHit("left")
-                .goToCloseShoot("strafe", "")
+                .goToCloseShoot("strafe", "", "")
                 .shoot();
         autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
-                .goToCloseShoot("spline", "")
+                .goToCloseShoot("spline", "", "")
                 .shoot();
         autoBuilder
                 .goToSpike3()
                 .intakeSpike3()
                 .backUpAfterSpike3()
-                .goToCloseShoot("spline", "")
+                .goToCloseShoot("spline", "", "")
                 .shoot();
         autoBuilder
                 .leaveZone();

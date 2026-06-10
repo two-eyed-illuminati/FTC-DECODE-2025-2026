@@ -15,7 +15,7 @@ public class MeepMeepCurrent {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Robot constraints
                 .setConstraints(60, 50, Math.toRadians(180), Math.toRadians(180), 14)
-                .setDimensions(15, 18)
+                .setDimensions(17.2, 18)
                 .build();
 
 //        double START_X = 63.0;
@@ -45,23 +45,29 @@ public class MeepMeepCurrent {
         AutoBuilder autoBuilder = new AutoBuilder(tabMapped);
 
         autoBuilder
-                .goToCloseShoot("strafe", "")
+                .goToCloseShoot("strafe", "", "1")
                 .shoot();
         autoBuilder
-                .goToSpike1("")
+                .goToSpike1("preload")
                 .intakeSpike1()
                 .goToGateHit("left")
-                .goToCloseShoot("strafe", "")
+                .goToCloseShoot("strafe", "", "")
                 .shoot();
         autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
                 .goToGateHit("right")
-                .goToCloseShoot("strafe", "")
+                .goToCloseShoot("strafe", "", "")
                 .shoot();
         autoBuilder
-                .leaveZone();
+                .intakeFromGate()
+                .goToCloseShoot("strafe", "", "")
+                .shoot();
+        autoBuilder
+                .intakeFromGate()
+                .goToCloseShoot("strafe", "", "last")
+                .shoot();
 
         myBot.runAction(autoBuilder.build());
 

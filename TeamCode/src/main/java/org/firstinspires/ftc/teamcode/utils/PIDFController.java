@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class PIDFController {
-    double pCoefficient;
-    double dCoefficient;
-    double feedforwardCoefficient;
-    double oldError = 0;
-    ElapsedTime timeSinceOld;
+    public double pCoefficient;
+    public double dCoefficient;
+    public double feedforwardCoefficient;
+    public double oldError = 0;
+    public ElapsedTime timeSinceOld;
     public PIDFController(double pCoefficient, double dCoefficient, double feedforwardCoefficient){
         this.pCoefficient = pCoefficient;
         this.dCoefficient = dCoefficient;

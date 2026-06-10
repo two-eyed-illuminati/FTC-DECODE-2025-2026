@@ -103,7 +103,7 @@ public class Robot{
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -180, 132, -384.5*180/360*4, 384.5*132/360*4, 1872);
-      outtakeTurretController = new PIDFController(1.0/4.0, 1/480.0,0);
+      outtakeTurretController = new PIDFController(1.0/28.0, 1/480.0,0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
 //      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
@@ -151,8 +151,6 @@ public class Robot{
             FtcDashboard.getInstance().getTelemetry() // Dashboard telemetry
     );
     if(initialized) {
-      outtakeTurretController.pCoefficient = 1/4.0; //make sure we reset the pCoefficient in case we have to stop in the middle of an AimOuttakeTurretAction in auto.
-
       intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
       outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
@@ -351,7 +349,12 @@ public class Robot{
     telemetry.addData("Target Angle After Unnecessary Motion Reduction", Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos));
     if(pid){
       angle = Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos);
+      double oldP = outtakeTurretController.pCoefficient;
+      if(Math.abs(outtakeTurret.getPos() - angle) < 2.0){
+        outtakeTurretController.pCoefficient = 1/28.0;
+      }
       double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
+      outtakeTurretController.pCoefficient = oldP;
       telemetry.addData("Target Outtake Turret Power", targetPower);
       outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       outtakeTurret.motor.setPower(targetPower);
@@ -471,15 +474,12 @@ public class Robot{
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
-      //This action is only used in auto, where loop times are longer so PID needs to be different
-      outtakeTurretController.pCoefficient = 1/16.0;
       aimOuttakeTurret(endPose);
       double targetTurretPos = calculateOuttakeTurretAim(endPose)-Math.toDegrees(endPose.heading.toDouble());
       packet.put("Outtake Turret Pos", outtakeTurret.getPos());
       packet.put("Outtake Turret Error", Math.abs(outtakeTurret.getPos()-targetTurretPos));
       if(STOP_AIM_TURRET_ACTION){
         STOP_AIM_TURRET_ACTION = false;
-        outtakeTurretController.pCoefficient = 1/4.0;
         return false;
       }
       return true;
@@ -529,8 +529,6 @@ public class Robot{
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
-      //This action is only used in auto, where loop times are longer so PID needs to be different
-      outtakeTurretController.pCoefficient = 1/16.0;
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
 
@@ -555,7 +553,6 @@ public class Robot{
         (elapsedTimeSinceBallDetected.seconds() > 0.2 && elapsedTime.seconds() > 1.0)){
         intake.setPower(0);
         stopper.setPosition(STOPPER_CLOSED_POS);
-        outtakeTurretController.pCoefficient = 1/4.0;
         return false;
       }
 
@@ -570,7 +567,7 @@ public class Robot{
         attemptingToShoot = true;
         intake.setPower(1.0);
       }
-      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175 && elapsedTime.seconds() > 0.5){
+      else if(elapsedSinceTimeStartAttemptToShoot.seconds() % 1.0 < 0.175 && elapsedTime.seconds() > 1.0){
         attemptingToShoot = false;
         intake.setPower(-1.0);
       }
