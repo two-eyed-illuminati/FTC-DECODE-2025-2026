@@ -354,7 +354,7 @@ public class Robot{
         outtakeTurretController.pCoefficient = 1/28.0;
       }
       double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
-      if(Math.abs(outtakeTurret.getPos() - angle) > 0.5){
+      if(Math.abs(outtakeTurret.getPos() - angle) > 0.5 && oldP <= 1/16.0){
         targetPower = Math.signum(targetPower)*(Math.abs(targetPower)+0.05);
       }
       outtakeTurretController.pCoefficient = oldP;
