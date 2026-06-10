@@ -353,6 +353,7 @@ public class AutoBuilder {
         currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_START_X, CORNER_Y), CORNER_START_HEADING);
         currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, CORNER_Y));
         currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_END_X, Math.signum(CORNER_Y)*(Math.abs(CORNER_Y)+0.01)), CORNER_END_HEADING);
+        currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, Math.signum(CORNER_Y)*(Math.abs(CORNER_Y)+1)));
         actions.add("IntakeFromCorner");
         return this;
     }
