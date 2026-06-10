@@ -93,12 +93,15 @@ public class AutoBuilder {
         Pose2d endPose = (
                 new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)
         );
+        Pose2d endPoseWithCorrection = (
+                new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y-4, FAR_SHOOT_HEADING)
+        ); //For some reason the turret is eternally pointed too much to the left. So this should help.
         currentTab = currentTab.afterTime(0,
                 new ParallelAction(
                         new InstantAction(() -> {
                             Robot.stopIntake();
                         }),
-                        Robot.getAimOuttakeTurretAction(pose2dMapped(endPose)),
+                        Robot.getAimOuttakeTurretAction(pose2dMapped(endPoseWithCorrection)),
                         Robot.getShootOuttakeAction(pose2dMapped(endPose))
                 )
         );
@@ -337,20 +340,22 @@ public class AutoBuilder {
                         new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING)
                 )
         ));
+//        currentTab = Robot.drive.actionBuilder(new Pose2d(FAR_SHOOT_X, FAR_SHOOT_Y, FAR_SHOOT_HEADING), currentTab.getPoseMap());
         actions.add("LooseIntake");
         return this;
     }
     public static double CORNER_START_X = 56.0;
     public static double CORNER_END_X = 64.0;
-    public static double CORNER_Y = -61.0;
-    public static double CORNER_START_HEADING = Math.toRadians(-80);
+    public static double CORNER_Y = -59.25;
+    public static double CORNER_START_HEADING = Math.toRadians(-65);
     public static double CORNER_END_HEADING = Math.toRadians(-90);
     public AutoBuilder intakeFromCorner(){
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
         currentTab = currentTab.waitSeconds(0.5);
         currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_START_X, CORNER_Y), CORNER_START_HEADING);
         currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, CORNER_Y));
-        currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_END_X, Math.signum(CORNER_Y)*(Math.abs(CORNER_Y)+1.0)), CORNER_END_HEADING);
+        currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_END_X, Math.signum(CORNER_Y)*(Math.abs(CORNER_Y)+0.01)), CORNER_END_HEADING);
+        currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, Math.signum(CORNER_Y)*(Math.abs(CORNER_Y)+1)));
         actions.add("IntakeFromCorner");
         return this;
     }

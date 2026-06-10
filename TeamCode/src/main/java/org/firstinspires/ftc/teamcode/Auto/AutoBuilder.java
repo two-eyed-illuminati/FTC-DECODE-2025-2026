@@ -348,8 +348,8 @@ public class AutoBuilder {
     }
     public static double CORNER_START_X = 56.0;
     public static double CORNER_END_X = 64.0;
-    public static double CORNER_Y = -60.25;
-    public static double CORNER_START_HEADING = Math.toRadians(-75);
+    public static double CORNER_Y = -59.25;
+    public static double CORNER_START_HEADING = Math.toRadians(-65);
     public static double CORNER_END_HEADING = Math.toRadians(-90);
     public AutoBuilder intakeFromCorner(){
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
