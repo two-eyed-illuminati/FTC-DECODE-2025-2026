@@ -338,12 +338,15 @@ public class AutoBuilder {
         actions.add("LooseIntake");
         return this;
     }
-    public static double CORNER_X = 62.0;
+    public static double CORNER_START_X = 56.0;
+    public static double CORNER_END_X = 62.0;
     public static double CORNER_Y = -62.0;
+    public static double CORNER_HEADING = Math.toRadians(-80);
     public AutoBuilder intakeFromCorner(){
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
         currentTab = currentTab.waitSeconds(0.5);
-        currentTab = currentTab.strafeTo(new Vector2d(CORNER_X, CORNER_Y));
+        currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_START_X, CORNER_Y), CORNER_HEADING);
+        currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, CORNER_Y));
         actions.add("IntakeFromCorner");
         return this;
     }
