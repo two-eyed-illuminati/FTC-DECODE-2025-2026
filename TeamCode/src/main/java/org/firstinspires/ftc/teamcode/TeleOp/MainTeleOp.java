@@ -235,6 +235,13 @@ public class MainTeleOp extends OpMode {
             Robot.ledRight.setPosition(0.50);
         }
 
+        if(gamepad2.left_trigger > 0.8){
+            Robot.leadEnabled = false;
+        }
+        else{
+            Robot.leadEnabled = true;
+        }
+
         Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());
 
         Robot.telemetry.update();

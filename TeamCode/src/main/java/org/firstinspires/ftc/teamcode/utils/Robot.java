@@ -58,6 +58,7 @@ public class Robot{
   public static double TURRET_OFFSET_ANGLE = -180.0;
   public static double SHOOT_TURRET_LEAD_TIME_CLOSE = 0.42;
   public static double SHOOT_TURRET_LEAD_TIME_FAR = 0.35;
+  public static boolean leadEnabled = true;
   public static double SHOOT_OUTTAKE_LEAD_TIME_CLOSE = 0.3;
   public static double SHOOT_OUTTAKE_LEAD_TIME_FAR = 0.15;
   public static double SHOOT_MIN_HEIGHT_CLOSE = 40.0;
@@ -286,6 +287,9 @@ public class Robot{
   }
 
   public static double turretLeadTime(Pose2d robotPose){
+    if(!leadEnabled){
+      return 0;
+    }
     Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
     double currDistance = Math.sqrt(
             goalRelativeToOuttake.x*goalRelativeToOuttake.x+
@@ -299,6 +303,9 @@ public class Robot{
     }
   }
   public static double outtakeLeadTime(Pose2d robotPose){
+    if(!leadEnabled){
+      return 0;
+    }
     Vector2d goalRelativeToOuttake = calculateGoalRelativeToOuttake(robotPose);
     double currDistance = Math.sqrt(
             goalRelativeToOuttake.x*goalRelativeToOuttake.x+
