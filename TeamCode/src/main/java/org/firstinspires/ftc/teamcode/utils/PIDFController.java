@@ -15,7 +15,7 @@ public class PIDFController {
         timeSinceOld = new ElapsedTime();
     }
     public double getPower(double currPos, double targetPos){
-        double power = Robot.drive.voltageSensor.getVoltage() * feedforwardCoefficient * targetPos + pCoefficient * (targetPos-currPos) + dCoefficient * (targetPos-currPos - oldError) / timeSinceOld.seconds();
+        double power = feedforwardCoefficient * targetPos / Robot.drive.voltageSensor.getVoltage() + pCoefficient * (targetPos-currPos) + dCoefficient * (targetPos-currPos - oldError) / timeSinceOld.seconds();
         oldError = targetPos-currPos;
         timeSinceOld.reset();
         return power;

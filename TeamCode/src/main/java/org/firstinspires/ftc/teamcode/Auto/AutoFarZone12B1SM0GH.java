@@ -11,12 +11,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Goal Zone 15B 2SM 3GH", group="Main")
+@Autonomous(name="Auto Far Zone 12B 1SM 0GH", group="Main")
 @Config
-public class AutoGoalZone15B2SM3GH extends LinearOpMode {
-    double START_X = -49.0;
-    double START_Y = -50.5;
-    double START_HEADING = -126.5;
+public class AutoFarZone12B1SM0GH extends LinearOpMode {
+    double START_X = 63.0;
+    double START_Y = -14.0;
+    double START_HEADING = -90.0;
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
@@ -54,28 +54,22 @@ public class AutoGoalZone15B2SM3GH extends LinearOpMode {
         AutoBuilder autoBuilder = new AutoBuilder(Robot.drive.actionBuilder(startPose, poseMap));
 
         autoBuilder
-                .goToCloseShoot("strafe", "", "1")
-                .shoot();
+                .goToFarShoot("strafe")
+                .shoot(1.2);
         autoBuilder
-                .goToSpike1("preload")
-                .intakeSpike1()
-                .goToGateHit("left")
-                .goToCloseShoot("strafe", "1", "")
-                .shoot();
+                .intakeFromCorner()
+                .goToFarShoot("strafe")
+                .shoot(1.2);
         autoBuilder
-                .goToSpike2()
-                .intakeSpike2()
-                .backUpAfterSpike2()
-                .goToCloseShoot("strafe", "", "")
-                .shoot();
+                .goToSpike3("far")
+                .intakeSpike3()
+                .goToFarShoot("strafe")
+                .shoot(1.2);
         autoBuilder
-                .intakeFromGate()
-                .goToCloseShoot("strafe", "", "")
-                .shoot();
+                .looseIntake(60.0)
+                .shoot(1.2);
         autoBuilder
-                .intakeFromGate()
-                .goToCloseShoot("strafe", "", "last")
-                .shoot();
+                .leaveZone();
 
         Actions.runBlocking(
                 autoBuilder.build()

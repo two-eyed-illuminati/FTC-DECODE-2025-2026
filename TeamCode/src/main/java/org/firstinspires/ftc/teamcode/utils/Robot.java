@@ -3,13 +3,22 @@ package org.firstinspires.ftc.teamcode.utils;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Actions;
+import com.acmerobotics.roadrunner.HolonomicController;
+import com.acmerobotics.roadrunner.MecanumKinematics;
+import com.acmerobotics.roadrunner.MotorFeedforward;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.PoseVelocity2dDual;
 import com.acmerobotics.roadrunner.Rotation2d;
+import com.acmerobotics.roadrunner.Time;
+import com.acmerobotics.roadrunner.TimeTrajectory;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -25,7 +34,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Auto.AutoBuilder;
+import org.firstinspires.ftc.teamcode.utils.rr.Drawing;
 import org.firstinspires.ftc.teamcode.utils.rr.MecanumDrive;
+import org.firstinspires.ftc.teamcode.utils.rr.messages.DriveCommandMessage;
+import org.firstinspires.ftc.teamcode.utils.rr.messages.MecanumCommandMessage;
+import org.firstinspires.ftc.teamcode.utils.rr.messages.PoseMessage;
+
+import java.util.List;
 
 //Allow configuration variables to be tuned without pushing code
 //with FTC Dashboard (https://acmerobotics.github.io/ftc-dashboard/features#configuration-variables)
@@ -101,6 +116,7 @@ public class Robot{
       DcMotorEx outtakeTurretMotor = hardwareMap.get(DcMotorEx.class, "turret");
       outtakeTurretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       outtakeTurretMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+      outtakeTurretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -180, 132, -384.5*180/360*4, 384.5*132/360*4, 1872);
       outtakeTurretController = new PIDFController(1/28.0, 1/480.0,0);
@@ -115,7 +131,7 @@ public class Robot{
       outtake = new ContinuousMotorMechanism(outtakeMotors,
               360.0/28.0, OUTTAKE_MAX_VEL
       );
-      outtakeController = new PIDFController(1.0/2000.0, 0,1.0/(OUTTAKE_MAX_VEL*12.4));
+      outtakeController = new PIDFController(1.0/2000.0, 0,12.4/(OUTTAKE_MAX_VEL));
 
       limelight = hardwareMap.get(Limelight3A.class, "limelight");
       limelight.setPollRateHz(100);
@@ -155,6 +171,7 @@ public class Robot{
 
       outtakeTurret.motor.setTargetPosition(outtakeTurret.motor.getCurrentPosition());
       outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+      outtakeTurret.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
       outtakeMotors.motor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -537,6 +554,7 @@ public class Robot{
     public boolean run(@NonNull TelemetryPacket packet) {
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
+      drive.updatePoseEstimate();
 
       if(!spunUp && (outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1])){
         spunUp = true;
@@ -680,7 +698,7 @@ public class Robot{
         packet.put("Time of Ball Detected", elapsedTimeOfBallDetected);
         packet.put("X", drive.localizer.getPose().position.x);
 
-        if (elapsedTime.seconds() > time || elapsedTimeOfBallDetected.seconds() > 1.0 || drive.localizer.getPose().position.x < 15) {
+        if (elapsedTime.seconds() > time || elapsedTimeOfBallDetected.seconds() > 0.6 || drive.localizer.getPose().position.x < 30) {
           stopIntake();
           returning = true;
           goToEndPoseAction = drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(endPose.position, endPose.heading).build();
@@ -696,5 +714,83 @@ public class Robot{
   }
   public static Action getLooseIntakeAction(Pose2d endPose){
     return new LooseIntakeAction(endPose);
+  }
+  public static class CorrectSecondsAction implements Action {
+    public Pose2d endPose;
+    private double beginTs = -1;
+    public double numSeconds;
+
+    public CorrectSecondsAction(Pose2d endPose, double numSeconds) {
+      this.endPose = endPose;
+      this.numSeconds = numSeconds;
+    }
+
+    @Override
+    public boolean run(@NonNull TelemetryPacket p){
+      double t;
+      if (beginTs < 0) {
+        beginTs = Actions.now();
+        t = 0;
+      } else {
+        t = Actions.now() - beginTs;
+      }
+
+      if (t >= numSeconds) {
+        drive.leftFront.setPower(0);
+        drive.leftBack.setPower(0);
+        drive.rightBack.setPower(0);
+        drive.rightFront.setPower(0);
+
+        return false;
+      }
+
+      Pose2dDual<Time> txWorldTarget = Pose2dDual.constant(endPose, 3);
+
+      PoseVelocity2d robotVelRobot = drive.updatePoseEstimate();
+
+      PoseVelocity2dDual<Time> command = new HolonomicController(
+              MecanumDrive.PARAMS.axialGain, MecanumDrive.PARAMS.lateralGain, MecanumDrive.PARAMS.headingGain,
+              MecanumDrive.PARAMS.axialVelGain, MecanumDrive.PARAMS.lateralVelGain, MecanumDrive.PARAMS.headingVelGain
+      )
+              .compute(txWorldTarget, drive.localizer.getPose(), robotVelRobot);
+
+      MecanumKinematics.WheelVelocities<Time> wheelVels = drive.kinematics.inverse(command);
+      double voltage = drive.voltageSensor.getVoltage();
+
+      final MotorFeedforward feedforward = new MotorFeedforward(MecanumDrive.PARAMS.kS,
+              MecanumDrive.PARAMS.kV / MecanumDrive.PARAMS.inPerTick, MecanumDrive.PARAMS.kA / MecanumDrive.PARAMS.inPerTick);
+      double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
+      double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
+      double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
+      double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;
+
+      drive.leftFront.setPower(leftFrontPower);
+      drive.leftBack.setPower(leftBackPower);
+      drive.rightBack.setPower(rightBackPower);
+      drive.rightFront.setPower(rightFrontPower);
+
+      p.put("flPower", leftFrontPower);
+      p.put("blPower", leftBackPower);
+      p.put("brPower", rightBackPower);
+      p.put("frPower", rightFrontPower);
+
+      p.put("x", drive.localizer.getPose().position.x);
+      p.put("y", drive.localizer.getPose().position.y);
+      p.put("heading (deg)", Math.toDegrees(drive.localizer.getPose().heading.toDouble()));
+
+      Pose2d error = txWorldTarget.value().minusExp(drive.localizer.getPose());
+      p.put("xError", error.position.x);
+      p.put("yError", error.position.y);
+      p.put("headingError (deg)", Math.toDegrees(error.heading.toDouble()));
+
+      p.put("xTarget", txWorldTarget.value().position.x);
+      p.put("yTarget", txWorldTarget.value().position.y);
+      p.put("headingTarget (deg", Math.toDegrees(error.heading.toDouble()));
+
+      return true;
+    }
+  }
+  public static Action getCorrectSecondsAction(Pose2d endPose, double numSeconds){
+    return new CorrectSecondsAction(endPose, numSeconds);
   }
 }

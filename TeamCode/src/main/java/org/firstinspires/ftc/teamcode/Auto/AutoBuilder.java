@@ -43,7 +43,7 @@ public class AutoBuilder {
     public static double PRELOAD_CLOSE_SHOOT_Y = -22.9996985274;
     public static double PRELOAD_CLOSE_SHOOT_X_GO_TO_SPIKE_1 = -13.3370432609;
     public static double PRELOAD_CLOSE_SHOOT_Y_GO_TO_SPIKE_1 = -19.9996985274;
-    public static double LAST_CLOSE_SHOOT_X = -38.3370432609;
+    public static double LAST_CLOSE_SHOOT_X = -39.3370432609;
     public static double LAST_CLOSE_SHOOT_Y = -15.9996985274;
     public AutoBuilder goToCloseShoot(String type, String tangentType, String posType){
         Pose2d endPose = (
@@ -179,16 +179,16 @@ public class AutoBuilder {
         return this;
     }
 
-    public static double SPIKE_3_X = 34.3457;
+    public static double SPIKE_3_X = 33.3457;
     public static double TO_SPIKE_3_INITIAL_TANGENT_ANGLE_FAR = Math.toRadians(-150);
     public AutoBuilder goToSpike3(String tangentType){
         VelConstraint constraint = (robotPose, _path, _disp) -> {
-            if(Math.abs(robotPose.position.x.value()-SPIKE_3_X) < 5.0 && Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(SPIKE_START_Y)) < 7.0){
+            if(Math.abs(robotPose.position.x.value()-SPIKE_3_X) < 25.0 && Math.abs(Math.abs(robotPose.position.y.value())-Math.abs(SPIKE_START_Y)) < 7.0){
                 return INTAKE_SPEED;
             }
             return 60;
         };
-        currentTab = currentTab.setTangent(tangentType.equals("far") ? TO_SPIKE_3_INITIAL_TANGENT_ANGLE_FAR : TO_SPIKE_INITIAL_TANGENT_ANGLE).splineToSplineHeading(
+        currentTab = currentTab.setTangent(tangentType.equals("far") ? TO_SPIKE_3_INITIAL_TANGENT_ANGLE_FAR : TO_SPIKE_INITIAL_TANGENT_ANGLE).splineToLinearHeading(
                 new Pose2d(SPIKE_3_X, SPIKE_START_Y, SPIKE_HEADING),
                 SPIKE_HEADING,
                 constraint
@@ -201,7 +201,7 @@ public class AutoBuilder {
     }
 
 
-    public static double SPIKE_RAMP_END_Y = -54.1282;
+    public static double SPIKE_RAMP_END_Y = -56.1282;
     public static double SPIKE_TUNNEL_END_Y = -62.1282;
     public AutoBuilder intakeSpike1(){
         currentTab = currentTab.afterTime(0, () -> {
@@ -212,6 +212,7 @@ public class AutoBuilder {
                 SPIKE_HEADING,
                 new TranslationalVelConstraint(INTAKE_SPEED)
         );
+
         actions.add("IntakeSpike1");
         return this;
     }
@@ -269,8 +270,8 @@ public class AutoBuilder {
     }
 
     public static double GATE_X_LEFT = -6.0;
-    public static double GATE_X_RIGHT = 12;
-    public static double GATE_Y_BEFORE_HIT = -47.0;
+    public static double GATE_X_RIGHT = 10;
+    public static double GATE_Y_BEFORE_HIT = -43.0;
     public static double GATE_Y_HIT = -56.0;
     public static double GATE_HIT_TIME = 0.1;
     public static double GATE_HIT_SPEED = 25.0;
@@ -300,9 +301,9 @@ public class AutoBuilder {
         actions.add("GoToGateHit");
         return this;
     }
-    public static double GATE_INTAKE_X = 16.2;
-    public static double GATE_INTAKE_Y = -56.0;
-    public static double GATE_INTAKE_HEADING = Math.toRadians(-110);
+    public static double GATE_INTAKE_X = 11.5;
+    public static double GATE_INTAKE_Y = -57.5;
+    public static double GATE_INTAKE_HEADING = Math.toRadians(-114);
     public static double GATE_INTAKE_TIME = 1.2;
     public AutoBuilder intakeFromGate(){
         currentTab = currentTab.afterTime(0, () -> {
@@ -325,12 +326,12 @@ public class AutoBuilder {
                 Math.toRadians(-90),
                 constraint
         );
-        currentTab = currentTab.stopAndAdd(new SleepAction(GATE_INTAKE_TIME)).setTangent(Math.toRadians(90));
+        currentTab = currentTab.stopAndAdd(Robot.getCorrectSecondsAction(pose2dMapped(new Pose2d(GATE_INTAKE_X, GATE_INTAKE_Y, GATE_INTAKE_HEADING)), GATE_INTAKE_TIME)).setTangent(Math.toRadians(90));
         actions.add("IntakeFromGate");
         return this;
     }
-    public static double LOOSE_INTAKE_START_Y = -35.0;
-    public static double LOOSE_INTAKE_START_HEADING = Math.toRadians(-75.0);
+    public static double LOOSE_INTAKE_START_Y = -43.0;
+    public static double LOOSE_INTAKE_START_HEADING = Math.toRadians(-100.0);
     public AutoBuilder looseIntake(double x){
         currentTab = currentTab.strafeToLinearHeading(
                 new Vector2d(x, LOOSE_INTAKE_START_Y), LOOSE_INTAKE_START_HEADING
