@@ -11,9 +11,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Goal Zone 15B 2SM 4GH", group="Main")
+@Autonomous(name="Auto Goal Zone 15B 2SM 4GH SM1 First", group="Main")
 @Config
-public class AutoGoalZone15B2SM4GH extends LinearOpMode {
+public class AutoGoalZone15B2SM4GHSM1First extends LinearOpMode {
     double START_X = -49.0;
     double START_Y = -50.5;
     double START_HEADING = -126.5;
@@ -33,9 +33,13 @@ public class AutoGoalZone15B2SM4GH extends LinearOpMode {
             Robot.telemetry.update();
             if(gamepad1.x){
                 selectedAlliance = Robot.Alliance.BLUE;
+                Robot.ledLeft.setPosition(0.611);
+                Robot.ledRight.setPosition(0.611);
             }
             else if(gamepad1.b){
                 selectedAlliance = Robot.Alliance.RED;
+                Robot.ledLeft.setPosition(0.28);
+                Robot.ledRight.setPosition(0.28);
             }
         }
         if(selectedAlliance != null){

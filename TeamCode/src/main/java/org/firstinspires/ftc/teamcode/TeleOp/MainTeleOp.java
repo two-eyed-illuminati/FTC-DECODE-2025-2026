@@ -194,8 +194,8 @@ public class MainTeleOp extends OpMode {
             wantedLedState = 0;
         }
 
-        double changeVal = 2.5;
-        if(gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed()){
+        double changeVal = 1.5;
+        if(gamepad2.dpadUpWasPressed()){
             Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             Robot.ledLeft.setPosition(1.0);

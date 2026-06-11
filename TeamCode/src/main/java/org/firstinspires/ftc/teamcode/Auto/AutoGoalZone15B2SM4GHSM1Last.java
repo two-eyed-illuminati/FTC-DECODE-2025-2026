@@ -11,12 +11,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.utils.Robot;
 
-@Autonomous(name="Auto Far Zone 6B 0SM 0GH", group="Main")
+@Autonomous(name="Auto Goal Zone 15B 2SM 4GH SM1 Last", group="Main")
 @Config
-public class AutoFarZone6B0SM0GH extends LinearOpMode {
-    double START_X = 63.0;
-    double START_Y = -14.0;
-    double START_HEADING = -90.0;
+public class AutoGoalZone15B2SM4GHSM1Last extends LinearOpMode {
+    double START_X = -49.0;
+    double START_Y = -50.5;
+    double START_HEADING = -126.5;
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
@@ -58,14 +58,30 @@ public class AutoFarZone6B0SM0GH extends LinearOpMode {
         AutoBuilder autoBuilder = new AutoBuilder(Robot.drive.actionBuilder(startPose, poseMap));
 
         autoBuilder
-                .goToFarShoot("strafe")
+                .goToCloseShoot("strafe", "", "")
                 .shoot();
         autoBuilder
-                .intakeFromCorner()
-                .goToFarShoot("strafe")
+                .goToSpike2()
+                .intakeSpike2()
+                .backUpAfterSpike2()
+                .goToGateHit("right")
+                .backUpToAvoidSpike1()
+                .goToCloseShoot("strafe", "", "")
                 .shoot();
         autoBuilder
-                .leaveZone();
+                .intakeFromGate()
+                .goToCloseShoot("spline", "", "avoid1")
+                .shoot();
+        autoBuilder
+                .intakeFromGate()
+                .goToCloseShoot("spline", "", "avoid1")
+                .shoot();
+        autoBuilder
+                .goToSpike1("")
+                .intakeSpike1()
+                .backUpAfterSpike1()
+                .goToCloseShoot("spline", "1", "last")
+                .shoot();
 
         Actions.runBlocking(
                 autoBuilder.build()

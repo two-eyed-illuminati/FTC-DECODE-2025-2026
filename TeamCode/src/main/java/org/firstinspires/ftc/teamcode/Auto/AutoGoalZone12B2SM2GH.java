@@ -33,9 +33,13 @@ public class AutoGoalZone12B2SM2GH extends LinearOpMode {
             Robot.telemetry.update();
             if(gamepad1.x){
                 selectedAlliance = Robot.Alliance.BLUE;
+                Robot.ledLeft.setPosition(0.611);
+                Robot.ledRight.setPosition(0.611);
             }
             else if(gamepad1.b){
                 selectedAlliance = Robot.Alliance.RED;
+                Robot.ledLeft.setPosition(0.28);
+                Robot.ledRight.setPosition(0.28);
             }
         }
         if(selectedAlliance != null){

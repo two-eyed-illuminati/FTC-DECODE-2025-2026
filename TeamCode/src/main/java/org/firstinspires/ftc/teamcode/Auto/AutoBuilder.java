@@ -42,7 +42,7 @@ public class AutoBuilder {
     public static double PRELOAD_CLOSE_SHOOT_X = -27.3370432609;
     public static double PRELOAD_CLOSE_SHOOT_Y = -22.9996985274;
     public static double PRELOAD_CLOSE_SHOOT_X_GO_TO_SPIKE_1 = -13.3370432609;
-    public static double PRELOAD_CLOSE_SHOOT_Y_GO_TO_SPIKE_1 = -19.9996985274;
+    public static double PRELOAD_CLOSE_SHOOT_Y_GO_TO_SPIKE_1 = -17.9996985274;
     public static double LAST_CLOSE_SHOOT_X = -39.3370432609;
     public static double LAST_CLOSE_SHOOT_Y = -15.9996985274;
     public AutoBuilder goToCloseShoot(String type, String tangentType, String posType){
@@ -60,6 +60,12 @@ public class AutoBuilder {
                         Robot.getShootOuttakeAction(pose2dMapped(endPose))
                 )
         );
+        if(posType.equals("avoid1")){
+            currentTab = currentTab.splineToSplineHeading(
+                    new Pose2d(SPIKE_2_X, BACKUP_Y, Math.toRadians(-90)),
+                    SPIKE_BACKUP_TANGENT_ANGLE
+            );
+        }
         if(type.equals("spline")){
             currentTab = currentTab.splineToSplineHeading(
                     endPose,
@@ -248,6 +254,18 @@ public class AutoBuilder {
         actions.add("BackUpAfterIntakeSpike2");
         return this;
     }
+    public static double BACKUP_Y = -40.0;
+    public AutoBuilder backUpToAvoidSpike1(){
+        if(!actions.isEmpty() && actions.get(actions.size()-1).equals("GoToGateHit")){
+            currentTab = currentTab.setTangent(Math.toRadians(90));
+        }
+        currentTab = currentTab.splineToConstantHeading(
+                new Vector2d(SPIKE_2_X, BACKUP_Y),
+                SPIKE_BACKUP_TANGENT_ANGLE
+        );
+        actions.add("BackUp");
+        return this;
+    }
     public AutoBuilder intakeSpike3(){
         currentTab = currentTab.afterTime(0, () -> {
             Robot.beginIntake();
@@ -269,7 +287,7 @@ public class AutoBuilder {
         return this;
     }
 
-    public static double GATE_X_LEFT = -6.0;
+    public static double GATE_X_LEFT = -4.5;
     public static double GATE_X_RIGHT = 10;
     public static double GATE_Y_BEFORE_HIT = -43.0;
     public static double GATE_Y_HIT = -56.0;
@@ -301,7 +319,7 @@ public class AutoBuilder {
         actions.add("GoToGateHit");
         return this;
     }
-    public static double GATE_INTAKE_X = 11.5;
+    public static double GATE_INTAKE_X = 12.25;
     public static double GATE_INTAKE_Y = -57.5;
     public static double GATE_INTAKE_HEADING = Math.toRadians(-114);
     public static double GATE_INTAKE_TIME = 1.2;
@@ -326,7 +344,8 @@ public class AutoBuilder {
                 Math.toRadians(-90),
                 constraint
         );
-        currentTab = currentTab.stopAndAdd(Robot.getCorrectSecondsAction(pose2dMapped(new Pose2d(GATE_INTAKE_X, GATE_INTAKE_Y, GATE_INTAKE_HEADING)), GATE_INTAKE_TIME)).setTangent(Math.toRadians(90));
+        currentTab = currentTab.waitSeconds(GATE_INTAKE_TIME);
+//        currentTab = currentTab.stopAndAdd(Robot.getCorrectSecondsAction(pose2dMapped(new Pose2d(GATE_INTAKE_X, GATE_INTAKE_Y, GATE_INTAKE_HEADING)), GATE_INTAKE_TIME)).setTangent(Math.toRadians(90));
         actions.add("IntakeFromGate");
         return this;
     }

@@ -36,4 +36,7 @@ public class Robot{
     public static Action getShootSequenceAction(double time){
         return new SleepAction(1.2);
     }
+    public static Action getCorrectSecondsAction(Pose2d endPose, double time){
+        return new SleepAction(time);
+    }
 }

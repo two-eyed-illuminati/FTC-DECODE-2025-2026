@@ -119,7 +119,7 @@ public class Robot{
       outtakeTurretMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
       outtakeTurret = new MotorMechanism(outtakeTurretMotor,
               -180, 132, -384.5*180/360*4, 384.5*132/360*4, 1872);
-      outtakeTurretController = new PIDFController(1/28.0, 1/480.0,0);
+      outtakeTurretController = new PIDFController(1/36.0, 1/480.0,0);
 
 //      Servo hoodServo = hardwareMap.get(Servo.class, "hood");
 //      hood = new ServoMechanism(hoodServo, HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, 0.0, 1.0, HOOD_VEL);
@@ -368,7 +368,10 @@ public class Robot{
       angle = Clamp.clamp(angle, outtakeTurret.minPos, outtakeTurret.maxPos);
       double oldP = outtakeTurretController.pCoefficient;
       if(Math.abs(outtakeTurret.getPos() - angle) < 2.0){
-        outtakeTurretController.pCoefficient = 1/28.0;
+        outtakeTurretController.pCoefficient = 1/36.0;
+      }
+      if(oldP > 1/16.0 && Math.abs(outtakeTurret.getPos() - angle) < 4.0){
+        outtakeTurretController.pCoefficient = 1/6.0;
       }
       double targetPower = outtakeTurretController.getPower(outtakeTurret.getPos(), angle);
       if(Math.abs(outtakeTurret.getPos() - angle) > 0.5 && oldP <= 1/16.0){
@@ -568,6 +571,8 @@ public class Robot{
         elapsedSinceTimeStartAttemptToShoot.reset();
         started = true;
       }
+
+      telemetry.addData("Stopper Pos", stopper.getPosition());
 
       double topDistance = voltageToDistance(topDistanceSensor.getVoltage());
       if(topDistance < TOP_DISTANCE_SENSOR_DETECTION_THRESH){
