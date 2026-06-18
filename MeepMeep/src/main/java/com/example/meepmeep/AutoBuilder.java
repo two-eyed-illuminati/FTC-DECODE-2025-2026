@@ -106,6 +106,8 @@ public class AutoBuilder {
                 new ParallelAction(
                         new InstantAction(() -> {
                             Robot.stopIntake();
+                            Robot.SHOOT_TARGET_HEIGHT_FAR = 50.0;
+                            Robot.SHOOT_MAX_HEIGHT_FAR = 53.0;
                         }),
                         Robot.getAimOuttakeTurretAction(pose2dMapped(endPoseWithCorrection)),
                         Robot.getShootOuttakeAction(pose2dMapped(endPose))
@@ -125,7 +127,10 @@ public class AutoBuilder {
         }
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {
             Robot.STOP_SHOOT_OUTTAKE_ACTION = true;
-            Robot.STOP_AIM_TURRET_ACTION = true;}));
+            Robot.STOP_AIM_TURRET_ACTION = true;
+            Robot.SHOOT_TARGET_HEIGHT_FAR = 48.5;
+            Robot.SHOOT_MAX_HEIGHT_FAR = 51.0;
+        }));
         actionObjs.add(currentTab.build());
         currentTab = currentTab.fresh();
         actions.add("GoToShoot");
@@ -138,6 +143,21 @@ public class AutoBuilder {
     }
     public AutoBuilder shoot(double time){
         actionObjs.add(Robot.getShootSequenceAction(time));
+        actions.add("Shoot");
+        return this;
+    }
+    public AutoBuilder shootFar(double time){
+        actionObjs.add(new InstantAction(() -> {
+            Robot.FAR_SHOOT_CORRECTION = true;
+            Robot.SHOOT_TARGET_HEIGHT_FAR = 50.0;
+            Robot.SHOOT_MAX_HEIGHT_FAR = 53.0;
+        }));
+        actionObjs.add(Robot.getShootSequenceAction(time));
+        actionObjs.add(new InstantAction(() -> {
+            Robot.FAR_SHOOT_CORRECTION = false;
+            Robot.SHOOT_TARGET_HEIGHT_FAR = 48.5;
+            Robot.SHOOT_MAX_HEIGHT_FAR = 51.0;
+        }));
         actions.add("Shoot");
         return this;
     }
@@ -193,7 +213,7 @@ public class AutoBuilder {
             return 60;
         };
         currentTab = currentTab.setTangent(tangentType.equals("far") ? TO_SPIKE_3_INITIAL_TANGENT_ANGLE_FAR : TO_SPIKE_INITIAL_TANGENT_ANGLE).splineToLinearHeading(
-                new Pose2d(SPIKE_3_X, SPIKE_START_Y, SPIKE_HEADING),
+                new Pose2d((tangentType.equals("far") ? SPIKE_3_X+3.0 : SPIKE_3_X), SPIKE_START_Y, SPIKE_HEADING),
                 SPIKE_HEADING,
                 constraint
         );
@@ -364,15 +384,15 @@ public class AutoBuilder {
     }
     public static double CORNER_START_X = 56.0;
     public static double CORNER_END_X = 64.0;
-    public static double CORNER_Y = -59.25;
+    public static double CORNER_Y = -60.7;
     public static double CORNER_START_HEADING = Math.toRadians(-65);
     public static double CORNER_END_HEADING = Math.toRadians(-90);
     public AutoBuilder intakeFromCorner(){
         currentTab = currentTab.afterTime(0, new InstantAction(() -> {Robot.beginIntake();}));
-        currentTab = currentTab.waitSeconds(0.5);
         currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_START_X, CORNER_Y), CORNER_START_HEADING);
         currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, CORNER_Y));
         currentTab = currentTab.strafeToLinearHeading(new Vector2d(CORNER_END_X, Math.signum(CORNER_Y)*(Math.abs(CORNER_Y)+0.01)), CORNER_END_HEADING);
+        currentTab = currentTab.waitSeconds(0.5);
         currentTab = currentTab.strafeTo(new Vector2d(CORNER_END_X, Math.signum(CORNER_Y)*(Math.abs(CORNER_Y)+1)));
         actions.add("IntakeFromCorner");
         return this;

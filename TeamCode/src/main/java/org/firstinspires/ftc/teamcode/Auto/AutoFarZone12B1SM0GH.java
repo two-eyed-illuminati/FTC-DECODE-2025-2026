@@ -59,19 +59,19 @@ public class AutoFarZone12B1SM0GH extends LinearOpMode {
 
         autoBuilder
                 .goToFarShoot("strafe")
-                .shoot(1.2);
+                .shootFar(1.2);
         autoBuilder
                 .intakeFromCorner()
                 .goToFarShoot("strafe")
-                .shoot(1.2);
+                .shootFar(1.2);
         autoBuilder
                 .goToSpike3("far")
                 .intakeSpike3()
                 .goToFarShoot("strafe")
-                .shoot(1.2);
+                .shootFar(1.2);
         autoBuilder
-                .looseIntake(60.0)
-                .shoot(1.2);
+                .looseIntake(61.0)
+                .shootFar(1.2);
         autoBuilder
                 .leaveZone();
 

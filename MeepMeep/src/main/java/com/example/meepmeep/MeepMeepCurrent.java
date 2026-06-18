@@ -18,12 +18,12 @@ public class MeepMeepCurrent {
                 .setDimensions(15, 18)
                 .build();
 
-//        double START_X = 63.0;
-//        double START_Y = -14.0;
-//        double START_HEADING = -90.0;
-        double START_X = -49.0;
-        double START_Y = -50.5;
-        double START_HEADING = -126.5;
+        double START_X = 63.0;
+        double START_Y = -10.0;
+        double START_HEADING = -90.0;
+//        double START_X = -49.0;
+//        double START_Y = -50.5;
+//        double START_HEADING = -126.5;
 
         Pose2d startPose = new Pose2d(START_X, START_Y, Math.toRadians(START_HEADING));
 
@@ -45,30 +45,32 @@ public class MeepMeepCurrent {
         AutoBuilder autoBuilder = new AutoBuilder(tabMapped);
 
         autoBuilder
+                .leaveZone()
+                .goToFarShoot("strafe");
+        autoBuilder.goToCloseShoot("strafe", "", "");
+        autoBuilder
+                .goToCloseShoot("strafe", "", "")
+                .shoot();
+        autoBuilder
+                .goToSpike1("")
+                .intakeSpike1()
+                .goToGateHit("left")
                 .goToCloseShoot("strafe", "", "")
                 .shoot();
         autoBuilder
                 .goToSpike2()
                 .intakeSpike2()
                 .backUpAfterSpike2()
-                .goToGateHit("right")
-                .backUpToAvoidSpike1()
-                .goToCloseShoot("strafe", "", "")
+                .goToCloseShoot("spline", "", "")
                 .shoot();
         autoBuilder
-                .intakeFromGate()
-                .goToCloseShoot("spline", "", "avoid1")
+                .goToSpike3()
+                .intakeSpike3()
+                .backUpAfterSpike3()
+                .goToCloseShoot("spline", "", "")
                 .shoot();
         autoBuilder
-                .intakeFromGate()
-                .goToCloseShoot("spline", "", "avoid1")
-                .shoot();
-        autoBuilder
-                .goToSpike1("")
-                .intakeSpike1()
-                .backUpAfterSpike1()
-                .goToCloseShoot("spline", "1", "last")
-                .shoot();
+                .leaveZone();
 
         myBot.runAction(autoBuilder.build());
 

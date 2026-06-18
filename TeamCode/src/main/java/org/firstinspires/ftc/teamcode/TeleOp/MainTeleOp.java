@@ -22,6 +22,7 @@ public class MainTeleOp extends OpMode {
     public double currentMinOuttakeVel = 0.0;
     public double currentMaxOuttakeVel = 0.0;
     public ElapsedTime timeSinceWantedLedStateChange;
+    public ElapsedTime timeSinceLedFlashWhiteStart;
     public int wantedLedState = 0;
     List<LynxModule> allHubs;
 
@@ -29,6 +30,7 @@ public class MainTeleOp extends OpMode {
     public void init(){
         Robot.initialize(hardwareMap, telemetry);
         timeSinceWantedLedStateChange = new ElapsedTime();
+        timeSinceLedFlashWhiteStart = new ElapsedTime();
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
@@ -159,7 +161,7 @@ public class MainTeleOp extends OpMode {
                         goalRelativeToOuttake.x*goalRelativeToOuttake.x+
                                 goalRelativeToOuttake.y*goalRelativeToOuttake.y
                 );
-                if(currDistance > 120.0){
+                if(currDistance > 120.0 || gamepad2.right_trigger > 0.8){
                     Robot.outtake.setPos(0, 23000.0);
                 }
                 else{
@@ -195,18 +197,21 @@ public class MainTeleOp extends OpMode {
         }
 
         double changeVal = 1.5;
-        if(gamepad2.dpadUpWasPressed()){
-            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            Robot.outtakeTurret.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if(gamepad1.dpadUpWasPressed() || gamepad2.dpadUpWasPressed()){
+            Pose2d currPose = Robot.drive.localizer.getPose();
+            Robot.drive.localizer.setPose(new Pose2d(
+                    currPose.position.x+changeVal, currPose.position.y + (Robot.alliance == Robot.Alliance.BLUE ? changeVal : -changeVal), currPose.heading.toDouble()));
             Robot.ledLeft.setPosition(1.0);
             Robot.ledRight.setPosition(1.0);
+            timeSinceLedFlashWhiteStart.reset();
         }
-        else if(gamepad1.dpadDownWasPressed() || gamepad2.dpadDownWasPressed()){
+        if(gamepad1.dpadDownWasPressed() || gamepad2.dpadDownWasPressed()){
             Pose2d currPose = Robot.drive.localizer.getPose();
             Robot.drive.localizer.setPose(new Pose2d(
                     currPose.position.x-changeVal, currPose.position.y + (Robot.alliance == Robot.Alliance.BLUE ? -changeVal : changeVal), currPose.heading.toDouble()));
             Robot.ledLeft.setPosition(1.0);
             Robot.ledRight.setPosition(1.0);
+            timeSinceLedFlashWhiteStart.reset();
         }
         else if(gamepad1.dpadLeftWasPressed() || gamepad2.dpadLeftWasPressed()){
             Pose2d currPose = Robot.drive.localizer.getPose();
@@ -214,6 +219,7 @@ public class MainTeleOp extends OpMode {
                     currPose.position.x + (Robot.alliance == Robot.Alliance.BLUE ? -changeVal : changeVal), currPose.position.y + changeVal, currPose.heading.toDouble()));
             Robot.ledLeft.setPosition(1.0);
             Robot.ledRight.setPosition(1.0);
+            timeSinceLedFlashWhiteStart.reset();
         }
         else if(gamepad1.dpadRightWasPressed() || gamepad2.dpadRightWasPressed()){
             Pose2d currPose = Robot.drive.localizer.getPose();
@@ -221,25 +227,26 @@ public class MainTeleOp extends OpMode {
                     currPose.position.x + (Robot.alliance == Robot.Alliance.BLUE ? changeVal : -changeVal), currPose.position.y - changeVal, currPose.heading.toDouble()));
             Robot.ledLeft.setPosition(1.0);
             Robot.ledRight.setPosition(1.0);
+            timeSinceLedFlashWhiteStart.reset();
         }
-        if(wantedLedState == 0){
+        if(wantedLedState == 0 && timeSinceLedFlashWhiteStart.seconds() > 0.1){
             Robot.ledLeft.setPosition(0.28);
             Robot.ledRight.setPosition(0.28);
         }
-        if(wantedLedState == 1){
+        if(wantedLedState == 1 && timeSinceLedFlashWhiteStart.seconds() > 0.1){
             Robot.ledLeft.setPosition(0.388);
             Robot.ledRight.setPosition(0.388);
         }
-        if(wantedLedState == 2 && timeSinceWantedLedStateChange.seconds() > 0.25){
+        if((wantedLedState == 2 && timeSinceWantedLedStateChange.seconds() > 0.25) && timeSinceLedFlashWhiteStart.seconds() > 0.1){
             Robot.ledLeft.setPosition(0.50);
             Robot.ledRight.setPosition(0.50);
         }
 
         if(gamepad2.left_trigger > 0.8){
-            Robot.leadEnabled = false;
+            Robot.leadEnabled = true;
         }
         else{
-            Robot.leadEnabled = true;
+            Robot.leadEnabled = false;
         }
 
         Robot.telemetry.addData("Actual Intake Power", Robot.intake.getPower());

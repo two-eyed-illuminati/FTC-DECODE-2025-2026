@@ -64,9 +64,9 @@ public class Robot{
   public static double SHOOT_MIN_HEIGHT_CLOSE = 40.0;
   public static double SHOOT_MIN_HEIGHT_FAR = 47.5;
   public static double SHOOT_MAX_HEIGHT_CLOSE = 47.0;
-  public static double SHOOT_MAX_HEIGHT_FAR = 51.0;
+  public static double SHOOT_MAX_HEIGHT_FAR = 54.0;
   public static double SHOOT_TARGET_HEIGHT_CLOSE = 45.0;
-  public static double SHOOT_TARGET_HEIGHT_FAR = 48.5;
+  public static double SHOOT_TARGET_HEIGHT_FAR = 51.5;
   public static double SHOOT_SLOWDOWN_FACTOR = 0.83;
   public static double SHOOT_RADIUS = 0.1181102362;
   public static double SHOOT_TRANSFER_FACTOR = 0.5714;
@@ -78,6 +78,7 @@ public class Robot{
   public static double HOOD_MIN_ANGLE = 45.0;
   public static double HOOD_MAX_ANGLE = 45.0;
   public static double HOOD_VEL = 0.5;
+  public static boolean FAR_SHOOT_CORRECTION = false;
   //Mechanisms, IMU, etc.
   public static MecanumDrive drive;
   public static DcMotorEx intake;
@@ -396,6 +397,9 @@ public class Robot{
     telemetry.addData("Outtake Turret Pos", outtakeTurret.getPos());
   }
   public static void aimOuttakeTurret(Pose2d robotPose, PoseVelocity2d robotVelocity, boolean pid){
+    if(FAR_SHOOT_CORRECTION) {
+      robotPose = new Pose2d(robotPose.position.x, Math.signum(robotPose.position.y) * (Math.abs(robotPose.position.y) + 3.0), robotPose.heading.toDouble());
+    }
     Pose2d futureRobotPose = new Pose2d(robotPose.position.x + turretLeadTime(robotPose)*robotVelocity.linearVel.x, robotPose.position.y + turretLeadTime(robotPose)*robotVelocity.linearVel.y, robotPose.heading.toDouble());
     double theta = calculateShoot(futureRobotPose, robotVelocity, shootTargetHeight(robotPose), false)[0];
     aimOuttakeTurret(theta, futureRobotPose, pid);
@@ -562,9 +566,9 @@ public class Robot{
 
     @Override
     public boolean run(@NonNull TelemetryPacket packet) {
+      drive.updatePoseEstimate();
       aimOuttakeTurret();
       double[] outtakeVels = shootOuttake();
-      drive.updatePoseEstimate();
 
       if(!spunUp && (outtake.getVel() >= outtakeVels[0] && outtake.getVel() <= outtakeVels[1])){
         spunUp = true;
@@ -710,7 +714,7 @@ public class Robot{
         packet.put("Time of Ball Detected", elapsedTimeOfBallDetected);
         packet.put("X", drive.localizer.getPose().position.x);
 
-        if (elapsedTime.seconds() > time || elapsedTimeOfBallDetected.seconds() > 0.6 || drive.localizer.getPose().position.x < 30) {
+        if (elapsedTime.seconds() > time || elapsedTimeOfBallDetected.seconds() > 1.0 || drive.localizer.getPose().position.x < 30 || Math.abs(drive.localizer.getPose().position.y) < 15) {
           stopIntake();
           returning = true;
           goToEndPoseAction = drive.actionBuilder(drive.localizer.getPose()).strafeToLinearHeading(endPose.position, endPose.heading).build();

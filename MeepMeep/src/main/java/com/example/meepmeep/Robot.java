@@ -16,6 +16,9 @@ public class Robot{
     public static Alliance alliance = Alliance.RED; //0 = blue, 1 = red
     public static boolean STOP_SHOOT_OUTTAKE_ACTION = false;
     public static boolean STOP_AIM_TURRET_ACTION = false;
+    public static double SHOOT_TARGET_HEIGHT_FAR = 50.0;
+    public static double SHOOT_MAX_HEIGHT_FAR = 53.0;
+    public static boolean FAR_SHOOT_CORRECTION = true;
     public static void beginIntake(){}
     public static void stopIntake(){}
     public static Action getLooseIntakeAction(Pose2d endPose){
